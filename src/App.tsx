@@ -13,6 +13,7 @@ import AIAssistantPage from "./pages/AIAssistantPage";
 import QuizDemoPage from "./pages/QuizDemoPage";
 import AdminPage from "./pages/AdminPage";
 import ProtectedRoute from "./components/shared/ProtectedRoute";
+import AdminRoute from "./components/shared/AdminRoute";
 
 function App() {
   return (
@@ -53,9 +54,9 @@ function App() {
         <Route
           path="/admin"
           element={
-            <ProtectedRoute>
+            <AdminRoute>
               <AdminPage />
-            </ProtectedRoute>
+            </AdminRoute>
           }
         />
       </Route>

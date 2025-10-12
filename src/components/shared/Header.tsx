@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { BookOpen, LayoutDashboard, Home, User, LogOut, Bot } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
-const getNavLinks = (isAdmin: boolean) => {
+const getNavLinks = (user: any) => {
   const links = [
     { to: "/", label: "Home", icon: <Home className="h-4 w-4" /> },
     { to: "/courses", label: "Courses", icon: <BookOpen className="h-4 w-4" /> },
@@ -11,6 +11,8 @@ const getNavLinks = (isAdmin: boolean) => {
     { to: "/ai-assistant", label: "AI Assistant", icon: <Bot className="h-4 w-4" /> },
   ];
   
+  // Show admin link for admin users or admin@example.com (temporary)
+  const isAdmin = user?.role === "admin" || user?.email === "admin@example.com";
   if (isAdmin) {
     links.push({ to: "/admin", label: "Admin", icon: <LayoutDashboard className="h-4 w-4" /> });
   }
@@ -36,7 +38,7 @@ export default function Header() {
         </Link>
 
         <nav className="hidden md:flex items-center gap-2">
-          {getNavLinks(user?.role === "admin").map((link) => (
+          {getNavLinks(user).map((link) => (
             <NavLink
               key={link.to}
               to={link.to}
