@@ -52,4 +52,15 @@ export const authAPI = {
   },
 };
 
+export const userAPI = {
+  updateProfile: async (name: string, email: string) => {
+    const { data } = await api.put("/user/profile", { name, email });
+    return data;
+  },
+  changePassword: async (currentPassword: string, newPassword: string) => {
+    const { data } = await api.put("/user/change-password", { currentPassword, newPassword });
+    return data;
+  },
+};
+
 export default api;

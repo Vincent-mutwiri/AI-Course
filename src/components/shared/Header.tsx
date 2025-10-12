@@ -48,9 +48,11 @@ export default function Header() {
         <div className="flex items-center gap-2">
           {user ? (
             <>
-              <span className="text-sm text-muted-foreground hidden md:inline">
-                {user.name}
-              </span>
+              <Button variant="ghost" size="icon" asChild>
+                <Link to="/profile">
+                  <User className="h-5 w-5" />
+                </Link>
+              </Button>
               <Button variant="ghost" size="icon" onClick={handleLogout}>
                 <LogOut className="h-5 w-5" />
               </Button>
