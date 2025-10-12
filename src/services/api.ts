@@ -63,4 +63,38 @@ export const userAPI = {
   },
 };
 
+export const courseAPI = {
+  getAll: async (filters?: { category?: string; level?: string; search?: string }) => {
+    const { data } = await api.get("/courses", { params: filters });
+    return data;
+  },
+  getById: async (id: string) => {
+    const { data } = await api.get(`/courses/${id}`);
+    return data;
+  },
+  enroll: async (courseId: string) => {
+    const { data } = await api.post(`/courses/${courseId}/enroll`);
+    return data;
+  },
+};
+
+export const enrollmentAPI = {
+  getMyCourses: async () => {
+    const { data } = await api.get("/enrollments/my-courses");
+    return data;
+  },
+  getProgress: async (courseId: string) => {
+    const { data } = await api.get(`/enrollments/${courseId}`);
+    return data;
+  },
+  updateProgress: async (courseId: string, lessonId: string, completed: boolean) => {
+    const { data } = await api.put(`/enrollments/${courseId}/progress`, { lessonId, completed });
+    return data;
+  },
+  getStats: async () => {
+    const { data } = await api.get("/enrollments/stats/overview");
+    return data;
+  },
+};
+
 export default api;
