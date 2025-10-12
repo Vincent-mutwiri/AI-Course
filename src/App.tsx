@@ -9,6 +9,7 @@ import SignupPage from "./pages/SignupPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import ProfilePage from "./pages/ProfilePage";
+import AIAssistantPage from "./pages/AIAssistantPage";
 import ProtectedRoute from "./components/shared/ProtectedRoute";
 
 function App() {
@@ -35,6 +36,14 @@ function App() {
           element={
             <ProtectedRoute>
               <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/ai-assistant"
+          element={
+            <ProtectedRoute>
+              <AIAssistantPage />
             </ProtectedRoute>
           }
         />

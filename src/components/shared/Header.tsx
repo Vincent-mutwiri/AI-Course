@@ -1,12 +1,13 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { BookOpen, LayoutDashboard, Home, User, LogOut } from "lucide-react";
+import { BookOpen, LayoutDashboard, Home, User, LogOut, Bot } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
 const navLinks = [
   { to: "/", label: "Home", icon: <Home className="h-4 w-4" /> },
   { to: "/courses", label: "Courses", icon: <BookOpen className="h-4 w-4" /> },
   { to: "/dashboard", label: "Dashboard", icon: <LayoutDashboard className="h-4 w-4" /> },
+  { to: "/ai-assistant", label: "AI Assistant", icon: <Bot className="h-4 w-4" /> },
 ];
 
 export default function Header() {

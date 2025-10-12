@@ -132,4 +132,11 @@ export const uploadAPI = {
   },
 };
 
+export const aiAPI = {
+  chat: async (message: string, context?: Array<{ text: string; type: string }>) => {
+    const { data } = await api.post("/ai/chat", { message, context });
+    return data;
+  },
+};
+
 export default api;
