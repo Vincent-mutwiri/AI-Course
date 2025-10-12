@@ -139,4 +139,19 @@ export const aiAPI = {
   },
 };
 
+export const quizAPI = {
+  getQuiz: async (quizId: string) => {
+    const { data } = await api.get(`/quizzes/${quizId}`);
+    return data;
+  },
+  submitQuiz: async (quizId: string, answers: Array<{ selectedOption: number }>) => {
+    const { data } = await api.post(`/quizzes/${quizId}/submit`, { answers });
+    return data;
+  },
+  getAttempts: async (quizId: string) => {
+    const { data } = await api.get(`/quizzes/${quizId}/attempts`);
+    return data;
+  },
+};
+
 export default api;

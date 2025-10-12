@@ -10,6 +10,7 @@ import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import ProfilePage from "./pages/ProfilePage";
 import AIAssistantPage from "./pages/AIAssistantPage";
+import QuizDemoPage from "./pages/QuizDemoPage";
 import ProtectedRoute from "./components/shared/ProtectedRoute";
 
 function App() {
@@ -47,6 +48,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="/demo/quiz" element={<QuizDemoPage />} />
       </Route>
     </Routes>
   );

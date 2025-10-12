@@ -7,6 +7,7 @@ import courseRoutes from "./routes/course";
 import enrollmentRoutes from "./routes/enrollment";
 import uploadRoutes from "./routes/upload";
 import aiRoutes from "./routes/ai";
+import quizRoutes from "./routes/quiz";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -25,6 +26,7 @@ app.use("/api/courses", courseRoutes);
 app.use("/api/enrollments", enrollmentRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/ai", aiRoutes);
+app.use("/api/quizzes", quizRoutes);
 
 connectDB().then(() => {
   app.listen(PORT, () => {
