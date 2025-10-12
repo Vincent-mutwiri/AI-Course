@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import axios from "axios";
+import { authAPI } from "@/services/api";
 
 interface User {
   id: string;
@@ -30,22 +30,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = async (email: string, password: string) => {
-    // TODO: Replace with actual API call
-    const mockUser = { id: "1", email, name: email.split("@")[0] };
-    setUser(mockUser);
-    localStorage.setItem("user", JSON.stringify(mockUser));
+    const { user, token } = await authAPI.login(email, password);
+    setUser(user);
+    localStorage.setItem("user", JSON.stringify(user));
+    localStorage.setItem("token", token);
   };
 
   const signup = async (name: string, email: string, password: string) => {
-    // TODO: Replace with actual API call
-    const mockUser = { id: "1", email, name };
-    setUser(mockUser);
-    localStorage.setItem("user", JSON.stringify(mockUser));
+    const { user, token } = await authAPI.signup(name, email, password);
+    setUser(user);
+    localStorage.setItem("user", JSON.stringify(user));
+    localStorage.setItem("token", token);
   };
 
   const logout = () => {
     setUser(null);
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
   };
 
   return (
