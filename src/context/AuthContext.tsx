@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { authAPI } from "@/services/api";
+import { getToken, setToken, removeToken } from "@/utils/token";
 
 interface User {
   id: string;
@@ -22,31 +23,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setIsLoading(false);
+    const verifyStoredToken = async () => {
+      const token = getToken();
+      if (token) {
+        try {
+          const { user } = await authAPI.verifyToken();
+          setUser(user);
+        } catch (error) {
+          removeToken();
+        }
+      }
+      setIsLoading(false);
+    };
+    verifyStoredToken();
   }, []);
 
   const login = async (email: string, password: string) => {
     const { user, token } = await authAPI.login(email, password);
     setUser(user);
-    localStorage.setItem("user", JSON.stringify(user));
-    localStorage.setItem("token", token);
+    setToken(token);
   };
 
   const signup = async (name: string, email: string, password: string) => {
     const { user, token } = await authAPI.signup(name, email, password);
     setUser(user);
-    localStorage.setItem("user", JSON.stringify(user));
-    localStorage.setItem("token", token);
+    setToken(token);
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
+    removeToken();
   };
 
   return (

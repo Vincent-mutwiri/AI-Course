@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getToken, removeToken } from "@/utils/token";
 
 const API_URL = "http://localhost:5000/api";
 
@@ -10,12 +11,23 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
+  const token = getToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      removeToken();
+      window.location.href = "/login";
+    }
+    return Promise.reject(error);
+  }
+);
 
 export const authAPI = {
   signup: async (name: string, email: string, password: string) => {
@@ -24,6 +36,10 @@ export const authAPI = {
   },
   login: async (email: string, password: string) => {
     const { data } = await api.post("/auth/login", { email, password });
+    return data;
+  },
+  verifyToken: async () => {
+    const { data } = await api.get("/auth/verify");
     return data;
   },
 };

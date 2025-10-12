@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
 import User from "../models/User";
 import { generateToken } from "../config/jwt";
+import { authenticate, AuthRequest } from "../middleware/auth";
 
 const router = Router();
 
@@ -40,6 +41,18 @@ router.post("/login", async (req: Request, res: Response) => {
       user: { id: user._id, name: user.name, email: user.email },
       token,
     });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+router.get("/verify", authenticate, async (req: AuthRequest, res: Response) => {
+  try {
+    const user = await User.findById(req.userId).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.json({ user: { id: user._id, name: user.name, email: user.email } });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
