@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useAuth } from "@/context/AuthContext";
 import { userAPI } from "@/services/api";
 import { useState } from "react";
+import FileUpload from "@/components/shared/FileUpload";
 
 const profileSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -32,6 +33,7 @@ export default function ProfilePage() {
   const [profileError, setProfileError] = useState("");
   const [passwordSuccess, setPasswordSuccess] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [avatar, setAvatar] = useState(user?.avatar || "");
 
   const {
     register: registerProfile,
@@ -58,7 +60,7 @@ export default function ProfilePage() {
     try {
       setProfileError("");
       setProfileSuccess("");
-      const { user: updatedUser } = await userAPI.updateProfile(data.name, data.email);
+      const { user: updatedUser } = await userAPI.updateProfile(data.name, data.email, avatar);
       updateUser(updatedUser);
       setProfileSuccess("Profile updated successfully!");
     } catch (err: any) {
@@ -99,6 +101,15 @@ export default function ProfilePage() {
                 {profileError}
               </div>
             )}
+
+            <div className="space-y-2">
+              <Label>Profile Picture</Label>
+              <FileUpload
+                type="image"
+                currentFile={avatar}
+                onUploadComplete={(fileUrl) => setAvatar(fileUrl)}
+              />
+            </div>
 
             <div className="space-y-2">
               <Label htmlFor="name">Name</Label>

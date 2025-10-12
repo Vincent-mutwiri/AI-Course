@@ -6,6 +6,7 @@ import authRoutes from "./routes/auth";
 import userRoutes from "./routes/user";
 import courseRoutes from "./routes/course";
 import enrollmentRoutes from "./routes/enrollment";
+import uploadRoutes from "./routes/upload";
 
 dotenv.config({ path: ".env.local" });
 
@@ -19,6 +20,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/enrollments", enrollmentRoutes);
+app.use("/api/upload", uploadRoutes);
 
 connectDB().then(() => {
   app.listen(PORT, () => {

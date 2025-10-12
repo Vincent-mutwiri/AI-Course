@@ -53,8 +53,8 @@ export const authAPI = {
 };
 
 export const userAPI = {
-  updateProfile: async (name: string, email: string) => {
-    const { data } = await api.put("/user/profile", { name, email });
+  updateProfile: async (name: string, email: string, avatar?: string) => {
+    const { data } = await api.put("/user/profile", { name, email, avatar });
     return data;
   },
   changePassword: async (currentPassword: string, newPassword: string) => {
@@ -93,6 +93,41 @@ export const enrollmentAPI = {
   },
   getStats: async () => {
     const { data } = await api.get("/enrollments/stats/overview");
+    return data;
+  },
+};
+
+export const uploadAPI = {
+  uploadImage: async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const { data } = await api.post("/upload/image", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return data;
+  },
+  uploadVideo: async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const { data } = await api.post("/upload/video", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return data;
+  },
+  uploadDocument: async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const { data } = await api.post("/upload/document", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return data;
+  },
+  getSignedUrl: async (fileName: string, fileType: string, folder: string) => {
+    const { data } = await api.post("/upload/signed-url", { fileName, fileType, folder });
+    return data;
+  },
+  deleteFile: async (fileUrl: string) => {
+    const { data } = await api.delete("/upload", { data: { fileUrl } });
     return data;
   },
 };

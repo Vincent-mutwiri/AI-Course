@@ -18,7 +18,7 @@ router.get("/me", authenticate, async (req: AuthRequest, res: Response) => {
 
 router.put("/profile", authenticate, async (req: AuthRequest, res: Response) => {
   try {
-    const { name, email } = req.body;
+    const { name, email, avatar } = req.body;
     const user = await User.findById(req.userId);
 
     if (!user) {
@@ -34,9 +34,10 @@ router.put("/profile", authenticate, async (req: AuthRequest, res: Response) => 
 
     user.name = name || user.name;
     user.email = email || user.email;
+    if (avatar !== undefined) user.avatar = avatar;
     await user.save();
 
-    res.json({ user: { id: user._id, name: user.name, email: user.email } });
+    res.json({ user: { id: user._id, name: user.name, email: user.email, avatar: user.avatar } });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
