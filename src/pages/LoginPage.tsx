@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,7 +18,9 @@ type LoginFormData = z.infer<typeof loginSchema>;
 export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [error, setError] = useState("");
+  const successMessage = (location.state as any)?.message;
   const {
     register,
     handleSubmit,
@@ -46,6 +48,11 @@ export default function LoginPage() {
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {successMessage && (
+            <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-md text-sm">
+              {successMessage}
+            </div>
+          )}
           {error && (
             <div className="bg-destructive/15 text-destructive px-4 py-3 rounded-md text-sm">
               {error}
@@ -66,7 +73,12 @@ export default function LoginPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="password">Password</Label>
+              <Link to="/forgot-password" className="text-sm text-primary hover:underline">
+                Forgot password?
+              </Link>
+            </div>
             <Input
               id="password"
               type="password"

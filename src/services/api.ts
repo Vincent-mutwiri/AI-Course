@@ -42,6 +42,14 @@ export const authAPI = {
     const { data } = await api.get("/auth/verify");
     return data;
   },
+  forgotPassword: async (email: string) => {
+    const { data } = await api.post("/auth/forgot-password", { email });
+    return data;
+  },
+  resetPassword: async (token: string, password: string) => {
+    const { data } = await api.post(`/auth/reset-password/${token}`, { password });
+    return data;
+  },
 };
 
 export default api;
