@@ -154,4 +154,39 @@ export const quizAPI = {
   },
 };
 
+export const adminAPI = {
+  getStats: async () => {
+    const { data } = await api.get("/admin/stats");
+    return data;
+  },
+  createCourse: async (courseData: any) => {
+    const { data } = await api.post("/admin/courses", courseData);
+    return data;
+  },
+  updateCourse: async (id: string, courseData: any) => {
+    const { data } = await api.put(`/admin/courses/${id}`, courseData);
+    return data;
+  },
+  deleteCourse: async (id: string) => {
+    const { data } = await api.delete(`/admin/courses/${id}`);
+    return data;
+  },
+  createQuiz: async (quizData: any) => {
+    const { data } = await api.post("/admin/quizzes", quizData);
+    return data;
+  },
+  updateQuiz: async (id: string, quizData: any) => {
+    const { data } = await api.put(`/admin/quizzes/${id}`, quizData);
+    return data;
+  },
+  deleteQuiz: async (id: string) => {
+    const { data } = await api.delete(`/admin/quizzes/${id}`);
+    return data;
+  },
+  getUsers: async () => {
+    const { data } = await api.get("/admin/users");
+    return data;
+  },
+};
+
 export default api;

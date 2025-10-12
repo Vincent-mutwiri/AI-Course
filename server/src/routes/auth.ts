@@ -19,7 +19,7 @@ router.post("/signup", async (req: Request, res: Response) => {
     const token = generateToken(user._id.toString());
 
     res.status(201).json({
-      user: { id: user._id, name: user.name, email: user.email, avatar: user.avatar },
+      user: { id: user._id, name: user.name, email: user.email, avatar: user.avatar, role: user.role },
       token,
     });
   } catch (error) {
@@ -39,7 +39,7 @@ router.post("/login", async (req: Request, res: Response) => {
     const token = generateToken(user._id.toString());
 
     res.json({
-      user: { id: user._id, name: user.name, email: user.email, avatar: user.avatar },
+      user: { id: user._id, name: user.name, email: user.email, avatar: user.avatar, role: user.role },
       token,
     });
   } catch (error) {
@@ -53,7 +53,7 @@ router.get("/verify", authenticate, async (req: AuthRequest, res: Response) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    res.json({ user: { id: user._id, name: user.name, email: user.email, avatar: user.avatar } });
+    res.json({ user: { id: user._id, name: user.name, email: user.email, avatar: user.avatar, role: user.role } });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }

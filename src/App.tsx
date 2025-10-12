@@ -11,6 +11,7 @@ import ResetPasswordPage from "./pages/ResetPasswordPage";
 import ProfilePage from "./pages/ProfilePage";
 import AIAssistantPage from "./pages/AIAssistantPage";
 import QuizDemoPage from "./pages/QuizDemoPage";
+import AdminPage from "./pages/AdminPage";
 import ProtectedRoute from "./components/shared/ProtectedRoute";
 
 function App() {
@@ -49,6 +50,14 @@ function App() {
           }
         />
         <Route path="/demo/quiz" element={<QuizDemoPage />} />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <AdminPage />
+            </ProtectedRoute>
+          }
+        />
       </Route>
     </Routes>
   );

@@ -14,6 +14,7 @@ const userSchema = new Schema<IUser>(
     email: { type: String, required: true, unique: true, lowercase: true },
     password: { type: String, required: true },
     avatar: { type: String },
+    role: { type: String, enum: ["user", "admin"], default: "user" },
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },
   },
