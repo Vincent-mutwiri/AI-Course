@@ -2,58 +2,31 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { aiAPI } from "@/services/api";
-import { Send } from "lucide-react";
-
-interface Message {
-  text: string;
-  type: "Human" | "AI";
-}
+import { useChat } from "@/contexts/ChatContext";
+import { Send, Trash2 } from "lucide-react";
 
 export default function AIChat() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const { messages, sendMessage, clearHistory, isLoading } = useChat();
   const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const handleSend = async () => {
     if (!input.trim()) return;
-
-    const userMessage: Message = { text: input, type: "Human" };
-    setMessages((prev) => [...prev, userMessage]);
+    const message = input;
     setInput("");
-    setLoading(true);
-
-    try {
-      const response = await aiAPI.chat(input, messages);
-      
-      if (response.text) {
-        const aiMessage: Message = { text: response.text, type: "AI" };
-        setMessages((prev) => [...prev, aiMessage]);
-      } else {
-        console.error("No text in response:", response);
-        const errorMessage: Message = { 
-          text: "Received empty response from AI. Please try again.", 
-          type: "AI" 
-        };
-        setMessages((prev) => [...prev, errorMessage]);
-      }
-    } catch (error: any) {
-      console.error("Chat error:", error);
-      const errorText = error.response?.data?.error || error.response?.data?.message || error.message;
-      const errorMessage: Message = { 
-        text: `Error: ${errorText}. Please check the server logs.`, 
-        type: "AI" 
-      };
-      setMessages((prev) => [...prev, errorMessage]);
-    } finally {
-      setLoading(false);
-    }
+    await sendMessage(message);
   };
 
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle>AI Learning Assistant</CardTitle>
+        <div className="flex justify-between items-center">
+          <CardTitle>AI Learning Assistant</CardTitle>
+          {messages.length > 0 && (
+            <Button variant="ghost" size="sm" onClick={clearHistory}>
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="h-96 overflow-y-auto space-y-3 p-4 border rounded-lg">
@@ -65,20 +38,20 @@ export default function AIChat() {
           {messages.map((msg, idx) => (
             <div
               key={idx}
-              className={`flex ${msg.type === "Human" ? "justify-end" : "justify-start"}`}
+              className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
             >
               <div
                 className={`max-w-[80%] rounded-lg px-4 py-2 ${
-                  msg.type === "Human"
+                  msg.role === "user"
                     ? "bg-primary text-primary-foreground"
                     : "bg-muted"
                 }`}
               >
-                <p className="text-sm">{msg.text}</p>
+                <p className="text-sm">{msg.content}</p>
               </div>
             </div>
           ))}
-          {loading && (
+          {isLoading && (
             <div className="flex justify-start">
               <div className="bg-muted rounded-lg px-4 py-2">
                 <p className="text-sm">Thinking...</p>
@@ -93,9 +66,9 @@ export default function AIChat() {
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && handleSend()}
             placeholder="Ask me anything about your courses..."
-            disabled={loading}
+            disabled={isLoading}
           />
-          <Button onClick={handleSend} disabled={loading || !input.trim()}>
+          <Button onClick={handleSend} disabled={isLoading || !input.trim()}>
             <Send className="h-4 w-4" />
           </Button>
         </div>

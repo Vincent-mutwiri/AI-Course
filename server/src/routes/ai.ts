@@ -1,16 +1,11 @@
 import { Router, Request, Response } from "express";
 import axios from "axios";
 import { authenticate, AuthRequest } from "../middleware/auth";
+import ChatHistory from "../models/ChatHistory";
 
 const router = Router();
 
-const INFLECTION_API_URL = process.env.INFLECTION_API_URL || "https://api.inflection.ai/external/api/inference";
-const API_KEY = process.env.INFLECTION_API_KEY;
-
-if (!API_KEY) {
-  console.error('ERROR: INFLECTION_API_KEY environment variable is not set');
-  process.exit(1);
-}
+import { INFLECTION_API_URL, INFLECTION_API_KEY as API_KEY } from "../config/env";
 
 router.get("/test", authenticate, async (req: AuthRequest, res: Response) => {
   res.json({
@@ -21,40 +16,34 @@ router.get("/test", authenticate, async (req: AuthRequest, res: Response) => {
 });
 
 router.post("/chat", authenticate, async (req: AuthRequest, res: Response) => {
-  console.log("=== AI Chat Route Hit ===");
   try {
-    const { message, context = [] } = req.body;
-    console.log("Message:", message, "Context length:", context.length);
+    const { message } = req.body;
+    const userId = req.userId;
+    console.log("Chat request - userId:", userId, "req.user:", req.user);
 
     if (!message) {
       return res.status(400).json({ message: "Message is required" });
     }
 
-    if (!API_KEY) {
-      console.error("INFLECTION_API_KEY not configured");
-      return res.status(500).json({ message: "AI service not configured" });
+    if (!userId) {
+      return res.status(401).json({ message: "User not authenticated" });
     }
 
-    const conversationContext = [
-      ...context,
-      { text: message, type: "Human" }
-    ];
+    let chatHistory = await ChatHistory.findOne({ userId });
+    if (!chatHistory) {
+      chatHistory = new ChatHistory({ userId, messages: [] });
+    }
 
-    const requestBody = {
-      context: conversationContext,
-      config: "Pi-3.1"
-    };
+    chatHistory.messages.push({ role: "user", content: message, timestamp: new Date() });
 
-    console.log("Request details:", {
-      url: INFLECTION_API_URL,
-      body: requestBody,
-      apiKeyPrefix: API_KEY?.substring(0, 10) + '...',
-      apiKeyLength: API_KEY?.length
-    });
+    const context = chatHistory.messages.slice(-10).map(m => ({
+      text: m.content,
+      type: m.role === "user" ? "Human" : "Pi"
+    }));
 
     const response = await axios.post(
       INFLECTION_API_URL,
-      requestBody,
+      { context, config: "Pi-3.1" },
       {
         headers: {
           'Authorization': `Bearer ${API_KEY}`,
@@ -64,29 +53,35 @@ router.post("/chat", authenticate, async (req: AuthRequest, res: Response) => {
       }
     );
 
-    console.log("Inflection AI response received:", response.status, response.data);
-    res.json(response.data);
+    const aiResponse = response.data.text || response.data;
+    chatHistory.messages.push({ role: "assistant", content: aiResponse, timestamp: new Date() });
+    await chatHistory.save();
+
+    res.json({ response: aiResponse, history: chatHistory.messages });
   } catch (error: any) {
-    console.error("AI API Error:", {
-      message: error.message,
-      status: error.response?.status,
-      data: error.response?.data,
-      url: INFLECTION_API_URL
-    });
-    
-    // Log detailed error for debugging
-    console.error("Full error details:", {
-      status: error.response?.status,
-      statusText: error.response?.statusText,
-      data: error.response?.data,
-      headers: error.response?.headers
-    });
-    
+    console.error("AI Error:", error.response ? error.response.data : error.message);
     res.status(500).json({ 
-      message: "AI service error",
-      error: error.response?.data?.message || error.message,
-      details: error.response?.data
+      message: "AI service error", 
+      error: error.response?.data?.error || error.message 
     });
+  }
+});
+
+router.get("/history", authenticate, async (req: AuthRequest, res: Response) => {
+  try {
+    const chatHistory = await ChatHistory.findOne({ userId: req.userId });
+    res.json({ messages: chatHistory?.messages || [] });
+  } catch (error: any) {
+    res.status(500).json({ message: "Failed to load history", error: error.message });
+  }
+});
+
+router.delete("/history", authenticate, async (req: AuthRequest, res: Response) => {
+  try {
+    await ChatHistory.findOneAndDelete({ userId: req.userId });
+    res.json({ message: "History cleared" });
+  } catch (error: any) {
+    res.status(500).json({ message: "Failed to clear history", error: error.message });
   }
 });
 
