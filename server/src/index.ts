@@ -10,6 +10,7 @@ import uploadRoutes from "./routes/upload";
 import aiRoutes from "./routes/ai";
 import quizRoutes from "./routes/quiz";
 import adminRoutes from "./routes/admin";
+import inflectionRoutes from "./routes/inflection";
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use("/api/upload", uploadRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/quizzes", quizRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/inflection-ai", inflectionRoutes);
 
 connectDB().then(() => {
   app.listen(PORT, () => {
