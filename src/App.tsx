@@ -14,7 +14,7 @@ import QuizDemoPage from "./pages/QuizDemoPage";
 import AdminPage from "./pages/AdminPage";
 import ProtectedRoute from "./components/shared/ProtectedRoute";
 import AdminRoute from "./components/shared/AdminRoute";
-import Module1 from "./components/modules/Module1";
+import ModuleContent from "./pages/ModuleContent";
 
 function App() {
   return (
@@ -36,6 +36,14 @@ function App() {
           }
         />
         <Route
+          path="/course/:courseId/module/:moduleId"
+          element={
+            <ProtectedRoute>
+              <ModuleContent />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/profile"
           element={
             <ProtectedRoute>
@@ -53,11 +61,6 @@ function App() {
         />
         <Route path="/demo/quiz" element={<QuizDemoPage />} />
         <Route path="/quiz-demo" element={<QuizDemoPage />} />
-        <Route path="/module/1" element={
-          <ProtectedRoute>
-            <Module1 />
-          </ProtectedRoute>
-        } />
         <Route
           path="/admin"
           element={

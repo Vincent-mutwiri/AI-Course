@@ -3,8 +3,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import { courseAPI } from "@/services/api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Clock, BookOpen, BarChart } from "lucide-react";
+import { Clock, BookOpen, BarChart, ChevronRight } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { Badge } from "@/components/ui/badge";
 
 interface Course {
   _id: string;
@@ -16,8 +17,11 @@ interface Course {
   totalDuration: number;
   enrolledCount: number;
   modules: Array<{
+    _id: string;
     title: string;
     description: string;
+    duration: number;
+    order: number;
     lessons: Array<{
       title: string;
       description: string;
@@ -94,9 +98,48 @@ export default function CourseDetailPage() {
         </Button>
       </div>
 
-      <Card>
+      <Card className="mb-8">
         <CardHeader>
           <CardTitle>About This Course</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground">{course.description}</p>
+        </CardContent>
+      </Card>
+
+      <div className="space-y-4">
+        <h2 className="text-2xl font-bold">Course Content</h2>
+        <div className="space-y-2">
+          {course.modules?.map((module, index) => (
+            <Card 
+              key={module._id}
+              className="group hover:bg-accent/50 transition-colors cursor-pointer"
+              onClick={() => navigate(`/course/${id}/module/${module._id}`)}
+            >
+              <CardContent className="p-4 flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                    {index + 1}
+                  </div>
+                  <div>
+                    <h3 className="font-medium group-hover:text-primary transition-colors">
+                      {module.title}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      {module.lessons?.length || 0} lessons • {Math.floor(module.duration / 60)}h {module.duration % 60}m
+                    </p>
+                  </div>
+                </div>
+                <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+
+      <Card className="mt-8">
+        <CardHeader>
+          <CardTitle>What You'll Learn</CardTitle>
         </CardHeader>
         <CardContent>
           <p>{course.description}</p>
