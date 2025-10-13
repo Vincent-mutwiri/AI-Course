@@ -42,6 +42,18 @@ router.post("/", authenticate, async (req: AuthRequest, res: Response) => {
   }
 });
 
+router.put("/:id", async (req: Request, res: Response) => {
+  try {
+    const course = await Course.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!course) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+    res.json({ course });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 router.post("/:id/enroll", authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const course = await Course.findById(req.params.id);
