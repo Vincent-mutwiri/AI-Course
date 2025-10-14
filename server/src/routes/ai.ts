@@ -38,7 +38,7 @@ router.post("/chat", authenticate, async (req: AuthRequest, res: Response) => {
 
     const context = chatHistory.messages.slice(-10).map(m => ({
       text: m.content,
-      type: m.role === "user" ? "Human" : "Pi"
+      type: m.role === "user" ? "Human" : "AI"
     }));
 
     const response = await axios.post(
@@ -53,7 +53,7 @@ router.post("/chat", authenticate, async (req: AuthRequest, res: Response) => {
       }
     );
 
-    const aiResponse = response.data.text || response.data;
+    const aiResponse = response.data.choices?.[0]?.message?.content || response.data.text || response.data;
     chatHistory.messages.push({ role: "assistant", content: aiResponse, timestamp: new Date() });
     await chatHistory.save();
 
@@ -62,7 +62,7 @@ router.post("/chat", authenticate, async (req: AuthRequest, res: Response) => {
     console.error("AI Error:", error.response ? error.response.data : error.message);
     res.status(500).json({ 
       message: "AI service error", 
-      error: error.response?.data?.error || error.message 
+      error: error.response?.data || error.message 
     });
   }
 });
