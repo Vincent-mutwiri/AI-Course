@@ -5,9 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2, ArrowLeft } from 'lucide-react';
 import EthicalDilemmaSolver from '@/components/interactive/EthicalDilemmaSolver';
-import AISketch from '@/components/interactive/AISketch';
-import Chatbot from '@/components/interactive/Chatbot';
-import AIQuiz from '@/components/interactive/AIQuiz';
 
 interface Lesson {
   title: string;
@@ -72,7 +69,9 @@ const ModuleContent = () => {
     return <div className="p-4">Module not found in this course</div>;
   }
 
+  // Render module content based on module ID or type
   const renderModuleContent = () => {
+    // For Module 1, show the EthicalDilemmaSolver
     if (module.order === 1) {
       return (
         <div className="space-y-8 mt-6">
@@ -90,51 +89,7 @@ const ModuleContent = () => {
       );
     }
     
-    if (module.order === 2) {
-      return (
-        <div className="space-y-8 mt-6">
-          <h2 className="text-3xl font-bold">Module 2: Designing Practical AI Features</h2>
-          <div className="space-y-4">
-            <p className="text-lg">Identify ONE feature in your product that could responsibly leverage AI to enhance learner outcomes.</p>
-          </div>
-          <div className="mt-8">
-            <h3 className="text-2xl font-semibold mb-4">The "AI Sketch" Activity</h3>
-            <AISketch />
-          </div>
-        </div>
-      );
-    }
-    
-    if (module.order === 3) {
-      return (
-        <div className="space-y-8 mt-6">
-          <h2 className="text-3xl font-bold">Module 3: Technical Integration with Inflection AI API</h2>
-          <div className="space-y-4">
-            <p className="text-lg">Learn how to integrate AI capabilities into your educational platform.</p>
-          </div>
-          <div className="mt-8">
-            <h3 className="text-2xl font-semibold mb-4">AI Chatbot with Conversation History</h3>
-            <Chatbot />
-          </div>
-        </div>
-      );
-    }
-    
-    if (module.order === 4) {
-      return (
-        <div className="space-y-8 mt-6">
-          <h2 className="text-3xl font-bold">Module 4: Building Interactive Course Components</h2>
-          <div className="space-y-4">
-            <p className="text-lg">Create engaging, AI-powered assessments for your learners.</p>
-          </div>
-          <div className="mt-8">
-            <h3 className="text-2xl font-semibold mb-4">AI-Generated Quiz</h3>
-            <AIQuiz topic="The core principles of Responsible AI in EdTech" />
-          </div>
-        </div>
-      );
-    }
-    
+    // Default content for other modules
     return (
       <div className="prose max-w-none">
         <p>Module content coming soon.</p>
