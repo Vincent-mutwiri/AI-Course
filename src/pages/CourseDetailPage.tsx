@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { courseAPI } from "@/services/api";
+import { courseAPI, progressAPI } from "@/services/api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Clock, BookOpen, BarChart, ChevronRight, PlayCircle } from "lucide-react";
+import { Clock, BookOpen, BarChart, ChevronRight, PlayCircle, CheckCircle2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { Badge } from "@/components/ui/badge";
 
@@ -37,20 +37,30 @@ export default function CourseDetailPage() {
   const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
   const [enrolling, setEnrolling] = useState(false);
+  const [progress, setProgress] = useState<any>(null);
 
   useEffect(() => {
-    const fetchCourse = async () => {
+    const fetchData = async () => {
       try {
         const { course } = await courseAPI.getById(id!);
         setCourse(course);
+        
+        if (user) {
+          try {
+            const { progress } = await progressAPI.get(id!);
+            setProgress(progress);
+          } catch (err) {
+            // Progress not found, user hasn't started
+          }
+        }
       } catch (error) {
         console.error("Failed to fetch course", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchCourse();
-  }, [id]);
+    fetchData();
+  }, [id, user]);
 
   const handleEnroll = async () => {
     if (!user) {
@@ -96,9 +106,34 @@ export default function CourseDetailPage() {
             </div>
           </div>
 
-          <Button size="lg" onClick={handleEnroll} disabled={enrolling} className="bg-white text-blue-600 hover:bg-blue-50">
-            {enrolling ? "Enrolling..." : "Enroll in Course"}
-          </Button>
+          {progress ? (
+            <div className="space-y-3">
+              <div className="bg-white/20 rounded-lg p-3">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm font-medium">Your Progress</span>
+                  <span className="text-sm font-bold">{progress.overallProgress}%</span>
+                </div>
+                <div className="w-full bg-white/30 rounded-full h-2">
+                  <div
+                    className="bg-white h-2 rounded-full transition-all"
+                    style={{ width: `${progress.overallProgress}%` }}
+                  />
+                </div>
+              </div>
+              <Button size="lg" onClick={() => {
+                const lastModule = progress.moduleProgress?.[0];
+                if (lastModule) {
+                  navigate(`/course/${id}/module/${lastModule.moduleId}`);
+                }
+              }} className="bg-white text-blue-600 hover:bg-blue-50">
+                Continue Learning
+              </Button>
+            </div>
+          ) : (
+            <Button size="lg" onClick={handleEnroll} disabled={enrolling} className="bg-white text-blue-600 hover:bg-blue-50">
+              {enrolling ? "Enrolling..." : "Enroll in Course"}
+            </Button>
+          )}
         </div>
       </div>
 

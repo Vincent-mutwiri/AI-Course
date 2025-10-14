@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { courseAPI } from '@/services/api';
+import { courseAPI, progressAPI } from '@/services/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, ArrowLeft, Clock } from 'lucide-react';
+import { Loader2, ArrowLeft, Clock, CheckCircle2 } from 'lucide-react';
 import { ContentRenderer } from '@/components/modules/ContentRenderer';
 import { InteractiveElement } from '@/components/modules/InteractiveElement';
 import { QuizComponent } from '@/components/modules/QuizComponent';
 import { CodeSnippet } from '@/components/modules/CodeSnippet';
+import { ProgressBar } from '@/components/modules/ProgressBar';
 
 interface Lesson {
   title: string;
@@ -43,15 +44,33 @@ const ModuleContent = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [currentLesson, setCurrentLesson] = useState(0);
+  const [progress, setProgress] = useState<any>(null);
+  const [completedLessons, setCompletedLessons] = useState<number[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchCourse = async () => {
+    const fetchData = async () => {
       if (!courseId) return;
       
       try {
-        const { course } = await courseAPI.getById(courseId);
-        setCourse(course);
+        const courseData = await courseAPI.getById(courseId);
+        setCourse(courseData.course);
+        
+        try {
+          const progressData = await progressAPI.get(courseId);
+          setProgress(progressData.progress);
+          
+          const moduleProgress = progressData.progress?.moduleProgress?.find(
+            (m: any) => m.moduleId === moduleId
+          );
+          
+          if (moduleProgress) {
+            setCurrentLesson(moduleProgress.currentLesson || 0);
+            setCompletedLessons(moduleProgress.completedLessons || []);
+          }
+        } catch (progressErr) {
+          console.log('No progress found, starting fresh');
+        }
       } catch (err) {
         setError(err instanceof Error ? err : new Error('An error occurred'));
       } finally {
@@ -59,8 +78,8 @@ const ModuleContent = () => {
       }
     };
     
-    fetchCourse();
-  }, [courseId]);
+    fetchData();
+  }, [courseId, moduleId]);
 
   const module = course?.modules?.find((m: CourseModule) => m._id === moduleId);
   const lesson = module?.lessons?.[currentLesson];
@@ -81,15 +100,41 @@ const ModuleContent = () => {
     return <div className="p-4">Module not found in this course</div>;
   }
 
-  const handleNextLesson = () => {
+  const handleNextLesson = async () => {
     if (currentLesson < module.lessons.length - 1) {
-      setCurrentLesson(currentLesson + 1);
+      const nextLesson = currentLesson + 1;
+      setCurrentLesson(nextLesson);
+      await progressAPI.updateAccess(courseId!, moduleId!, nextLesson);
     }
   };
 
-  const handlePrevLesson = () => {
+  const handlePrevLesson = async () => {
     if (currentLesson > 0) {
-      setCurrentLesson(currentLesson - 1);
+      const prevLesson = currentLesson - 1;
+      setCurrentLesson(prevLesson);
+      await progressAPI.updateAccess(courseId!, moduleId!, prevLesson);
+    }
+  };
+
+  const handleCompleteLesson = async () => {
+    if (!completedLessons.includes(currentLesson)) {
+      try {
+        const updated = await progressAPI.updateLesson(courseId!, moduleId!, currentLesson, true);
+        const moduleProgress = updated.progress.moduleProgress.find((m: any) => m.moduleId === moduleId);
+        setCompletedLessons(moduleProgress?.completedLessons || []);
+      } catch (err) {
+        console.error('Failed to update progress:', err);
+      }
+    }
+  };
+
+  const handleQuizComplete = async (score: number) => {
+    try {
+      const updated = await progressAPI.updateLesson(courseId!, moduleId!, currentLesson, true, score);
+      const moduleProgress = updated.progress.moduleProgress.find((m: any) => m.moduleId === moduleId);
+      setCompletedLessons(moduleProgress?.completedLessons || []);
+    } catch (err) {
+      console.error('Failed to save quiz score:', err);
     }
   };
 
@@ -113,10 +158,22 @@ const ModuleContent = () => {
         <CardContent className="pt-0">
           {lesson ? (
             <div className="space-y-8">
+              {/* Progress Bar */}
+              <ProgressBar
+                current={currentLesson}
+                total={module.lessons.length}
+                completedLessons={completedLessons}
+              />
+
               {/* Lesson Header */}
               <div className="border-b pb-4">
                 <div className="flex items-center justify-between mb-2">
-                  <h2 className="text-2xl font-bold">{lesson.title}</h2>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-2xl font-bold">{lesson.title}</h2>
+                    {completedLessons.includes(currentLesson) && (
+                      <CheckCircle2 className="h-6 w-6 text-green-600" />
+                    )}
+                  </div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Clock className="h-4 w-4" />
                     {lesson.duration} min
@@ -146,7 +203,15 @@ const ModuleContent = () => {
 
               {/* Quiz */}
               {lesson.quiz && (
-                <QuizComponent quiz={lesson.quiz} />
+                <QuizComponent quiz={lesson.quiz} onComplete={handleQuizComplete} />
+              )}
+
+              {/* Complete Lesson Button */}
+              {!completedLessons.includes(currentLesson) && !lesson.quiz && (
+                <Button onClick={handleCompleteLesson} className="w-full" size="lg">
+                  <CheckCircle2 className="mr-2 h-5 w-5" />
+                  Mark as Complete
+                </Button>
               )}
 
               {/* Navigation */}

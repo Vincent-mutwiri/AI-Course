@@ -154,6 +154,21 @@ export const quizAPI = {
   },
 };
 
+export const progressAPI = {
+  get: async (courseId: string) => {
+    const { data } = await api.get(`/progress/${courseId}`);
+    return data;
+  },
+  updateLesson: async (courseId: string, moduleId: string, lessonIndex: number, completed: boolean, quizScore?: number) => {
+    const { data } = await api.post(`/progress/${courseId}/lesson`, { moduleId, lessonIndex, completed, quizScore });
+    return data;
+  },
+  updateAccess: async (courseId: string, moduleId: string, lessonIndex: number) => {
+    const { data } = await api.post(`/progress/${courseId}/access`, { moduleId, lessonIndex });
+    return data;
+  },
+};
+
 export const adminAPI = {
   getStats: async () => {
     const { data } = await api.get("/admin/stats");

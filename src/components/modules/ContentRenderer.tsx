@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { CheckCircle2, XCircle, AlertCircle } from "lucide-react";
+import { CheckCircle2, XCircle, AlertCircle, Circle } from "lucide-react";
 
 interface ContentSection {
   type: string;
@@ -135,40 +135,44 @@ const DefinitionSection = ({ title, definition, levels }: ContentSection) => (
   </div>
 );
 
-const CaseStudySection = ({ title, background, challenge, solution, results, code_example }: ContentSection) => (
-  <Card className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50">
-    <h3 className="text-xl font-semibold mb-3 text-blue-900">{title}</h3>
+const CaseStudySection = ({ title, background, challenge, solution, results }: ContentSection) => (
+  <Card className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200">
+    <div className="flex items-center gap-2 mb-4">
+      <span className="text-2xl">📚</span>
+      <h3 className="text-xl font-semibold text-blue-900">{title}</h3>
+    </div>
     <div className="space-y-4">
-      <div>
-        <h4 className="font-semibold text-sm text-blue-700 mb-1">Background</h4>
+      <div className="bg-white/70 p-4 rounded-lg">
+        <h4 className="font-semibold text-sm text-blue-700 mb-2 flex items-center gap-2">
+          <span>🎯</span> Background
+        </h4>
         <p className="text-sm">{background}</p>
       </div>
-      <div>
-        <h4 className="font-semibold text-sm text-blue-700 mb-1">Challenge</h4>
+      <div className="bg-white/70 p-4 rounded-lg">
+        <h4 className="font-semibold text-sm text-blue-700 mb-2 flex items-center gap-2">
+          <span>⚠️</span> Challenge
+        </h4>
         <p className="text-sm">{challenge}</p>
       </div>
-      <div>
-        <h4 className="font-semibold text-sm text-blue-700 mb-1">Solution</h4>
+      <div className="bg-white/70 p-4 rounded-lg">
+        <h4 className="font-semibold text-sm text-blue-700 mb-2 flex items-center gap-2">
+          <span>💡</span> Solution
+        </h4>
         <p className="text-sm">{solution}</p>
       </div>
-      {results && (
-        <div>
-          <h4 className="font-semibold text-sm text-blue-700 mb-2">Results</h4>
-          <ul className="text-sm space-y-1">
+      {results && results.length > 0 && (
+        <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-600">
+          <h4 className="font-semibold text-sm text-green-800 mb-3 flex items-center gap-2">
+            <span>📈</span> Results
+          </h4>
+          <ul className="text-sm space-y-2">
             {results.map((result: string, idx: number) => (
-              <li key={idx} className="flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-green-600" />
-                {result}
+              <li key={idx} className="flex items-start gap-2">
+                <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <span>{result}</span>
               </li>
             ))}
           </ul>
-        </div>
-      )}
-      {code_example && (
-        <div className="mt-4">
-          <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-xs overflow-x-auto">
-            <code>{code_example.student_code}</code>
-          </pre>
         </div>
       )}
     </div>

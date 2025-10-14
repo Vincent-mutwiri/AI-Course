@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, XCircle } from "lucide-react";
 
-export const QuizComponent = ({ quiz }: { quiz: any }) => {
+export const QuizComponent = ({ quiz, onComplete }: { quiz: any; onComplete?: (score: number) => void }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | number[] | boolean | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
@@ -20,7 +20,8 @@ export const QuizComponent = ({ quiz }: { quiz: any }) => {
       : selectedAnswer === question.correct;
 
     if (isCorrect) {
-      setScore(score + 1);
+      const newScore = score + 1;
+      setScore(newScore);
     }
     setShowExplanation(true);
   };
@@ -44,6 +45,10 @@ export const QuizComponent = ({ quiz }: { quiz: any }) => {
   };
 
   if (completed) {
+    if (onComplete && score > 0) {
+      onComplete(Math.round((score / quiz.questions.length) * 100));
+    }
+    
     return (
       <Card className="p-6 text-center">
         <h3 className="text-2xl font-bold mb-4">Quiz Complete! 🎉</h3>
@@ -74,34 +79,66 @@ export const QuizComponent = ({ quiz }: { quiz: any }) => {
       <div className="mb-6">
         <p className="font-medium mb-4">{question.question}</p>
 
-        {question.type === "multiple_choice" && (
+        {(question.type === "multiple_choice" || question.type === "multiple_select") && (
           <div className="space-y-2">
-            {question.options.map((option: string, idx: number) => (
-              <button
-                key={idx}
-                onClick={() => !showExplanation && setSelectedAnswer(idx)}
-                disabled={showExplanation}
-                className={`w-full text-left p-3 rounded-lg border-2 transition-all ${
-                  selectedAnswer === idx
-                    ? showExplanation
-                      ? idx === question.correct
-                        ? "border-green-500 bg-green-50"
-                        : "border-red-500 bg-red-50"
-                      : "border-blue-500 bg-blue-50"
-                    : "border-gray-200 hover:border-gray-300"
-                } ${showExplanation ? "cursor-default" : "cursor-pointer"}`}
-              >
-                <div className="flex items-center gap-2">
-                  {showExplanation && idx === question.correct && (
-                    <CheckCircle2 className="h-5 w-5 text-green-600" />
-                  )}
-                  {showExplanation && selectedAnswer === idx && idx !== question.correct && (
-                    <XCircle className="h-5 w-5 text-red-600" />
-                  )}
-                  <span className="text-sm">{option}</span>
-                </div>
-              </button>
-            ))}
+            {question.type === "multiple_select" && (
+              <p className="text-sm text-muted-foreground mb-2">Select all that apply</p>
+            )}
+            {question.options.map((option: string, idx: number) => {
+              const isSelected = question.type === "multiple_select"
+                ? Array.isArray(selectedAnswer) && selectedAnswer.includes(idx)
+                : selectedAnswer === idx;
+              const isCorrect = Array.isArray(question.correct)
+                ? question.correct.includes(idx)
+                : idx === question.correct;
+              
+              return (
+                <button
+                  key={idx}
+                  onClick={() => {
+                    if (showExplanation) return;
+                    if (question.type === "multiple_select") {
+                      const current = Array.isArray(selectedAnswer) ? selectedAnswer : [];
+                      if (current.includes(idx)) {
+                        setSelectedAnswer(current.filter((i: number) => i !== idx));
+                      } else {
+                        setSelectedAnswer([...current, idx]);
+                      }
+                    } else {
+                      setSelectedAnswer(idx);
+                    }
+                  }}
+                  disabled={showExplanation}
+                  className={`w-full text-left p-3 rounded-lg border-2 transition-all ${
+                    isSelected
+                      ? showExplanation
+                        ? isCorrect
+                          ? "border-green-500 bg-green-50"
+                          : "border-red-500 bg-red-50"
+                        : "border-blue-500 bg-blue-50"
+                      : "border-gray-200 hover:border-gray-300"
+                  } ${showExplanation ? "cursor-default" : "cursor-pointer"}`}
+                >
+                  <div className="flex items-center gap-2">
+                    {question.type === "multiple_select" && (
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        readOnly
+                        className="h-4 w-4"
+                      />
+                    )}
+                    {showExplanation && isCorrect && (
+                      <CheckCircle2 className="h-5 w-5 text-green-600" />
+                    )}
+                    {showExplanation && isSelected && !isCorrect && (
+                      <XCircle className="h-5 w-5 text-red-600" />
+                    )}
+                    <span className="text-sm">{option}</span>
+                  </div>
+                </button>
+              );
+            })}
           </div>
         )}
 

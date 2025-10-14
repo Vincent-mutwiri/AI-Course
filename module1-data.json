@@ -142,21 +142,16 @@
             },
             {
               "type": "case_study",
-              "title": "CodeClimb's Adaptive Feedback System",
-              "background": "CodeClimb teaches Python to career switchers (ages 25-45)",
-              "challenge": "Beginners get frustrated with cryptic error messages, advanced learners feel patronized, teachers can't provide instant personalized feedback at scale",
-              "solution": "Context-Aware Feedback Engine that analyzes student skill level, previous errors, learning style, and emotional state",
+              "title": "LinguaLearn's Adaptive Language System",
+              "background": "LinguaLearn teaches Spanish to English speakers using AI-powered personalization (inspired by Duolingo's approach)",
+              "challenge": "Students learn at different paces, some need more grammar practice while others excel at vocabulary but struggle with pronunciation",
+              "solution": "Adaptive Learning Algorithm that adjusts difficulty in real-time, provides personalized practice sessions, and uses spaced repetition based on individual performance patterns",
               "results": [
-                "40% reduction in student frustration",
-                "60% faster problem resolution",
-                "85% of students report feeling 'understood' by the system"
-              ],
-              "code_example": {
-                "language": "python",
-                "student_code": "def calculate_average(numbers):\n    total = sum(numbers)\n    return total / len(numbers)\n\nresult = calculate_average([])  # Bug: Empty list!",
-                "beginner_feedback": "🤔 Oops! Your function crashes with an empty list.\n\nThink about it: What happens when you divide by zero?\n\n💡 Hint: Check if the list is empty before calculating.",
-                "advanced_feedback": "⚠️ ZeroDivisionError on line 3.\n\nEdge case: Empty list handling missing.\nConsider: Default return value or exception?\n\nPythonic approach: Use `if not numbers:` guard clause."
-              }
+                "65% increase in lesson completion rates",
+                "3x improvement in vocabulary retention after 30 days",
+                "Students reach conversational fluency 40% faster",
+                "92% of users report feeling motivated by personalized challenges"
+              ]
             },
             {
               "type": "principles",

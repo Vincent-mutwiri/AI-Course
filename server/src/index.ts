@@ -11,6 +11,7 @@ import aiRoutes from "./routes/ai";
 import quizRoutes from "./routes/quiz";
 import adminRoutes from "./routes/admin";
 import inflectionRoutes from "./routes/inflection";
+import progressRoutes from "./routes/progress";
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use("/api/ai", aiRoutes);
 app.use("/api/quizzes", quizRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/inflection-ai", inflectionRoutes);
+app.use("/api/progress", progressRoutes);
 
 connectDB().then(() => {
   app.listen(PORT, () => {
