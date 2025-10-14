@@ -18,13 +18,16 @@ async function seedModule1() {
     console.log("Connected to MongoDB");
 
     // Find or create the AI in EdTech course
-    let course = await Course.findOne({ title: "AI in EdTech: A Practical Guide for Founders and Developers" });
+    let course = await Course.findOne({ 
+      title: "AI in EdTech: A Practical Guide for Founders and Developers",
+      instructor: "Vincent Mutwiri"
+    });
 
     if (!course) {
       course = new Course({
         title: "AI in EdTech: A Practical Guide for Founders and Developers",
         description: "Equip EdTech founders and developers with the knowledge and practical skills to responsibly leverage AI in educational products.",
-        instructor: "Manus AI",
+        instructor: "Vincent Mutwiri",
         category: "AI & Technology",
         level: "intermediate",
         modules: [],

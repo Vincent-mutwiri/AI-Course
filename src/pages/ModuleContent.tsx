@@ -3,13 +3,22 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { courseAPI } from '@/services/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, ArrowLeft } from 'lucide-react';
-import EthicalDilemmaSolver from '@/components/interactive/EthicalDilemmaSolver';
+import { Loader2, ArrowLeft, Clock } from 'lucide-react';
+import { ContentRenderer } from '@/components/modules/ContentRenderer';
+import { InteractiveElement } from '@/components/modules/InteractiveElement';
+import { QuizComponent } from '@/components/modules/QuizComponent';
+import { CodeSnippet } from '@/components/modules/CodeSnippet';
 
 interface Lesson {
   title: string;
   description: string;
   duration: number;
+  objective?: string;
+  content?: any;
+  interactive?: any;
+  quiz?: any;
+  codeSnippet?: any;
+  order: number;
 }
 
 interface CourseModule {
@@ -33,6 +42,7 @@ const ModuleContent = () => {
   const [course, setCourse] = useState<Course | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const [currentLesson, setCurrentLesson] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -52,6 +62,9 @@ const ModuleContent = () => {
     fetchCourse();
   }, [courseId]);
 
+  const module = course?.modules?.find((m: CourseModule) => m._id === moduleId);
+  const lesson = module?.lessons?.[currentLesson];
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -64,37 +77,20 @@ const ModuleContent = () => {
     return <div className="p-4">Error loading course: {error?.message || 'Course not found'}</div>;
   }
 
-  const module = course.modules?.find((m: CourseModule) => m._id === moduleId);
   if (!module) {
     return <div className="p-4">Module not found in this course</div>;
   }
 
-  // Render module content based on module ID or type
-  const renderModuleContent = () => {
-    // For Module 1, show the EthicalDilemmaSolver
-    if (module.order === 1) {
-      return (
-        <div className="space-y-8 mt-6">
-          <h2 className="text-3xl font-bold">Module 1: Foundations of Responsible AI in EdTech</h2>
-          <div className="space-y-4">
-            <h3 className="text-2xl font-semibold">Lesson 1.3: Safety and Data Ethics</h3>
-            <p>Content Safety: Protecting learners from harmful content.</p>
-            <p>Algorithmic Fairness: Ensuring AI decisions are unbiased.</p>
-            <p>Data Ethics: Transparency, Consent, and Security in handling student data.</p>
-          </div>
-          <div className="mt-8">
-            <EthicalDilemmaSolver />
-          </div>
-        </div>
-      );
+  const handleNextLesson = () => {
+    if (currentLesson < module.lessons.length - 1) {
+      setCurrentLesson(currentLesson + 1);
     }
-    
-    // Default content for other modules
-    return (
-      <div className="prose max-w-none">
-        <p>Module content coming soon.</p>
-      </div>
-    );
+  };
+
+  const handlePrevLesson = () => {
+    if (currentLesson > 0) {
+      setCurrentLesson(currentLesson - 1);
+    }
   };
 
   return (
@@ -115,7 +111,67 @@ const ModuleContent = () => {
           )}
         </CardHeader>
         <CardContent className="pt-0">
-          {renderModuleContent()}
+          {lesson ? (
+            <div className="space-y-8">
+              {/* Lesson Header */}
+              <div className="border-b pb-4">
+                <div className="flex items-center justify-between mb-2">
+                  <h2 className="text-2xl font-bold">{lesson.title}</h2>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Clock className="h-4 w-4" />
+                    {lesson.duration} min
+                  </div>
+                </div>
+                {lesson.objective && (
+                  <p className="text-muted-foreground">
+                    <span className="font-semibold">Objective:</span> {lesson.objective}
+                  </p>
+                )}
+              </div>
+
+              {/* Lesson Content */}
+              {lesson.content?.sections && (
+                <ContentRenderer sections={lesson.content.sections} />
+              )}
+
+              {/* Interactive Element */}
+              {lesson.interactive && (
+                <InteractiveElement interactive={lesson.interactive} />
+              )}
+
+              {/* Code Snippet */}
+              {lesson.codeSnippet && (
+                <CodeSnippet codeSnippet={lesson.codeSnippet} />
+              )}
+
+              {/* Quiz */}
+              {lesson.quiz && (
+                <QuizComponent quiz={lesson.quiz} />
+              )}
+
+              {/* Navigation */}
+              <div className="flex justify-between pt-6 border-t">
+                <Button
+                  variant="outline"
+                  onClick={handlePrevLesson}
+                  disabled={currentLesson === 0}
+                >
+                  ← Previous Lesson
+                </Button>
+                <div className="text-sm text-muted-foreground">
+                  Lesson {currentLesson + 1} of {module.lessons.length}
+                </div>
+                <Button
+                  onClick={handleNextLesson}
+                  disabled={currentLesson === module.lessons.length - 1}
+                >
+                  Next Lesson →
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <p className="text-muted-foreground">No lessons available.</p>
+          )}
         </CardContent>
       </Card>
     </div>
