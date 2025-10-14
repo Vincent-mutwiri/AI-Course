@@ -22,11 +22,45 @@ export const InteractiveElement = ({ interactive }: { interactive: any }) => {
 const ReflectionActivity = ({ title, description, questions, reflection_prompt }: any) => {
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [aiFeedback, setAiFeedback] = useState<string>("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const allAnswered = questions?.every((_: any, idx: number) => answers[idx]?.trim());
     if (allAnswered) {
-      setSubmitted(true);
+      setLoading(true);
+      try {
+        const prompt = `As an AI learning assistant, provide constructive feedback on a student's reflection about AI in EdTech.
+
+Reflection Questions and Answers:
+${questions.map((q: string, idx: number) => `Q${idx + 1}: ${q}\nA${idx + 1}: ${answers[idx]}`).join('\n\n')}
+
+Provide encouraging, specific feedback that:
+1. Acknowledges their insights
+2. Highlights strong points
+3. Suggests areas for deeper thinking
+4. Connects their ideas to real-world applications
+
+Keep feedback concise (3-4 sentences).`;
+
+        const response = await fetch('http://localhost:5000/api/ai/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          body: JSON.stringify({ message: prompt })
+        });
+
+        const data = await response.json();
+        setAiFeedback(data.response);
+        setSubmitted(true);
+      } catch (error) {
+        console.error('Failed to get AI feedback:', error);
+        setSubmitted(true);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -65,13 +99,31 @@ const ReflectionActivity = ({ title, description, questions, reflection_prompt }
           <Button 
             onClick={handleSubmit} 
             className="w-full bg-purple-600 hover:bg-purple-700"
-            disabled={!questions?.every((_: any, idx: number) => answers[idx]?.trim())}
+            disabled={!questions?.every((_: any, idx: number) => answers[idx]?.trim()) || loading}
           >
-            Submit Reflection
+            {loading ? (
+              <>
+                <span className="animate-spin mr-2">⏳</span>
+                Getting AI Feedback...
+              </>
+            ) : (
+              'Submit Reflection'
+            )}
           </Button>
         ) : (
-          <div className="p-4 bg-green-100 rounded-lg border-l-4 border-green-600 text-center">
-            <p className="text-green-800 font-semibold">✅ Great reflection! Your thoughts have been recorded.</p>
+          <div className="space-y-4">
+            <div className="p-4 bg-green-100 rounded-lg border-l-4 border-green-600">
+              <p className="text-green-800 font-semibold mb-2">✅ Reflection Submitted!</p>
+            </div>
+            {aiFeedback && (
+              <div className="p-4 bg-blue-50 rounded-lg border-l-4 border-blue-600">
+                <div className="flex items-start gap-2 mb-2">
+                  <span className="text-xl">🤖</span>
+                  <h4 className="font-semibold text-blue-900">AI Feedback</h4>
+                </div>
+                <p className="text-sm text-blue-800 leading-relaxed whitespace-pre-line">{aiFeedback}</p>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -82,13 +134,52 @@ const ReflectionActivity = ({ title, description, questions, reflection_prompt }
 const FrameworkActivity = ({ title, description, template, example }: any) => {
   const [entries, setEntries] = useState<any[]>([{ ...template }]);
   const [submitted, setSubmitted] = useState(false);
+  const [aiFeedback, setAiFeedback] = useState<string>("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const allFilled = entries.every(entry => 
       Object.values(entry).every(val => (val as string)?.trim())
     );
     if (allFilled) {
-      setSubmitted(true);
+      setLoading(true);
+      try {
+        const frameworkData = entries.map((entry, idx) => 
+          `Framework #${idx + 1}:\n${Object.entries(entry).map(([key, value]) => 
+            `${key.replace(/_/g, ' ')}: ${value}`
+          ).join('\n')}`
+        ).join('\n\n');
+
+        const prompt = `As an AI EdTech expert, review this personalization framework and provide actionable feedback.
+
+${frameworkData}
+
+Provide feedback that:
+1. Validates their personalization approach
+2. Suggests specific improvements or considerations
+3. Highlights potential challenges they should address
+4. Recommends next steps for implementation
+
+Keep feedback practical and concise (4-5 sentences).`;
+
+        const response = await fetch('http://localhost:5000/api/ai/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          body: JSON.stringify({ message: prompt })
+        });
+
+        const data = await response.json();
+        setAiFeedback(data.response);
+        setSubmitted(true);
+      } catch (error) {
+        console.error('Failed to get AI feedback:', error);
+        setSubmitted(true);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -142,13 +233,31 @@ const FrameworkActivity = ({ title, description, template, example }: any) => {
         <Button 
           onClick={handleSubmit} 
           className="w-full bg-green-600 hover:bg-green-700"
-          disabled={!entries.every(entry => Object.values(entry).every(val => (val as string)?.trim()))}
+          disabled={!entries.every(entry => Object.values(entry).every(val => (val as string)?.trim())) || loading}
         >
-          Submit Framework
+          {loading ? (
+            <>
+              <span className="animate-spin mr-2">⏳</span>
+              Getting AI Feedback...
+            </>
+          ) : (
+            'Submit Framework'
+          )}
         </Button>
       ) : (
-        <div className="p-4 bg-green-100 rounded-lg border-l-4 border-green-600 text-center">
-          <p className="text-green-800 font-semibold">✅ Excellent work! Your framework has been saved.</p>
+        <div className="space-y-4">
+          <div className="p-4 bg-green-100 rounded-lg border-l-4 border-green-600">
+            <p className="text-green-800 font-semibold">✅ Framework Submitted!</p>
+          </div>
+          {aiFeedback && (
+            <div className="p-4 bg-blue-50 rounded-lg border-l-4 border-blue-600">
+              <div className="flex items-start gap-2 mb-2">
+                <span className="text-xl">🤖</span>
+                <h4 className="font-semibold text-blue-900">AI Expert Feedback</h4>
+              </div>
+              <p className="text-sm text-blue-800 leading-relaxed whitespace-pre-line">{aiFeedback}</p>
+            </div>
+          )}
         </div>
       )}
     </Card>
