@@ -6,6 +6,11 @@ interface ILesson {
   videoUrl?: string;
   duration: number;
   order: number;
+  objective?: string;
+  content?: any;
+  interactive?: any;
+  quiz?: any;
+  codeSnippet?: any;
 }
 
 interface IModule {
@@ -34,6 +39,11 @@ const lessonSchema = new Schema<ILesson>({
   videoUrl: { type: String },
   duration: { type: Number, required: true },
   order: { type: Number, required: true },
+  objective: { type: String },
+  content: { type: Schema.Types.Mixed },
+  interactive: { type: Schema.Types.Mixed },
+  quiz: { type: Schema.Types.Mixed },
+  codeSnippet: { type: Schema.Types.Mixed },
 });
 
 const moduleSchema = new Schema<IModule>({

@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "server": "tsx watch server/src/index.ts",
     "server:dev": "nodemon --exec tsx server/src/index.ts",
-    "seed": "tsx server/src/seed.ts"
+    "seed": "tsx server/src/seed.ts",
+    "seed:module1": "tsx server/src/scripts/seedModule1.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.908.0",

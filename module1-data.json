@@ -1,0 +1,504 @@
+{
+  "module": {
+    "title": "Module 1: Foundations of Responsible AI in EdTech",
+    "description": "Understand core Responsible AI concepts and identify opportunities in your EdTech product",
+    "duration": "45-60 minutes",
+    "order": 1,
+    "lessons": [
+      {
+        "title": "Introduction to AI in EdTech",
+        "order": 1,
+        "duration": "15 minutes",
+        "objective": "Understand AI's transformative potential in education and why responsible implementation matters",
+        "content": {
+          "sections": [
+            {
+              "type": "text",
+              "title": "The EdTech AI Revolution",
+              "content": "Imagine a classroom where every student has a personal tutor that never gets tired, adapts instantly to their learning style, is available 24/7 anywhere in the world, and learns from millions of student interactions. This isn't science fiction—it's AI in EdTech today."
+            },
+            {
+              "type": "scenarios",
+              "title": "Real-World Impact: Three Scenarios",
+              "scenarios": [
+                {
+                  "title": "The Struggling Coder",
+                  "character": "Sarah, learning Python at midnight after her day job",
+                  "without_ai": "She's stuck on a bug, forums are slow, and she's ready to quit.",
+                  "with_ai": "An intelligent assistant analyzes her code, identifies the logic error, and guides her with Socratic questions rather than giving the answer."
+                },
+                {
+                  "title": "The Overwhelmed Teacher",
+                  "character": "Mr. Chen has 150 students and limited time for personalized feedback",
+                  "without_ai": "Generic feedback, delayed responses, students fall through cracks.",
+                  "with_ai": "Automated first-pass grading, pattern detection for common mistakes, freeing Mr. Chen to focus on complex cases."
+                },
+                {
+                  "title": "The Diverse Classroom",
+                  "character": "A class with students from 12 countries, varying English proficiency",
+                  "without_ai": "One-size-fits-all content, some students lost, others bored.",
+                  "with_ai": "Real-time translation, difficulty adjustment, culturally relevant examples."
+                }
+              ]
+            },
+            {
+              "type": "comparison",
+              "title": "Why Responsible AI Matters",
+              "subtitle": "The Double-Edged Sword",
+              "benefits": [
+                "Democratize quality education",
+                "Scale personalized learning",
+                "Identify struggling students early",
+                "Reduce teacher burnout"
+              ],
+              "risks": [
+                "Algorithmic bias perpetuating inequality",
+                "Privacy violations with student data",
+                "Over-reliance reducing critical thinking",
+                "Replacing human connection"
+              ]
+            },
+            {
+              "type": "callout",
+              "style": "warning",
+              "title": "Your Responsibility as a Builder",
+              "content": "As an EdTech founder or developer, you're not just building features—you're shaping how millions learn. Every AI decision you make impacts student confidence, educational equity, data privacy, and the future of learning itself."
+            }
+          ]
+        },
+        "interactive": {
+          "type": "reflection",
+          "title": "AI Impact Analyzer",
+          "description": "Analyze your current or planned EdTech product",
+          "questions": [
+            "What problem are you solving with AI?",
+            "Who benefits most? Who might be disadvantaged?",
+            "What data do you need? How will you protect it?",
+            "What happens if the AI makes a mistake?"
+          ],
+          "reflection_prompt": "If your AI feature appeared in a news headline tomorrow, would it be positive or cautionary?"
+        },
+        "quiz": {
+          "questions": [
+            {
+              "type": "multiple_choice",
+              "question": "What is the primary reason responsible AI matters in EdTech?",
+              "options": [
+                "To comply with regulations",
+                "To protect students and ensure equitable outcomes",
+                "To reduce development costs",
+                "To make the product more marketable"
+              ],
+              "correct": 1,
+              "explanation": "Responsible AI prioritizes student safety, privacy, and equitable outcomes above all else."
+            },
+            {
+              "type": "multiple_select",
+              "question": "Select two potential benefits and two potential risks of AI in education:",
+              "options": [
+                "Benefit: Scale personalized learning",
+                "Risk: Algorithmic bias",
+                "Benefit: Replace all teachers",
+                "Risk: Privacy violations",
+                "Benefit: Reduce teacher workload"
+              ],
+              "correct": [0, 1, 3, 4],
+              "explanation": "AI should augment, not replace teachers. Key benefits include personalization and efficiency, while risks include bias and privacy concerns."
+            },
+            {
+              "type": "true_false",
+              "question": "AI should completely replace human teachers.",
+              "correct": false,
+              "explanation": "AI should augment and support teachers, not replace them. Human connection, empathy, and judgment remain essential in education."
+            }
+          ]
+        }
+      },
+      {
+        "title": "Personalization and Adaptive Pathways",
+        "order": 2,
+        "duration": "20 minutes",
+        "objective": "Design AI-powered personalization that respects learner autonomy and enhances outcomes",
+        "content": {
+          "sections": [
+            {
+              "type": "definition",
+              "title": "Understanding Personalization",
+              "definition": "Tailoring learning experiences to individual needs, preferences, and progress.",
+              "levels": [
+                {
+                  "level": "Basic",
+                  "examples": ["Using learner's name", "Remembering preferences (dark mode, font size)", "Showing recent activity"]
+                },
+                {
+                  "level": "Intermediate",
+                  "examples": ["Adaptive difficulty based on performance", "Content recommendations", "Pacing adjustments"]
+                },
+                {
+                  "level": "Advanced",
+                  "examples": ["Predictive learning pathways", "Multi-modal content adaptation", "Learning style optimization"]
+                }
+              ]
+            },
+            {
+              "type": "case_study",
+              "title": "CodeClimb's Adaptive Feedback System",
+              "background": "CodeClimb teaches Python to career switchers (ages 25-45)",
+              "challenge": "Beginners get frustrated with cryptic error messages, advanced learners feel patronized, teachers can't provide instant personalized feedback at scale",
+              "solution": "Context-Aware Feedback Engine that analyzes student skill level, previous errors, learning style, and emotional state",
+              "results": [
+                "40% reduction in student frustration",
+                "60% faster problem resolution",
+                "85% of students report feeling 'understood' by the system"
+              ],
+              "code_example": {
+                "language": "python",
+                "student_code": "def calculate_average(numbers):\n    total = sum(numbers)\n    return total / len(numbers)\n\nresult = calculate_average([])  # Bug: Empty list!",
+                "beginner_feedback": "🤔 Oops! Your function crashes with an empty list.\n\nThink about it: What happens when you divide by zero?\n\n💡 Hint: Check if the list is empty before calculating.",
+                "advanced_feedback": "⚠️ ZeroDivisionError on line 3.\n\nEdge case: Empty list handling missing.\nConsider: Default return value or exception?\n\nPythonic approach: Use `if not numbers:` guard clause."
+              }
+            },
+            {
+              "type": "principles",
+              "title": "Design Principles for Effective Personalization",
+              "principles": [
+                {
+                  "name": "Transparency",
+                  "bad_example": "The AI decided you should skip this lesson.",
+                  "good_example": "Based on your quiz score (9/10), you've mastered this concept. Skip ahead or review?"
+                },
+                {
+                  "name": "Learner Control",
+                  "bad_example": "Forcing students down a predetermined path",
+                  "good_example": "We recommend Path A, but you can choose Path B or create your own."
+                },
+                {
+                  "name": "Meaningful Adaptation",
+                  "bad_example": "Changing font colors based on time of day",
+                  "good_example": "Adjusting content complexity based on demonstrated understanding"
+                },
+                {
+                  "name": "Avoid Filter Bubbles",
+                  "bad_example": "Only showing content similar to what they've liked",
+                  "good_example": "Introducing diverse perspectives and challenging material"
+                }
+              ]
+            }
+          ]
+        },
+        "interactive": {
+          "type": "framework",
+          "title": "Personalization Opportunity Finder",
+          "description": "Identify 3 personalization opportunities in your product",
+          "template": {
+            "feature": "",
+            "current_state": "One-size-fits-all",
+            "personalization_opportunity": "",
+            "data_needed": "",
+            "expected_impact": "",
+            "ethical_consideration": ""
+          },
+          "example": {
+            "feature": "Quiz Feedback",
+            "current_state": "Same feedback for all students",
+            "personalization_opportunity": "Adapt explanation depth to skill level",
+            "data_needed": "Student's course progress, previous quiz scores",
+            "expected_impact": "Faster comprehension, less frustration",
+            "ethical_consideration": "Avoid labeling students as 'slow' or 'advanced'"
+          }
+        },
+        "code_snippet": {
+          "language": "typescript",
+          "title": "Implementing Adaptive Feedback",
+          "code": "interface StudentContext {\n  skillLevel: 'beginner' | 'intermediate' | 'advanced';\n  previousErrors: string[];\n  attemptCount: number;\n  learningStyle: 'visual' | 'textual' | 'example-based';\n}\n\nasync function generateAdaptiveFeedback(\n  code: string,\n  error: Error,\n  context: StudentContext\n): Promise<string> {\n  const prompt = `\n    Student Level: ${context.skillLevel}\n    Error: ${error.message}\n    Attempt: ${context.attemptCount}\n    \n    Generate ${context.skillLevel}-appropriate feedback that:\n    - Explains the error clearly\n    - Provides a hint, not the solution\n    - Encourages the student\n    - Uses ${context.learningStyle} approach\n  `;\n  \n  const feedback = await callInflectionAPI(prompt, context);\n  return feedback;\n}"
+        },
+        "quiz": {
+          "questions": [
+            {
+              "type": "scenario",
+              "question": "A student consistently scores 95%+ on quizzes. What adaptive pathway would you recommend?",
+              "options": [
+                "Keep them on the standard path",
+                "Skip to advanced content with their consent",
+                "Force them to move faster",
+                "Give them harder questions without explanation"
+              ],
+              "correct": 1,
+              "explanation": "Respecting learner autonomy while offering appropriate challenges is key. Always get consent before changing their path."
+            },
+            {
+              "type": "scenario",
+              "question": "Your AI notices a student struggling. What's the most responsible action?",
+              "options": [
+                "Automatically lower difficulty without telling them",
+                "Send an alert to their teacher",
+                "Offer additional resources and support options",
+                "Lock them out until they review basics"
+              ],
+              "correct": 2,
+              "explanation": "Empowering students with resources and options respects their autonomy while providing support."
+            }
+          ]
+        }
+      },
+      {
+        "title": "Safety and Data Ethics",
+        "order": 3,
+        "duration": "20 minutes",
+        "objective": "Implement AI features that prioritize learner safety, privacy, and ethical data practices",
+        "content": {
+          "sections": [
+            {
+              "type": "framework",
+              "title": "The Three Pillars of Responsible AI",
+              "pillars": [
+                {
+                  "name": "Safety",
+                  "focus": "Content Protection",
+                  "description": "Protecting learners from harmful, inappropriate, or inaccurate content"
+                },
+                {
+                  "name": "Fairness",
+                  "focus": "Algorithm Equity",
+                  "description": "Ensuring AI decisions are unbiased and equitable across all demographics"
+                },
+                {
+                  "name": "Ethics",
+                  "focus": "Data Privacy",
+                  "description": "Transparent, consensual, and secure handling of student data"
+                }
+              ]
+            },
+            {
+              "type": "case_study",
+              "title": "The Biased Recommendation Engine",
+              "scenario": "An EdTech platform recommends career paths based on student performance",
+              "bias": "Female students recommended nursing/teaching, male students recommended engineering/CS",
+              "impact": ["Reinforces stereotypes", "Limits student aspirations", "Perpetuates inequality"],
+              "fix": [
+                "Audit training data for bias",
+                "Show diverse recommendations regardless of demographics",
+                "Explain recommendation logic transparently",
+                "Allow students to override suggestions"
+              ]
+            },
+            {
+              "type": "principles",
+              "title": "Data Ethics: The Three Principles",
+              "principles": [
+                {
+                  "name": "Transparency",
+                  "description": "Students should know what data you collect, how you use it, who has access, and how long you keep it",
+                  "example": "Clear privacy notice listing collected data, usage, and retention"
+                },
+                {
+                  "name": "Consent",
+                  "description": "Informed, specific, revocable, and age-appropriate consent",
+                  "good_example": "Separate checkboxes for different data uses with clear explanations"
+                },
+                {
+                  "name": "Security",
+                  "description": "Protecting student data with encryption, authentication, and access controls",
+                  "requirements": ["TLS 1.3+ encryption", "OAuth 2.0 + MFA", "Regular security audits", "Incident response plan"]
+                }
+              ]
+            }
+          ]
+        },
+        "interactive": {
+          "type": "ethical_dilemma",
+          "title": "Ethical Dilemma Solver",
+          "scenarios": [
+            {
+              "id": 1,
+              "title": "The Data Dilemma",
+              "description": "Your AI identified that students who study between 10 PM - 2 AM perform worse on tests. Marketing wants to send 'Go to bed!' notifications.",
+              "options": [
+                {
+                  "choice": "Send the notifications—it helps students!",
+                  "feedback": "Consider: Is this helpful or intrusive? What if students work night shifts?",
+                  "score": 2
+                },
+                {
+                  "choice": "Make it opt-in with clear explanation",
+                  "feedback": "✅ Best practice! Respects autonomy while offering value.",
+                  "score": 5
+                },
+                {
+                  "choice": "Use the insight internally but don't notify students",
+                  "feedback": "Missed opportunity to help, but respects privacy.",
+                  "score": 3
+                },
+                {
+                  "choice": "Ignore the finding—it's too invasive",
+                  "feedback": "You have data that could help—find an ethical way to use it.",
+                  "score": 2
+                }
+              ]
+            },
+            {
+              "id": 2,
+              "title": "The Fairness Challenge",
+              "description": "Your AI tutoring system performs well for native English speakers but struggles with non-native speakers.",
+              "options": [
+                {
+                  "choice": "Add disclaimer: 'Works best for native English speakers'",
+                  "feedback": "Transparency is good, but this excludes users.",
+                  "score": 2
+                },
+                {
+                  "choice": "Invest in multilingual training data and testing",
+                  "feedback": "✅ Ideal long-term solution. Requires investment.",
+                  "score": 5
+                },
+                {
+                  "choice": "Offer human tutor fallback for non-native speakers",
+                  "feedback": "✅ Good interim solution while improving AI.",
+                  "score": 4
+                },
+                {
+                  "choice": "Continue as-is—most users are native speakers",
+                  "feedback": "❌ Perpetuates inequality. Not acceptable.",
+                  "score": 0
+                }
+              ]
+            },
+            {
+              "id": 3,
+              "title": "The Safety Incident",
+              "description": "A student asks: 'I'm feeling really depressed and don't want to go to school anymore.'",
+              "options": [
+                {
+                  "choice": "Let's focus on your math homework instead.",
+                  "feedback": "❌ Dismissive and potentially harmful.",
+                  "score": 0
+                },
+                {
+                  "choice": "I'm an AI tutor, not qualified for this. Please talk to a counselor: [Resources]",
+                  "feedback": "✅ Appropriate boundaries, provides resources.",
+                  "score": 5
+                },
+                {
+                  "choice": "Silently alert school counselor",
+                  "feedback": "Privacy violation without consent (unless imminent danger).",
+                  "score": 1
+                },
+                {
+                  "choice": "Provide mental health advice",
+                  "feedback": "❌ AI shouldn't provide medical/mental health advice.",
+                  "score": 0
+                }
+              ]
+            }
+          ]
+        },
+        "code_snippet": {
+          "language": "typescript",
+          "title": "Content Moderation System",
+          "code": "interface SafetyCheck {\n  isInputSafe: boolean;\n  isOutputSafe: boolean;\n  flaggedReasons: string[];\n  suggestedAction: 'allow' | 'block' | 'humanReview';\n}\n\nasync function moderateAIInteraction(\n  userInput: string,\n  aiResponse: string\n): Promise<SafetyCheck> {\n  const inputCheck = await checkContentSafety(userInput);\n  const outputCheck = await checkContentSafety(aiResponse);\n  \n  const sensitiveTopics = detectSensitiveTopics(userInput);\n  \n  if (sensitiveTopics.includes('mental_health')) {\n    return {\n      isInputSafe: true,\n      isOutputSafe: false,\n      flaggedReasons: ['mental_health_detected'],\n      suggestedAction: 'humanReview'\n    };\n  }\n  \n  return {\n    isInputSafe: inputCheck.safe,\n    isOutputSafe: outputCheck.safe,\n    flaggedReasons: [...inputCheck.flags, ...outputCheck.flags],\n    suggestedAction: determineAction(inputCheck, outputCheck)\n  };\n}"
+        },
+        "quiz": {
+          "questions": [
+            {
+              "type": "multiple_choice",
+              "question": "What are the three pillars of Responsible AI in EdTech?",
+              "options": [
+                "Speed, Cost, Quality",
+                "Safety, Fairness, Ethics",
+                "Privacy, Security, Compliance",
+                "Innovation, Scalability, Reliability"
+              ],
+              "correct": 1,
+              "explanation": "The three pillars are Safety (content protection), Fairness (algorithmic equity), and Ethics (data privacy)."
+            },
+            {
+              "type": "multiple_choice",
+              "question": "How should an AI respond to a student's mental health concern?",
+              "options": [
+                "Provide mental health advice",
+                "Ignore it and redirect to coursework",
+                "Acknowledge limitations and provide professional resources",
+                "Alert parents immediately"
+              ],
+              "correct": 2,
+              "explanation": "AI should acknowledge its limitations, maintain appropriate boundaries, and direct students to qualified professionals."
+            }
+          ]
+        }
+      }
+    ],
+    "final_assessment": {
+      "type": "comprehensive",
+      "questions": [
+        {
+          "type": "short_answer",
+          "question": "What are the three pillars of Responsible AI in EdTech?",
+          "points": 3
+        },
+        {
+          "type": "short_answer",
+          "question": "Describe one way to implement transparent personalization.",
+          "points": 5
+        },
+        {
+          "type": "short_answer",
+          "question": "What's the difference between personalization and adaptive pathways?",
+          "points": 5
+        },
+        {
+          "type": "essay",
+          "question": "Why is algorithmic fairness important in educational AI?",
+          "points": 10,
+          "min_words": 100
+        },
+        {
+          "type": "short_answer",
+          "question": "What are the three principles of data ethics?",
+          "points": 3
+        }
+      ],
+      "practical_assignment": {
+        "title": "Responsible AI Plan",
+        "description": "Create a one-page Responsible AI Plan for your EdTech product",
+        "requirements": [
+          "Identify 2 personalization opportunities",
+          "List 3 safety guardrails you'll implement",
+          "Draft a student-friendly privacy notice (100 words max)",
+          "Describe your fairness testing approach"
+        ],
+        "points": 25
+      }
+    },
+    "resources": {
+      "reading": [
+        {
+          "title": "Weapons of Math Destruction",
+          "author": "Cathy O'Neil",
+          "type": "book"
+        },
+        {
+          "title": "Artificial Intelligence and Education",
+          "author": "UNESCO",
+          "type": "report"
+        },
+        {
+          "title": "Ethics of AI in Education",
+          "author": "Stanford HAI",
+          "type": "article"
+        }
+      ],
+      "tools": [
+        {
+          "name": "AI Fairness 360",
+          "provider": "IBM",
+          "url": "https://aif360.mybluemix.net/"
+        },
+        {
+          "name": "What-If Tool",
+          "provider": "Google",
+          "url": "https://pair-code.github.io/what-if-tool/"
+        }
+      ]
+    }
+  }
+}
