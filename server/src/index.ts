@@ -15,7 +15,13 @@ import progressRoutes from "./routes/progress";
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'https://ai-course-amber-six.vercel.app'
+  ],
+  credentials: true
+}));
 app.use(express.json());
 
 app.use((req, res, next) => {
