@@ -43,7 +43,8 @@ Provide encouraging, specific feedback that:
 
 Keep feedback concise (3-4 sentences).`;
 
-        const response = await fetch('http://localhost:5000/api/ai/chat', {
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        const response = await fetch(`${API_URL}/ai/chat`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -162,7 +163,8 @@ Provide feedback that:
 
 Keep feedback practical and concise (4-5 sentences).`;
 
-        const response = await fetch('http://localhost:5000/api/ai/chat', {
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        const response = await fetch(`${API_URL}/ai/chat`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

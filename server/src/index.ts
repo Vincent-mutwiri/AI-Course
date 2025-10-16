@@ -37,6 +37,7 @@ app.get("/health", (req, res) => {
   res.json({ status: "healthy", timestamp: new Date().toISOString() });
 });
 
+// Note: Ad blockers may block /signup endpoints. Users should whitelist localhost:5173
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/courses", courseRoutes);
