@@ -266,15 +266,29 @@
             },
             {
               "type": "case_study",
-              "title": "The Biased Recommendation Engine",
-              "scenario": "An EdTech platform recommends career paths based on student performance",
-              "bias": "Female students recommended nursing/teaching, male students recommended engineering/CS",
-              "impact": ["Reinforces stereotypes", "Limits student aspirations", "Perpetuates inequality"],
+              "title": "The Biased Recommendation Engine: A Real-World Warning",
+              "background": "CareerPath AI, an EdTech platform with 500K+ students, used machine learning to recommend career paths based on academic performance, course selections, and quiz results. The system was trained on 10 years of historical student data.",
+              "scenario": "After 6 months, a data analyst noticed disturbing patterns: 78% of female students received recommendations for healthcare, education, and social services, while 82% of male students were directed toward STEM, business, and technology careers—regardless of their actual interests or aptitudes.",
+              "bias": "The AI learned from historical data that reflected societal biases from 2010-2020, when career choices were heavily influenced by gender stereotypes. The algorithm wasn't explicitly programmed to discriminate, but it perpetuated existing inequalities.",
+              "impact": [
+                "Reinforced harmful gender stereotypes at scale",
+                "Limited career aspirations for thousands of students",
+                "Perpetuated wage gaps (recommended careers had 30% salary difference)",
+                "Violated equal opportunity principles",
+                "Damaged platform reputation when exposed by journalists"
+              ],
               "fix": [
-                "Audit training data for bias",
-                "Show diverse recommendations regardless of demographics",
-                "Explain recommendation logic transparently",
-                "Allow students to override suggestions"
+                "Immediate: Disabled gender-based features and retrained model on balanced dataset",
+                "Audit: Hired external fairness auditors to test for bias across all demographics",
+                "Transparency: Added 'Why this recommendation?' explanations showing decision factors",
+                "User Control: Implemented override system where students can explore any career path",
+                "Ongoing: Quarterly bias testing and diverse recommendation requirements (minimum 3 different career clusters)"
+              ],
+              "results": [
+                "Career recommendation diversity increased by 156%",
+                "Student satisfaction with recommendations rose from 62% to 89%",
+                "Platform regained trust and became industry leader in ethical AI",
+                "Published their bias detection methodology as open-source tool"
               ]
             },
             {

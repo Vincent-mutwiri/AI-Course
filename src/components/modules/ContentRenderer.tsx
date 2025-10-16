@@ -135,31 +135,83 @@ const DefinitionSection = ({ title, definition, levels }: ContentSection) => (
   </div>
 );
 
-const CaseStudySection = ({ title, background, challenge, solution, results }: ContentSection) => (
+const CaseStudySection = ({ title, background, challenge, solution, results, scenario, bias, impact, fix }: ContentSection) => (
   <Card className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200">
     <div className="flex items-center gap-2 mb-4">
       <span className="text-2xl">📚</span>
       <h3 className="text-xl font-semibold text-blue-900">{title}</h3>
     </div>
     <div className="space-y-4">
-      <div className="bg-white/70 p-4 rounded-lg">
-        <h4 className="font-semibold text-sm text-blue-700 mb-2 flex items-center gap-2">
-          <span>🎯</span> Background
-        </h4>
-        <p className="text-sm">{background}</p>
-      </div>
-      <div className="bg-white/70 p-4 rounded-lg">
-        <h4 className="font-semibold text-sm text-blue-700 mb-2 flex items-center gap-2">
-          <span>⚠️</span> Challenge
-        </h4>
-        <p className="text-sm">{challenge}</p>
-      </div>
-      <div className="bg-white/70 p-4 rounded-lg">
-        <h4 className="font-semibold text-sm text-blue-700 mb-2 flex items-center gap-2">
-          <span>💡</span> Solution
-        </h4>
-        <p className="text-sm">{solution}</p>
-      </div>
+      {background && (
+        <div className="bg-white/70 p-4 rounded-lg">
+          <h4 className="font-semibold text-sm text-blue-700 mb-2 flex items-center gap-2">
+            <span>🎯</span> Background
+          </h4>
+          <p className="text-sm">{background}</p>
+        </div>
+      )}
+      {scenario && (
+        <div className="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-500">
+          <h4 className="font-semibold text-sm text-orange-800 mb-2 flex items-center gap-2">
+            <span>🚨</span> The Problem
+          </h4>
+          <p className="text-sm text-orange-900">{scenario}</p>
+        </div>
+      )}
+      {bias && (
+        <div className="bg-red-50 p-4 rounded-lg border-l-4 border-red-500">
+          <h4 className="font-semibold text-sm text-red-800 mb-2 flex items-center gap-2">
+            <span>⚠️</span> The Bias
+          </h4>
+          <p className="text-sm text-red-900">{bias}</p>
+        </div>
+      )}
+      {challenge && (
+        <div className="bg-white/70 p-4 rounded-lg">
+          <h4 className="font-semibold text-sm text-blue-700 mb-2 flex items-center gap-2">
+            <span>⚠️</span> Challenge
+          </h4>
+          <p className="text-sm">{challenge}</p>
+        </div>
+      )}
+      {impact && impact.length > 0 && (
+        <div className="bg-red-50 p-4 rounded-lg border-l-4 border-red-600">
+          <h4 className="font-semibold text-sm text-red-800 mb-3 flex items-center gap-2">
+            <span>💔</span> Impact
+          </h4>
+          <ul className="text-sm space-y-2">
+            {impact.map((item: string, idx: number) => (
+              <li key={idx} className="flex items-start gap-2">
+                <XCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+                <span className="text-red-900">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {solution && (
+        <div className="bg-white/70 p-4 rounded-lg">
+          <h4 className="font-semibold text-sm text-blue-700 mb-2 flex items-center gap-2">
+            <span>💡</span> Solution
+          </h4>
+          <p className="text-sm">{solution}</p>
+        </div>
+      )}
+      {fix && fix.length > 0 && (
+        <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-600">
+          <h4 className="font-semibold text-sm text-blue-800 mb-3 flex items-center gap-2">
+            <span>🔧</span> The Fix
+          </h4>
+          <ul className="text-sm space-y-2">
+            {fix.map((item: string, idx: number) => (
+              <li key={idx} className="flex items-start gap-2">
+                <CheckCircle2 className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                <span className="text-blue-900">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
       {results && results.length > 0 && (
         <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-600">
           <h4 className="font-semibold text-sm text-green-800 mb-3 flex items-center gap-2">
@@ -169,7 +221,7 @@ const CaseStudySection = ({ title, background, challenge, solution, results }: C
             {results.map((result: string, idx: number) => (
               <li key={idx} className="flex items-start gap-2">
                 <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                <span>{result}</span>
+                <span className="text-green-900">{result}</span>
               </li>
             ))}
           </ul>
