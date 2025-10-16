@@ -16,11 +16,20 @@ import progressRoutes from "./routes/progress";
 const app = express();
 
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'https://ai-course-amber-six.vercel.app',
-    'https://ai-course-l3na.onrender.com'
-  ],
+  origin: function(origin, callback) {
+    const allowedOrigins = [
+      'http://localhost:5173',
+      'https://ai-course-amber-six.vercel.app',
+      'https://ai-course-l3na.onrender.com'
+    ];
+    
+    // Allow Vercel preview deployments
+    if (!origin || allowedOrigins.includes(origin) || origin.includes('vercel.app')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 app.use(express.json());
