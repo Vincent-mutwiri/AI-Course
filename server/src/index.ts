@@ -18,7 +18,8 @@ const app = express();
 app.use(cors({
   origin: [
     'http://localhost:5173',
-    'https://ai-course-amber-six.vercel.app'
+    'https://ai-course-amber-six.vercel.app',
+    'https://ai-course-l3na.onrender.com'
   ],
   credentials: true
 }));
