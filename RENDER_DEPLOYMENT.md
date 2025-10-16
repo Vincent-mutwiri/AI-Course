@@ -54,7 +54,7 @@
 4. **Deploy**
    - Click "Create Web Service"
    - Wait 5-10 minutes for build
-   - Your API will be at: `https://ai-course-api.onrender.com`
+   - Your API will be at: `https://ai-course.onrender.com`
 
 ### Option B: Using render.yaml (Automated)
 

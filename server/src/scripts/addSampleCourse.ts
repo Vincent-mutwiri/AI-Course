@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import path from "path";
+import * as path from "path";
 import Course from "../models/Course";
 
 // Load environment variables
-dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
+dotenv.config();
 
 const MONGODB_URI = process.env.MONGODB_URI;
 

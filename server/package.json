@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc",
+    "build": "tsc --skipLibCheck",
     "start": "node dist/index.js",
     "seed": "tsx src/seed.ts"
   },
@@ -18,16 +18,17 @@
     "axios": "^1.12.2",
     "multer": "^2.0.2",
     "@aws-sdk/client-s3": "^3.908.0",
-    "@aws-sdk/s3-request-presigner": "^3.908.0"
-  },
-  "devDependencies": {
+    "@aws-sdk/s3-request-presigner": "^3.908.0",
     "@types/express": "^5.0.3",
     "@types/cors": "^2.8.19",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/bcryptjs": "^3.0.0",
     "@types/multer": "^2.0.0",
     "@types/node": "^24.6.0",
-    "typescript": "~5.9.3",
+    "@types/node-fetch": "^2.6.13",
+    "typescript": "~5.9.3"
+  },
+  "devDependencies": {
     "tsx": "^4.20.6"
   }
 }

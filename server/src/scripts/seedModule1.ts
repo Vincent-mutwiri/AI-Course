@@ -1,15 +1,11 @@
 import mongoose from "mongoose";
 import Course from "../models/Course";
 import { MONGODB_URI } from "../config/env";
-import { readFileSync } from "fs";
-import { fileURLToPath } from "url";
-import { dirname, join } from "path";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import * as fs from "fs";
+import * as path from "path";
 
 const module1Data = JSON.parse(
-  readFileSync(join(__dirname, "../../../module1-data.json"), "utf-8")
+  fs.readFileSync(path.join(__dirname, "../../../module1-data.json"), "utf-8")
 );
 
 async function seedModule1() {
