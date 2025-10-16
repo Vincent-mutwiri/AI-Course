@@ -1,0 +1,38 @@
+services:
+  # Backend API
+  - type: web
+    name: ai-course-api
+    runtime: node
+    buildCommand: cd server && npm install && npm run build
+    startCommand: cd server && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: INFLECTION_API_KEY
+        sync: false
+      - key: INFLECTION_API_URL
+        value: https://api.inflection.ai/external/api/inference
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+      - key: AWS_REGION
+        sync: false
+      - key: AWS_S3_BUCKET
+        sync: false
+
+  # Frontend
+  - type: web
+    name: ai-course-frontend
+    runtime: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://ai-course-api.onrender.com

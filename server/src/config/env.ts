@@ -1,7 +1,6 @@
 import dotenv from "dotenv";
-import path from "path";
 
-dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
+dotenv.config();
 
 export const MONGODB_URI = process.env.MONGODB_URI;
 export const JWT_SECRET = process.env.JWT_SECRET;
@@ -10,6 +9,5 @@ export const INFLECTION_API_URL = process.env.INFLECTION_API_URL || "https://api
 export const INFLECTION_API_KEY = process.env.INFLECTION_API_KEY;
 
 if (!INFLECTION_API_KEY) {
-  console.error('ERROR: INFLECTION_API_KEY environment variable is not set');
-  process.exit(1);
+  console.warn('WARNING: INFLECTION_API_KEY not set - AI features will be disabled');
 }
