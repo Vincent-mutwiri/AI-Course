@@ -7,8 +7,7 @@ const INFLECTION_API_URL = process.env.INFLECTION_API_URL || 'https://api.inflec
 const INFLECTION_API_KEY = process.env.INFLECTION_API_KEY;
 
 if (!INFLECTION_API_KEY) {
-  console.error('ERROR: INFLECTION_API_KEY environment variable is not set');
-  process.exit(1);
+  console.warn('WARNING: INFLECTION_API_KEY not set - AI features will be disabled');
 }
 
 const chatHistory: { [userId: string]: { role: string; content: string }[] } = {};

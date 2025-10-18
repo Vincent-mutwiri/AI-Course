@@ -14,7 +14,8 @@ export const SentenceBuilder = () => {
     setSentence(newSentence);
     
     const nextPredictions = model[word] || [];
-    setPredictions(nextPredictions.slice(0, 3));
+    const numPredictions = Math.min(3 + newSentence.length, 6);
+    setPredictions(nextPredictions.slice(0, numPredictions));
   };
 
   const reset = () => {
@@ -23,7 +24,7 @@ export const SentenceBuilder = () => {
   };
 
   if (sentence.length === 0 && predictions.length === 0) {
-    setPredictions(Object.keys(model).slice(0, 3));
+    setPredictions(['Artificial', 'The', 'Machine']);
   }
 
   return (

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Loader2, ArrowLeft, Clock, CheckCircle2 } from 'lucide-react';
 import { ContentRenderer } from '@/components/modules/ContentRenderer';
 import { InteractiveElement } from '@/components/modules/InteractiveElement';
+import { InteractiveElementRouter } from '@/components/interactive/InteractiveElementRouter';
 import { QuizComponent } from '@/components/modules/QuizComponent';
 import { CodeSnippet } from '@/components/modules/CodeSnippet';
 import { ProgressBar } from '@/components/modules/ProgressBar';
@@ -17,6 +18,7 @@ interface Lesson {
   objective?: string;
   content?: any;
   interactive?: any;
+  interactiveElements?: any[];
   quiz?: any;
   codeSnippet?: any;
   order: number;
@@ -195,6 +197,11 @@ const ModuleContent = () => {
               {lesson.interactive && (
                 <InteractiveElement interactive={lesson.interactive} />
               )}
+
+              {/* Interactive Elements (New) */}
+              {lesson.interactiveElements?.map((element, idx) => (
+                <InteractiveElementRouter key={idx} element={element} />
+              ))}
 
               {/* Code Snippet */}
               {lesson.codeSnippet && (

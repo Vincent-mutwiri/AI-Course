@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
+import path from "path";
 
-dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, '../../../.env.local') });
 
 export const MONGODB_URI = process.env.MONGODB_URI;
 export const JWT_SECRET = process.env.JWT_SECRET;

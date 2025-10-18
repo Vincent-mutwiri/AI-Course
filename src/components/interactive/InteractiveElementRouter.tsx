@@ -3,6 +3,7 @@ import { VisualTokens } from './VisualTokens';
 import { SentenceBuilder } from './SentenceBuilder';
 import { PresentationCoach } from './PresentationCoach';
 import { EthicalDilemmaSolver } from './EthicalDilemmaSolver';
+import { BuildABot } from './BuildABot';
 
 interface InteractiveElementProps {
   element: {
@@ -26,6 +27,9 @@ export const InteractiveElementRouter = ({ element }: InteractiveElementProps) =
       return <SentenceBuilder />;
 
     case 'aiGenerator':
+      if (element.generatorType === 'buildABot') {
+        return <BuildABot />;
+      }
       return (
         <AIGeneratorComponent
           generatorType={element.generatorType || 'studyBuddy'}

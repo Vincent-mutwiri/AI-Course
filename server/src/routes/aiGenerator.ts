@@ -1,11 +1,10 @@
 import { Router, Request, Response } from "express";
-import axios from "axios";
 import { getPrompt } from "../config/aiPrompts";
-import { auth } from "../middleware/auth";
+import { authenticate } from "../middleware/auth";
 
 const router = Router();
 
-router.post("/generate", auth, async (req: Request, res: Response) => {
+router.post("/generate", authenticate, async (req: Request, res: Response) => {
   try {
     const { generatorType, userInput, options = {} } = req.body;
 
@@ -13,14 +12,24 @@ router.post("/generate", auth, async (req: Request, res: Response) => {
       return res.status(400).json({ error: "generatorType and userInput are required" });
     }
 
+    if (!process.env.INFLECTION_API_KEY) {
+      return res.status(503).json({ error: "AI service not configured" });
+    }
+
     const variables = { userInput, ...options };
     const prompt = getPrompt(generatorType, variables);
 
+    const axios = (await import("axios")).default;
+    
+    const context = [
+      { text: prompt, type: "Human" }
+    ];
+    
     const response = await axios.post(
       process.env.INFLECTION_API_URL!,
       {
-        model: "inflection_3_productivity",
-        messages: [{ role: "user", content: prompt }],
+        context,
+        config: "Pi-3.1"
       },
       {
         headers: {
@@ -30,7 +39,7 @@ router.post("/generate", auth, async (req: Request, res: Response) => {
       }
     );
 
-    const aiResponse = response.data.choices?.[0]?.message?.content || "No response generated";
+    const aiResponse = response.data.text || "No response generated";
 
     res.json({ success: true, response: aiResponse, generatorType });
   } catch (error: any) {
