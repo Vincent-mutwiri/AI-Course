@@ -15,4 +15,11 @@ export default defineConfig({
     stringify: false
   },
   assetsInclude: ['**/*.json'],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: undefined
+      }
+    }
+  }
 })
