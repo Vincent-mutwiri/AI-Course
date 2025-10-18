@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { AIGeneratorComponent } from './AIGeneratorComponent';
 import { VisualTokens } from './VisualTokens';
 import { SentenceBuilder } from './SentenceBuilder';
@@ -6,9 +7,11 @@ import { EthicalDilemmaSolver } from './EthicalDilemmaSolver';
 import { BuildABot } from './BuildABot';
 import { DataDashboard } from './DataDashboard';
 import { AIJourney } from './AIJourney';
-import { ConceptMap } from './ConceptMap';
-import { CertificateGenerator } from './CertificateGenerator';
 import { ErrorBoundary } from '@/components/shared/ErrorBoundary';
+import { CardSkeleton } from '@/components/shared/Skeleton';
+
+const ConceptMap = lazy(() => import('./ConceptMap').then(m => ({ default: m.ConceptMap })));
+const CertificateGenerator = lazy(() => import('./CertificateGenerator').then(m => ({ default: m.CertificateGenerator })));
 
 interface InteractiveElementProps {
   element: {
@@ -60,10 +63,18 @@ export const InteractiveElementRouter = ({ element }: InteractiveElementProps) =
         return <AIJourney />;
       }
       if (element.simulationType === 'conceptMap') {
-        return <ConceptMap />;
+        return (
+          <Suspense fallback={<CardSkeleton />}>
+            <ConceptMap />
+          </Suspense>
+        );
       }
       if (element.simulationType === 'certificate') {
-        return <CertificateGenerator />;
+        return (
+          <Suspense fallback={<CardSkeleton />}>
+            <CertificateGenerator />
+          </Suspense>
+        );
       }
       return <div>Unknown simulation type</div>;
 

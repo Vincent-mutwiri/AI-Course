@@ -1,4 +1,5 @@
 import { Route, Routes } from "react-router-dom";
+import { Toaster } from 'sonner';
 import Layout from "./components/shared/Layout";
 import HomePage from "./pages/HomePage";
 import CoursesPage from "./pages/CoursesPage";
@@ -18,7 +19,9 @@ import ModuleContent from "./pages/ModuleContent";
 
 function App() {
   return (
-    <Routes>
+    <>
+      <Toaster position="top-right" richColors />
+      <Routes>
       <Route element={<Layout />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/courses" element={<CoursesPage />} />
@@ -71,6 +74,7 @@ function App() {
         />
       </Route>
     </Routes>
+    </>
   );
 }
 

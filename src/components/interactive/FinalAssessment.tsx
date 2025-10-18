@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -72,16 +72,39 @@ interface FinalAssessmentProps {
 }
 
 export const FinalAssessment = ({ onPass }: FinalAssessmentProps) => {
-  const [answers, setAnswers] = useState<number[]>(Array(questions.length).fill(-1));
+  const [answers, setAnswers] = useState<number[]>(() => {
+    const saved = localStorage.getItem('assessmentAnswers');
+    return saved ? JSON.parse(saved) : Array(questions.length).fill(-1);
+  });
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
+
+  useEffect(() => {
+    if (!submitted) {
+      localStorage.setItem('assessmentAnswers', JSON.stringify(answers));
+    }
+  }, [answers, submitted]);
+
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (!submitted && answers.some(a => a !== -1)) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [submitted, answers]);
 
   const handleSubmit = () => {
     const correctCount = answers.filter((ans, idx) => ans === questions[idx].correct).length;
     setScore(correctCount);
     setSubmitted(true);
+    localStorage.removeItem('assessmentAnswers');
     
     if (correctCount >= 10) {
+      localStorage.setItem('certificatePassed', 'true');
       onPass();
     }
   };

@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { aiCache } from '@/utils/aiCache';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -13,6 +15,8 @@ interface AIGeneratorProps {
   options?: Record<string, any>;
 }
 
+const MAX_CHARS = 5000;
+
 export const AIGeneratorComponent = ({ 
   generatorType, 
   title, 
@@ -25,7 +29,23 @@ export const AIGeneratorComponent = ({
   const [loading, setLoading] = useState(false);
 
   const handleGenerate = async () => {
-    if (!input.trim()) return;
+    if (!input.trim()) {
+      toast.error('Please enter some text first.');
+      return;
+    }
+    if (input.length > MAX_CHARS) {
+      toast.error(`Text is too long. Maximum ${MAX_CHARS} characters allowed.`);
+      return;
+    }
+
+    const cacheKey = aiCache.generateKey(generatorType, input, options);
+    const cached = aiCache.get(cacheKey);
+    
+    if (cached) {
+      setResponse(cached);
+      toast.success('Response loaded from cache');
+      return;
+    }
 
     setLoading(true);
     setResponse('');
@@ -36,6 +56,7 @@ export const AIGeneratorComponent = ({
         options
       });
       setResponse(data.response);
+      aiCache.set(cacheKey, data.response);
     } catch (error: any) {
       const errorMsg = error.response?.status === 401 
         ? 'Please log in to use this feature.'
@@ -63,8 +84,12 @@ export const AIGeneratorComponent = ({
             onChange={(e) => setInput(e.target.value)}
             placeholder={placeholder}
             rows={6}
+            maxLength={MAX_CHARS}
             className="mt-2"
           />
+          <p className="text-xs text-muted-foreground mt-1">
+            {input.length} / {MAX_CHARS} characters
+          </p>
         </div>
 
         <Button onClick={handleGenerate} disabled={loading || !input.trim()}>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { jsPDF } from 'jspdf';
@@ -9,7 +10,9 @@ import { jwtDecode } from 'jwt-decode';
 
 export const CertificateGenerator = () => {
   const [generating, setGenerating] = useState(false);
-  const [passed, setPassed] = useState(false);
+  const [passed, setPassed] = useState(() => {
+    return localStorage.getItem('certificatePassed') === 'true';
+  });
   const [userName, setUserName] = useState('Student');
 
   useEffect(() => {
@@ -56,11 +59,15 @@ export const CertificateGenerator = () => {
 
       doc.save('AI-Course-Certificate.pdf');
       setGenerating(false);
+      toast.success('Certificate downloaded successfully!');
     }, 1000);
   };
 
   if (!passed) {
-    return <FinalAssessment onPass={() => setPassed(true)} />;
+    return <FinalAssessment onPass={() => {
+      setPassed(true);
+      localStorage.setItem('certificatePassed', 'true');
+    }} />;
   }
 
   return (

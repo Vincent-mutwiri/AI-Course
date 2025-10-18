@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { courseAPI, progressAPI } from '@/services/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -126,8 +127,10 @@ const ModuleContent = () => {
         const updated = await progressAPI.updateLesson(courseId!, moduleId!, currentLesson, true);
         const moduleProgress = updated.progress.moduleProgress.find((m: any) => m.moduleId === moduleId);
         setCompletedLessons(moduleProgress?.completedLessons || []);
+        toast.success('Lesson completed! Great job!');
       } catch (err) {
         console.error('Failed to update progress:', err);
+        toast.error('Failed to save progress. Please try again.');
       }
     }
   };
@@ -137,8 +140,10 @@ const ModuleContent = () => {
       const updated = await progressAPI.updateLesson(courseId!, moduleId!, currentLesson, true, score);
       const moduleProgress = updated.progress.moduleProgress.find((m: any) => m.moduleId === moduleId);
       setCompletedLessons(moduleProgress?.completedLessons || []);
+      toast.success(`Quiz completed! Score: ${score}%`);
     } catch (err) {
       console.error('Failed to save quiz score:', err);
+      toast.error('Failed to save quiz score.');
     }
   };
 
