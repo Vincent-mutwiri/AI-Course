@@ -235,7 +235,7 @@ const ModuleContent = () => {
               )}
 
               {/* Interactive Elements (New) */}
-              {lesson.interactiveElements?.length > 0 && (
+              {lesson.interactiveElements && lesson.interactiveElements.length > 0 && (
                 <div className="mt-4 p-4 bg-blue-50 rounded-lg">
                   <h3 className="font-semibold mb-2">Interactive Elements ({lesson.interactiveElements.length})</h3>
                   {lesson.interactiveElements.map((element, idx) => (
