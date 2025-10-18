@@ -107,6 +107,8 @@ const ModuleContent = () => {
       const nextLesson = currentLesson + 1;
       setCurrentLesson(nextLesson);
       await progressAPI.updateAccess(courseId!, moduleId!, nextLesson);
+    } else {
+      navigate(`/course/${courseId}`);
     }
   };
 
@@ -235,9 +237,8 @@ const ModuleContent = () => {
                 </div>
                 <Button
                   onClick={handleNextLesson}
-                  disabled={currentLesson === module.lessons.length - 1}
                 >
-                  Next Lesson →
+                  {currentLesson === module.lessons.length - 1 ? 'Back to Course' : 'Next Lesson →'}
                 </Button>
               </div>
             </div>
