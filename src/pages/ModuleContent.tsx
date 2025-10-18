@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { courseAPI, progressAPI } from '@/services/api';
+import api from '@/services/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2, ArrowLeft, Clock, CheckCircle2 } from 'lucide-react';
@@ -155,7 +156,7 @@ const ModuleContent = () => {
           eventType: 'lesson_complete',
           moduleId,
           lessonIndex: currentLesson
-        }).catch(err => console.error('Analytics tracking failed:', err));
+        }).catch((err: unknown) => console.error('Analytics tracking failed:', err));
       } catch (err) {
         console.error('Failed to update progress:', err);
         toast.error('Failed to save progress. Please try again.');
