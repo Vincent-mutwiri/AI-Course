@@ -26,68 +26,79 @@ interface InteractiveElementProps {
   };
 }
 
-// Explicit component map prevents tree-shaking in production
-const componentMap: { [key: string]: React.ComponentType<any> } = {
-  visualTokens: VisualTokens,
-  sentenceBuilder: SentenceBuilder,
-  buildABot: BuildABot,
-  presentationCoach: PresentationCoach,
-  ethicalSimulator: EthicalDilemmaSolver,
-  dataDashboard: DataDashboard,
-  aiJourney: AIJourney,
+// Force all components to be included in bundle
+const ALL_COMPONENTS = {
+  VisualTokens,
+  SentenceBuilder,
+  BuildABot,
+  PresentationCoach,
+  EthicalDilemmaSolver,
+  DataDashboard,
+  AIJourney,
+  AIGeneratorComponent,
+  ConceptMap,
+  CertificateGenerator,
 };
+
+// Prevent tree-shaking by referencing all components
+if (false) {
+  console.log(ALL_COMPONENTS);
+}
 
 export const InteractiveElementRouter = ({ element }: InteractiveElementProps) => {
   console.log('InteractiveElementRouter rendering:', element);
   
   const renderElement = () => {
-    if (element.type === 'aiGenerator') {
-      if (element.generatorType === 'buildABot') {
-        const Component = componentMap.buildABot;
-        return <Component />;
-      }
-      return (
-        <AIGeneratorComponent
-          generatorType={element.generatorType || 'studyBuddy'}
-          title={element.title || 'AI Generator'}
-          description={element.description}
-          placeholder={element.placeholder}
-          options={element.options}
-        />
-      );
-    }
-
-    if (element.type === 'simulation') {
-      const Component = componentMap[element.simulationType!];
-      if (Component) {
-        return <Component />;
-      }
+    switch (element.type) {
+      case 'visualTokens':
+        return <VisualTokens />;
       
-      // Handle lazy-loaded components
-      if (element.simulationType === 'conceptMap') {
-        return (
-          <Suspense fallback={<CardSkeleton />}>
-            <ConceptMap />
-          </Suspense>
-        );
-      }
-      if (element.simulationType === 'certificate') {
-        return (
-          <Suspense fallback={<CardSkeleton />}>
-            <CertificateGenerator />
-          </Suspense>
-        );
-      }
+      case 'sentenceBuilder':
+        return <SentenceBuilder />;
       
-      return <div>Unknown simulation type: {element.simulationType}</div>;
+      case 'aiGenerator':
+        if (element.generatorType === 'buildABot') {
+          return <BuildABot />;
+        }
+        return (
+          <AIGeneratorComponent
+            generatorType={element.generatorType || 'studyBuddy'}
+            title={element.title || 'AI Generator'}
+            description={element.description}
+            placeholder={element.placeholder}
+            options={element.options}
+          />
+        );
+      
+      case 'simulation':
+        switch (element.simulationType) {
+          case 'presentationCoach':
+            return <PresentationCoach />;
+          case 'ethicalSimulator':
+            return <EthicalDilemmaSolver />;
+          case 'dataDashboard':
+            return <DataDashboard />;
+          case 'aiJourney':
+            return <AIJourney />;
+          case 'conceptMap':
+            return (
+              <Suspense fallback={<CardSkeleton />}>
+                <ConceptMap />
+              </Suspense>
+            );
+          case 'certificate':
+            return (
+              <Suspense fallback={<CardSkeleton />}>
+                <CertificateGenerator />
+              </Suspense>
+            );
+          default:
+            return <div>Unknown simulation type: {element.simulationType}</div>;
+        }
+      
+      default:
+        return <div>Unknown interactive element type: {element.type}</div>;
     }
-
-    const Component = componentMap[element.type];
-    if (Component) {
-      return <Component />;
-    }
-
-    return <div>Unknown interactive element type: {element.type}</div>;
   };
 
   return <ErrorBoundary>{renderElement()}</ErrorBoundary>;
