@@ -51,7 +51,11 @@ const ModuleContent = () => {
   const [completedLessons, setCompletedLessons] = useState<number[]>([]);
   const navigate = useNavigate();
 
+  const module = course?.modules?.find((m: CourseModule) => m._id === moduleId);
+
   useEffect(() => {
+    if (!module) return;
+    
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.ctrlKey || e.metaKey) {
         if (e.key === 'ArrowLeft' && currentLesson > 0) {
@@ -101,7 +105,6 @@ const ModuleContent = () => {
     fetchData();
   }, [courseId, moduleId]);
 
-  const module = course?.modules?.find((m: CourseModule) => m._id === moduleId);
   const lesson = module?.lessons?.[currentLesson];
 
   if (isLoading) {
