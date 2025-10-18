@@ -1,7 +1,12 @@
 import dotenv from "dotenv";
-import path from "path";
 
-dotenv.config({ path: path.resolve(__dirname, '../../../.env.local') });
+// In production, env vars come from platform (Render, Vercel, etc.)
+// In development, load from .env.local
+if (process.env.NODE_ENV !== 'production') {
+  dotenv.config({ path: '.env.local' });
+} else {
+  dotenv.config();
+}
 
 export const MONGODB_URI = process.env.MONGODB_URI;
 export const JWT_SECRET = process.env.JWT_SECRET;

@@ -3,7 +3,19 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import coachData from '@/data/simulations/presentationCoach.json';
+
+const coachData = {
+  fillerWords: ["um", "uh", "like", "so", "you know", "actually", "basically", "literally", "just", "really"],
+  wordsPerMinute: 130,
+  idealSentenceLength: { min: 15, max: 25 },
+  tips: [
+    "Practice your presentation multiple times to reduce filler words",
+    "Pause instead of using filler words - silence is powerful",
+    "Vary your sentence length to maintain audience interest",
+    "Aim for 130-150 words per minute for clear delivery",
+    "Use shorter sentences for complex topics"
+  ]
+};
 
 export const PresentationCoach = () => {
   const [script, setScript] = useState('');

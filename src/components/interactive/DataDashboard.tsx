@@ -1,8 +1,26 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import schoolData from '@/data/simulations/schoolData.json';
+
+const schoolData = {
+  attendance: [
+    { month: "Sep", rate: 94 },
+    { month: "Oct", rate: 92 },
+    { month: "Nov", rate: 89 },
+    { month: "Dec", rate: 91 },
+    { month: "Jan", rate: 88 },
+    { month: "Feb", rate: 93 }
+  ],
+  grades: [
+    { grade: "A", count: 45 },
+    { grade: "B", count: 78 },
+    { grade: "C", count: 52 },
+    { grade: "D", count: 18 },
+    { grade: "F", count: 7 }
+  ],
+  aiInsight: "Analysis shows a correlation between attendance rates and grade distribution. The dip in January attendance (88%) coincides with lower performance. Consider implementing targeted interventions for students with attendance below 90%. The data suggests that students with consistent attendance (>92%) are 3x more likely to achieve A or B grades."
+};
 
 export const DataDashboard = () => {
   const [showInsights, setShowInsights] = useState(false);

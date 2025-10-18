@@ -2,7 +2,52 @@ import { useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import ReactFlow, { Background, Controls, MiniMap } from 'reactflow';
 import 'reactflow/dist/style.css';
-import conceptMapData from '@/data/conceptMap.json';
+
+const conceptMapData = {
+  nodes: [
+    { id: "1", type: "input", data: { label: "AI Fundamentals" }, position: { x: 400, y: 0 } },
+    { id: "2", data: { label: "Tokens" }, position: { x: 200, y: 100 } },
+    { id: "3", data: { label: "Predictions" }, position: { x: 400, y: 100 } },
+    { id: "4", data: { label: "Personalities" }, position: { x: 600, y: 100 } },
+    { id: "5", data: { label: "Student Tools" }, position: { x: 200, y: 250 } },
+    { id: "6", data: { label: "Study Buddy" }, position: { x: 50, y: 350 } },
+    { id: "7", data: { label: "Writing Partner" }, position: { x: 200, y: 350 } },
+    { id: "8", data: { label: "Code Debugger" }, position: { x: 350, y: 350 } },
+    { id: "9", data: { label: "Presentation Coach" }, position: { x: 100, y: 450 } },
+    { id: "10", data: { label: "Ethics" }, position: { x: 250, y: 450 } },
+    { id: "11", data: { label: "Teacher Tools" }, position: { x: 600, y: 250 } },
+    { id: "12", data: { label: "Lesson Planner" }, position: { x: 500, y: 350 } },
+    { id: "13", data: { label: "Rubric Builder" }, position: { x: 650, y: 350 } },
+    { id: "14", data: { label: "Data Dashboard" }, position: { x: 575, y: 450 } },
+    { id: "15", data: { label: "Admin Tools" }, position: { x: 400, y: 550 } },
+    { id: "16", data: { label: "AI Policy" }, position: { x: 300, y: 650 } },
+    { id: "17", type: "output", data: { label: "Strategic Planning" }, position: { x: 500, y: 650 } }
+  ],
+  edges: [
+    { id: "e1-2", source: "1", target: "2" },
+    { id: "e1-3", source: "1", target: "3" },
+    { id: "e1-4", source: "1", target: "4" },
+    { id: "e2-5", source: "2", target: "5" },
+    { id: "e3-5", source: "3", target: "5" },
+    { id: "e4-5", source: "4", target: "5" },
+    { id: "e5-6", source: "5", target: "6" },
+    { id: "e5-7", source: "5", target: "7" },
+    { id: "e5-8", source: "5", target: "8" },
+    { id: "e6-9", source: "6", target: "9" },
+    { id: "e7-9", source: "7", target: "9" },
+    { id: "e8-10", source: "8", target: "10" },
+    { id: "e4-11", source: "4", target: "11" },
+    { id: "e11-12", source: "11", target: "12" },
+    { id: "e11-13", source: "11", target: "13" },
+    { id: "e11-14", source: "11", target: "14" },
+    { id: "e12-15", source: "12", target: "15" },
+    { id: "e13-15", source: "13", target: "15" },
+    { id: "e14-15", source: "14", target: "15" },
+    { id: "e15-16", source: "15", target: "16" },
+    { id: "e15-17", source: "15", target: "17" },
+    { id: "e10-15", source: "10", target: "15" }
+  ]
+};
 
 export const ConceptMap = () => {
   const onNodesChange = useCallback(() => {}, []);
