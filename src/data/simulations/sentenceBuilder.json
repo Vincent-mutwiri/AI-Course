@@ -1,0 +1,18 @@
+{
+  "predictionModel": {
+    "Artificial": ["intelligence", "life", "neural"],
+    "intelligence": ["is", "can", "will", "helps"],
+    "is": ["a", "the", "transforming", "revolutionizing"],
+    "a": ["powerful", "technology", "tool", "system"],
+    "powerful": ["tool", "technology", "system", "force"],
+    "tool": ["that", "for", "which", "to"],
+    "that": ["helps", "can", "enables", "allows"],
+    "helps": ["us", "students", "teachers", "people"],
+    "us": ["learn", "understand", "solve", "create"],
+    "learn": ["faster", "better", "more", "efficiently"],
+    "can": ["help", "transform", "improve", "enhance"],
+    "transform": ["education", "learning", "teaching", "schools"],
+    "education": ["by", "through", "with", "for"],
+    "by": ["providing", "offering", "enabling", "creating"]
+  }
+}

@@ -137,6 +137,10 @@ export const aiAPI = {
     const { data } = await api.post("/ai/chat", { message, context });
     return data;
   },
+  generate: async (generatorType: string, userInput: string, options?: Record<string, any>) => {
+    const { data } = await api.post("/ai/generate", { generatorType, userInput, options });
+    return data;
+  },
 };
 
 export const quizAPI = {

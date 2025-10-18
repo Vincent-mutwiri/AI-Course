@@ -1,0 +1,12 @@
+{
+  "fillerWords": ["um", "uh", "like", "so", "you know", "actually", "basically", "literally", "just", "really"],
+  "wordsPerMinute": 130,
+  "idealSentenceLength": { "min": 15, "max": 25 },
+  "tips": [
+    "Practice your presentation multiple times to reduce filler words",
+    "Pause instead of using filler words - silence is powerful",
+    "Vary your sentence length to maintain audience interest",
+    "Aim for 130-150 words per minute for clear delivery",
+    "Use shorter sentences for complex topics"
+  ]
+}

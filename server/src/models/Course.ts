@@ -9,6 +9,10 @@ interface ILesson {
   objective?: string;
   content?: any;
   interactive?: any;
+  interactiveElements?: Array<{
+    type: 'reflection' | 'visualTokens' | 'sentenceBuilder' | 'aiGenerator' | 'simulation' | 'dragAndDropQuiz' | 'buildABot' | 'ethicalSimulator';
+    [key: string]: any;
+  }>;
   quiz?: any;
   codeSnippet?: any;
 }
@@ -42,6 +46,7 @@ const lessonSchema = new Schema<ILesson>({
   objective: { type: String },
   content: { type: Schema.Types.Mixed },
   interactive: { type: Schema.Types.Mixed },
+  interactiveElements: [{ type: Schema.Types.Mixed }],
   quiz: { type: Schema.Types.Mixed },
   codeSnippet: { type: Schema.Types.Mixed },
 });
