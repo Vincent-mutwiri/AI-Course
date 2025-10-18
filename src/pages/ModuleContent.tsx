@@ -52,6 +52,23 @@ const ModuleContent = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey) {
+        if (e.key === 'ArrowLeft' && currentLesson > 0) {
+          e.preventDefault();
+          handlePrevLesson();
+        } else if (e.key === 'ArrowRight' && currentLesson < module.lessons.length - 1) {
+          e.preventDefault();
+          handleNextLesson();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [currentLesson, module]);
+
+  useEffect(() => {
     const fetchData = async () => {
       if (!courseId) return;
       
@@ -128,6 +145,14 @@ const ModuleContent = () => {
         const moduleProgress = updated.progress.moduleProgress.find((m: any) => m.moduleId === moduleId);
         setCompletedLessons(moduleProgress?.completedLessons || []);
         toast.success('Lesson completed! Great job!');
+        
+        // Track analytics
+        api.post('/analytics/track', {
+          courseId,
+          eventType: 'lesson_complete',
+          moduleId,
+          lessonIndex: currentLesson
+        }).catch(err => console.error('Analytics tracking failed:', err));
       } catch (err) {
         console.error('Failed to update progress:', err);
         toast.error('Failed to save progress. Please try again.');
@@ -234,14 +259,17 @@ const ModuleContent = () => {
                   variant="outline"
                   onClick={handlePrevLesson}
                   disabled={currentLesson === 0}
+                  title="Ctrl/Cmd + Left Arrow"
                 >
                   ← Previous Lesson
                 </Button>
-                <div className="text-sm text-muted-foreground">
-                  Lesson {currentLesson + 1} of {module.lessons.length}
+                <div className="text-sm text-muted-foreground text-center">
+                  <div>Lesson {currentLesson + 1} of {module.lessons.length}</div>
+                  <div className="text-xs mt-1">Use Ctrl/Cmd + Arrow keys to navigate</div>
                 </div>
                 <Button
                   onClick={handleNextLesson}
+                  title="Ctrl/Cmd + Right Arrow"
                 >
                   {currentLesson === module.lessons.length - 1 ? 'Back to Course' : 'Next Lesson →'}
                 </Button>

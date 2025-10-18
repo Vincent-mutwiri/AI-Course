@@ -17,7 +17,7 @@ export const VisualTokens = () => {
   };
 
   return (
-    <Card className="mt-4">
+    <Card className="mt-4" role="region" aria-label="Visual Tokens Interactive Component">
       <CardHeader>
         <CardTitle className="text-lg md:text-xl">Visual Tokens: See How AI Reads Text</CardTitle>
         <p className="text-sm text-muted-foreground">
@@ -37,6 +37,7 @@ export const VisualTokens = () => {
             placeholder="Type something here..."
             rows={3}
             className="mt-2"
+            aria-label="Enter text to tokenize"
           />
         </div>
 

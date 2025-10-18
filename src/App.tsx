@@ -16,6 +16,7 @@ import AdminPage from "./pages/AdminPage";
 import ProtectedRoute from "./components/shared/ProtectedRoute";
 import AdminRoute from "./components/shared/AdminRoute";
 import ModuleContent from "./pages/ModuleContent";
+import HelpPage from "./pages/HelpPage";
 
 function App() {
   return (
@@ -64,6 +65,7 @@ function App() {
         />
         <Route path="/demo/quiz" element={<QuizDemoPage />} />
         <Route path="/quiz-demo" element={<QuizDemoPage />} />
+        <Route path="/help" element={<HelpPage />} />
         <Route
           path="/admin"
           element={

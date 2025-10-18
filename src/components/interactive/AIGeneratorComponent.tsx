@@ -5,7 +5,42 @@ import { aiCache } from '@/utils/aiCache';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { HelpCircle, Lightbulb } from 'lucide-react';
 import api from '@/services/api';
+
+const EXAMPLE_PROMPTS: Record<string, string[]> = {
+  studyBuddy: [
+    'Explain photosynthesis in simple terms',
+    'Summarize the causes of World War I',
+    'What are the key concepts in calculus?'
+  ],
+  writingPartner: [
+    'Review my essay introduction about climate change',
+    'Suggest improvements for this story opening',
+    'Help me make this paragraph more engaging'
+  ],
+  codeDebugger: [
+    'Why is my Python loop not working?',
+    'Find the error in this JavaScript function',
+    'Debug this SQL query'
+  ],
+  lessonPlanner: [
+    'Create a 45-min lesson on fractions for 5th grade',
+    'Plan a science lab about chemical reactions',
+    'Design an English lesson on persuasive writing'
+  ],
+  rubricBuilder: [
+    'Create a rubric for a research paper (10 pages)',
+    'Build a grading rubric for a group presentation',
+    'Design assessment criteria for a coding project'
+  ],
+  policyDrafter: [
+    'Draft an AI usage policy for high school students',
+    'Create guidelines for AI in homework assignments',
+    'Write a policy on AI-assisted learning'
+  ]
+};
 
 interface AIGeneratorProps {
   generatorType: string;
@@ -57,6 +92,13 @@ export const AIGeneratorComponent = ({
       });
       setResponse(data.response);
       aiCache.set(cacheKey, data.response);
+      
+      // Track AI usage
+      api.post('/analytics/track', {
+        courseId: 'ai-course',
+        eventType: 'ai_request',
+        metadata: { generatorType, inputLength: input.length }
+      }).catch(err => console.error('Analytics tracking failed:', err));
     } catch (error: any) {
       const errorMsg = error.response?.status === 401 
         ? 'Please log in to use this feature.'
@@ -72,10 +114,43 @@ export const AIGeneratorComponent = ({
   return (
     <Card className="mt-4">
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle>{title}</CardTitle>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <HelpCircle className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs">
+                <p>Enter your text and click Generate to get AI-powered assistance. Responses are cached for faster access.</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
         {description && <p className="text-sm text-muted-foreground">{description}</p>}
       </CardHeader>
       <CardContent className="space-y-4">
+        {EXAMPLE_PROMPTS[generatorType] && (
+          <div className="p-3 bg-muted/50 rounded-lg">
+            <div className="flex items-center gap-2 mb-2">
+              <Lightbulb className="h-4 w-4 text-yellow-600" />
+              <span className="text-sm font-medium">Example prompts:</span>
+            </div>
+            <div className="space-y-1">
+              {EXAMPLE_PROMPTS[generatorType].map((example, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setInput(example)}
+                  className="block text-xs text-left text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  • {example}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
         <div>
           <Label htmlFor="input">Your Input</Label>
           <Textarea
