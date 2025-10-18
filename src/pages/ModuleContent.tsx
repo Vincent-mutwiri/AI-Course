@@ -235,6 +235,7 @@ const ModuleContent = () => {
               )}
 
               {/* Interactive Elements (New) */}
+              {console.log('Lesson data:', { title: lesson.title, hasInteractive: !!lesson.interactiveElements, elements: lesson.interactiveElements })}
               {lesson.interactiveElements?.map((element, idx) => (
                 <InteractiveElementRouter key={idx} element={element} />
               ))}

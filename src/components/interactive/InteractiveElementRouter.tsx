@@ -38,6 +38,8 @@ const componentMap: { [key: string]: React.ComponentType<any> } = {
 };
 
 export const InteractiveElementRouter = ({ element }: InteractiveElementProps) => {
+  console.log('InteractiveElementRouter rendering:', element);
+  
   const renderElement = () => {
     if (element.type === 'aiGenerator') {
       if (element.generatorType === 'buildABot') {
