@@ -4,6 +4,7 @@ import { SentenceBuilder } from './SentenceBuilder';
 import { PresentationCoach } from './PresentationCoach';
 import { EthicalDilemmaSolver } from './EthicalDilemmaSolver';
 import { BuildABot } from './BuildABot';
+import { DataDashboard } from './DataDashboard';
 
 interface InteractiveElementProps {
   element: {
@@ -46,6 +47,9 @@ export const InteractiveElementRouter = ({ element }: InteractiveElementProps) =
       }
       if (element.simulationType === 'ethicalSimulator') {
         return <EthicalDilemmaSolver />;
+      }
+      if (element.simulationType === 'dataDashboard') {
+        return <DataDashboard />;
       }
       return <div>Unknown simulation type</div>;
 
