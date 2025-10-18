@@ -78,7 +78,7 @@ const ModuleContent = () => {
       if (!courseId) return;
       
       try {
-        const courseData = await courseAPI.getById(courseId);
+        const courseData = await courseAPI.getById(courseId + '?t=' + Date.now());
         setCourse(courseData.course);
         
         try {
@@ -235,10 +235,14 @@ const ModuleContent = () => {
               )}
 
               {/* Interactive Elements (New) */}
-              {console.log('Lesson data:', { title: lesson.title, hasInteractive: !!lesson.interactiveElements, elements: lesson.interactiveElements })}
-              {lesson.interactiveElements?.map((element, idx) => (
-                <InteractiveElementRouter key={idx} element={element} />
-              ))}
+              {lesson.interactiveElements?.length > 0 && (
+                <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+                  <h3 className="font-semibold mb-2">Interactive Elements ({lesson.interactiveElements.length})</h3>
+                  {lesson.interactiveElements.map((element, idx) => (
+                    <InteractiveElementRouter key={idx} element={element} />
+                  ))}
+                </div>
+              )}
 
               {/* Code Snippet */}
               {lesson.codeSnippet && (

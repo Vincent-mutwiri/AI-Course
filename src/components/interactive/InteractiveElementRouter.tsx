@@ -46,7 +46,6 @@ if (false) {
 }
 
 export const InteractiveElementRouter = ({ element }: InteractiveElementProps) => {
-  console.log('InteractiveElementRouter rendering:', element);
   
   const renderElement = () => {
     switch (element.type) {
