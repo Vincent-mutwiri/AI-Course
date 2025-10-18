@@ -26,6 +26,7 @@ interface InteractiveElementProps {
   };
 }
 
+// Explicit component map prevents tree-shaking in production
 const componentMap: { [key: string]: React.ComponentType<any> } = {
   visualTokens: VisualTokens,
   sentenceBuilder: SentenceBuilder,
@@ -34,8 +35,6 @@ const componentMap: { [key: string]: React.ComponentType<any> } = {
   ethicalSimulator: EthicalDilemmaSolver,
   dataDashboard: DataDashboard,
   aiJourney: AIJourney,
-  conceptMap: ConceptMap,
-  certificate: CertificateGenerator,
 };
 
 export const InteractiveElementRouter = ({ element }: InteractiveElementProps) => {
@@ -59,12 +58,25 @@ export const InteractiveElementRouter = ({ element }: InteractiveElementProps) =
     if (element.type === 'simulation') {
       const Component = componentMap[element.simulationType!];
       if (Component) {
+        return <Component />;
+      }
+      
+      // Handle lazy-loaded components
+      if (element.simulationType === 'conceptMap') {
         return (
           <Suspense fallback={<CardSkeleton />}>
-            <Component />
+            <ConceptMap />
           </Suspense>
         );
       }
+      if (element.simulationType === 'certificate') {
+        return (
+          <Suspense fallback={<CardSkeleton />}>
+            <CertificateGenerator />
+          </Suspense>
+        );
+      }
+      
       return <div>Unknown simulation type: {element.simulationType}</div>;
     }
 
