@@ -19,7 +19,7 @@ export const VisualTokens = () => {
   return (
     <Card className="mt-4">
       <CardHeader>
-        <CardTitle>Visual Tokens: See How AI Reads Text</CardTitle>
+        <CardTitle className="text-lg md:text-xl">Visual Tokens: See How AI Reads Text</CardTitle>
         <p className="text-sm text-muted-foreground">
           Type a sentence to see how AI breaks it into tokens
         </p>

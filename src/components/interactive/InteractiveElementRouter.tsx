@@ -8,6 +8,7 @@ import { DataDashboard } from './DataDashboard';
 import { AIJourney } from './AIJourney';
 import { ConceptMap } from './ConceptMap';
 import { CertificateGenerator } from './CertificateGenerator';
+import { ErrorBoundary } from '@/components/shared/ErrorBoundary';
 
 interface InteractiveElementProps {
   element: {
@@ -23,7 +24,8 @@ interface InteractiveElementProps {
 }
 
 export const InteractiveElementRouter = ({ element }: InteractiveElementProps) => {
-  switch (element.type) {
+  const renderElement = () => {
+    switch (element.type) {
     case 'visualTokens':
       return <VisualTokens />;
 
@@ -65,7 +67,10 @@ export const InteractiveElementRouter = ({ element }: InteractiveElementProps) =
       }
       return <div>Unknown simulation type</div>;
 
-    default:
-      return <div>Unknown interactive element type: {element.type}</div>;
-  }
+      default:
+        return <div>Unknown interactive element type: {element.type}</div>;
+    }
+  };
+
+  return <ErrorBoundary>{renderElement()}</ErrorBoundary>;
 };

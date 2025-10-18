@@ -17,17 +17,19 @@ export const ConceptMap = () => {
         </p>
       </CardHeader>
       <CardContent>
-        <div style={{ height: '500px' }}>
+        <div className="w-full h-[500px] md:h-[600px] overflow-hidden">
           <ReactFlow
             nodes={conceptMapData.nodes}
             edges={conceptMapData.edges}
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             fitView
+            minZoom={0.1}
+            maxZoom={1.5}
           >
             <Background />
             <Controls />
-            <MiniMap />
+            <MiniMap className="hidden md:block" />
           </ReactFlow>
         </div>
       </CardContent>

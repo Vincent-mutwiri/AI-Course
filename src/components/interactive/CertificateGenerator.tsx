@@ -27,34 +27,36 @@ export const CertificateGenerator = () => {
   const generateCertificate = () => {
     setGenerating(true);
     
-    const doc = new jsPDF({
-      orientation: 'landscape',
-      unit: 'mm',
-      format: 'a4'
-    });
+    setTimeout(() => {
+      const doc = new jsPDF({
+        orientation: 'landscape',
+        unit: 'mm',
+        format: 'a4'
+      });
 
-    const completionDate = new Date().toLocaleDateString();
+      const completionDate = new Date().toLocaleDateString();
 
-    doc.setFontSize(40);
-    doc.text('Certificate of Completion', 148, 60, { align: 'center' });
-    
-    doc.setFontSize(20);
-    doc.text('This certifies that', 148, 90, { align: 'center' });
-    
-    doc.setFontSize(30);
-    doc.text(userName, 148, 110, { align: 'center' });
-    
-    doc.setFontSize(20);
-    doc.text('has successfully completed', 148, 130, { align: 'center' });
-    
-    doc.setFontSize(25);
-    doc.text('AI in Education Course', 148, 150, { align: 'center' });
-    
-    doc.setFontSize(15);
-    doc.text(`Completion Date: ${completionDate}`, 148, 180, { align: 'center' });
+      doc.setFontSize(40);
+      doc.text('Certificate of Completion', 148, 60, { align: 'center' });
+      
+      doc.setFontSize(20);
+      doc.text('This certifies that', 148, 90, { align: 'center' });
+      
+      doc.setFontSize(30);
+      doc.text(userName, 148, 110, { align: 'center' });
+      
+      doc.setFontSize(20);
+      doc.text('has successfully completed', 148, 130, { align: 'center' });
+      
+      doc.setFontSize(25);
+      doc.text('AI in Education Course', 148, 150, { align: 'center' });
+      
+      doc.setFontSize(15);
+      doc.text(`Completion Date: ${completionDate}`, 148, 180, { align: 'center' });
 
-    doc.save('AI-Course-Certificate.pdf');
-    setGenerating(false);
+      doc.save('AI-Course-Certificate.pdf');
+      setGenerating(false);
+    }, 1000);
   };
 
   if (!passed) {
@@ -75,8 +77,17 @@ export const CertificateGenerator = () => {
             Congratulations {userName} on completing the AI in Education course!
           </p>
           <Button onClick={generateCertificate} disabled={generating} size="lg">
-            <Download className="mr-2 h-5 w-5" />
-            {generating ? 'Generating...' : 'Download Certificate'}
+            {generating ? (
+              <span className="flex items-center gap-2">
+                <span className="animate-spin">⏳</span>
+                Generating your certificate...
+              </span>
+            ) : (
+              <>
+                <Download className="mr-2 h-5 w-5" />
+                Download Certificate
+              </>
+            )}
           </Button>
         </div>
       </CardContent>

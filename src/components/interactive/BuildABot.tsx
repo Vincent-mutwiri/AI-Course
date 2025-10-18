@@ -33,6 +33,7 @@ export const BuildABot = () => {
     if (!userMessage.trim() || selectedTraits.length === 0) return;
 
     setLoading(true);
+    setBotResponse('');
     try {
       const { data } = await api.post('/ai/generate', {
         generatorType: 'buildABot',
@@ -40,8 +41,13 @@ export const BuildABot = () => {
         options: { personality: selectedTraits.join(', ') }
       });
       setBotResponse(data.response);
-    } catch (error) {
-      setBotResponse('Failed to get response. Please try again.');
+    } catch (error: any) {
+      const errorMsg = error.response?.status === 401 
+        ? 'Authentication required. Please log in to chat with your bot.'
+        : error.response?.status === 503
+        ? 'AI service is temporarily unavailable. Please try again later.'
+        : 'Failed to get response. Please check your connection and try again.';
+      setBotResponse(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -95,7 +101,12 @@ export const BuildABot = () => {
             </div>
 
             <Button onClick={handleChat} disabled={loading || !userMessage.trim()}>
-              {loading ? 'Thinking...' : 'Chat with Bot'}
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <span className="animate-spin">⏳</span>
+                  Bot is thinking...
+                </span>
+              ) : 'Chat with Bot'}
             </Button>
 
             {botResponse && (

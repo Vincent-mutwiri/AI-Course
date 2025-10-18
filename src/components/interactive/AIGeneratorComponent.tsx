@@ -28,6 +28,7 @@ export const AIGeneratorComponent = ({
     if (!input.trim()) return;
 
     setLoading(true);
+    setResponse('');
     try {
       const { data } = await api.post('/ai/generate', {
         generatorType,
@@ -35,8 +36,13 @@ export const AIGeneratorComponent = ({
         options
       });
       setResponse(data.response);
-    } catch (error) {
-      setResponse('Failed to generate response. Please try again.');
+    } catch (error: any) {
+      const errorMsg = error.response?.status === 401 
+        ? 'Please log in to use this feature.'
+        : error.response?.status === 503
+        ? 'AI service is temporarily unavailable. Please try again later.'
+        : 'Failed to generate response. Please check your connection and try again.';
+      setResponse(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -62,7 +68,12 @@ export const AIGeneratorComponent = ({
         </div>
 
         <Button onClick={handleGenerate} disabled={loading || !input.trim()}>
-          {loading ? 'Generating...' : 'Generate'}
+          {loading ? (
+            <span className="flex items-center gap-2">
+              <span className="animate-spin">⏳</span>
+              Generating AI response...
+            </span>
+          ) : 'Generate'}
         </Button>
 
         {response && (

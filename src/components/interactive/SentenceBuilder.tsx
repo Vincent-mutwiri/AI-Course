@@ -30,7 +30,7 @@ export const SentenceBuilder = () => {
   return (
     <Card className="mt-4">
       <CardHeader>
-        <CardTitle>Sentence Builder: AI Predictions</CardTitle>
+        <CardTitle className="text-lg md:text-xl">Sentence Builder: AI Predictions</CardTitle>
         <p className="text-sm text-muted-foreground">
           Click words to build a sentence. See how AI predicts the next word!
         </p>
