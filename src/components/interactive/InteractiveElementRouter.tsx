@@ -5,6 +5,9 @@ import { PresentationCoach } from './PresentationCoach';
 import { EthicalDilemmaSolver } from './EthicalDilemmaSolver';
 import { BuildABot } from './BuildABot';
 import { DataDashboard } from './DataDashboard';
+import { AIJourney } from './AIJourney';
+import { ConceptMap } from './ConceptMap';
+import { CertificateGenerator } from './CertificateGenerator';
 
 interface InteractiveElementProps {
   element: {
@@ -50,6 +53,15 @@ export const InteractiveElementRouter = ({ element }: InteractiveElementProps) =
       }
       if (element.simulationType === 'dataDashboard') {
         return <DataDashboard />;
+      }
+      if (element.simulationType === 'aiJourney') {
+        return <AIJourney />;
+      }
+      if (element.simulationType === 'conceptMap') {
+        return <ConceptMap />;
+      }
+      if (element.simulationType === 'certificate') {
+        return <CertificateGenerator />;
       }
       return <div>Unknown simulation type</div>;
 
