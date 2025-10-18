@@ -66,7 +66,8 @@ const addAllInteractiveElements = async () => {
         { _id: course._id },
         { $set: { [`modules.1.lessons.${update.lesson}.interactiveElements`]: update.elements } }
       );
-      console.log(`✓ Module 2, Lesson ${update.lesson + 1}: ${update.elements[0].generatorType || update.elements[0].simulationType}`);
+      const elem: any = update.elements[0];
+      console.log(`✓ Module 2, Lesson ${update.lesson + 1}: ${elem.generatorType || elem.simulationType}`);
     }
 
     // Module 3: AI Tools for Teachers
@@ -81,7 +82,8 @@ const addAllInteractiveElements = async () => {
         { _id: course._id },
         { $set: { [`modules.2.lessons.${update.lesson}.interactiveElements`]: update.elements } }
       );
-      console.log(`✓ Module 3, Lesson ${update.lesson + 1}: ${update.elements[0].generatorType || update.elements[0].simulationType}`);
+      const elem: any = update.elements[0];
+      console.log(`✓ Module 3, Lesson ${update.lesson + 1}: ${elem.generatorType || elem.simulationType}`);
     }
 
     // Module 4: AI for School Leaders
@@ -95,7 +97,8 @@ const addAllInteractiveElements = async () => {
         { _id: course._id },
         { $set: { [`modules.3.lessons.${update.lesson}.interactiveElements`]: update.elements } }
       );
-      console.log(`✓ Module 4, Lesson ${update.lesson + 1}: ${update.elements[0].generatorType || update.elements[0].simulationType}`);
+      const elem: any = update.elements[0];
+      console.log(`✓ Module 4, Lesson ${update.lesson + 1}: ${elem.generatorType || elem.simulationType}`);
     }
 
     // Module 5: Bringing It All Together
