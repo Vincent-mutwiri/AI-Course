@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
 import { adminAPI, courseAPI } from "@/services/api";
+import api from "@/services/api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Users, BookOpen, GraduationCap, TrendingUp } from "lucide-react";
+import { Users, BookOpen, GraduationCap, TrendingUp, Activity, Award, Zap } from "lucide-react";
 
 export default function AdminPage() {
   const [stats, setStats] = useState<any>(null);
   const [courses, setCourses] = useState<any[]>([]);
+  const [analytics, setAnalytics] = useState<any>(null);
   const [showCourseForm, setShowCourseForm] = useState(false);
   const [showQuizForm, setShowQuizForm] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -25,6 +27,12 @@ export default function AdminPage() {
       ]);
       setStats(statsData.stats);
       setCourses(coursesData.courses);
+      
+      // Fetch analytics for first course
+      if (coursesData.courses.length > 0) {
+        const analyticsData = await api.get(`/analytics/stats?courseId=${coursesData.courses[0]._id}`);
+        setAnalytics(analyticsData.data);
+      }
     } catch (error) {
       console.error("Failed to fetch admin data", error);
     } finally {
@@ -130,6 +138,58 @@ export default function AdminPage() {
           </CardContent>
         </Card>
       </div>
+
+      {analytics && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Course Analytics</CardTitle>
+            <CardDescription>Track user engagement and AI usage</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 md:grid-cols-3">
+              <div className="flex items-center gap-3 p-4 border rounded-lg">
+                <Activity className="h-8 w-8 text-blue-600" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Total Events</p>
+                  <p className="text-2xl font-bold">
+                    {analytics.stats?.reduce((sum: number, s: any) => sum + s.count, 0) || 0}
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-3 p-4 border rounded-lg">
+                <Award className="h-8 w-8 text-green-600" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Certificates Earned</p>
+                  <p className="text-2xl font-bold">{analytics.certificateCompletionRate || 0}</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-3 p-4 border rounded-lg">
+                <Zap className="h-8 w-8 text-yellow-600" />
+                <div>
+                  <p className="text-sm text-muted-foreground">AI Requests</p>
+                  <p className="text-2xl font-bold">{analytics.totalAIRequests || 0}</p>
+                </div>
+              </div>
+            </div>
+            
+            {analytics.stats && analytics.stats.length > 0 && (
+              <div className="mt-6">
+                <h3 className="font-semibold mb-3">Event Breakdown</h3>
+                <div className="space-y-2">
+                  {analytics.stats.map((stat: any) => (
+                    <div key={stat._id} className="flex justify-between items-center p-2 border rounded">
+                      <span className="text-sm capitalize">{stat._id.replace('_', ' ')}</span>
+                      <span className="font-semibold">{stat.count}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
