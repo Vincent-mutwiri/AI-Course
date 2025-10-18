@@ -23,11 +23,12 @@ const addInteractiveElements = async () => {
       throw new Error('Courses collection not found');
     }
 
-    // Find the AI in Education course
-    const course = await courses.findOne({ title: /AI.*Education/i });
+    // Find the course by ID
+    const courseId = '68ee38bb69010a67868df245';
+    const course = await courses.findOne({ _id: new mongoose.Types.ObjectId(courseId) });
 
     if (!course) {
-      console.log('AI in Education course not found');
+      console.log('Course not found');
       process.exit(0);
     }
 
