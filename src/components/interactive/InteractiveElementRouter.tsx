@@ -26,18 +26,24 @@ interface InteractiveElementProps {
   };
 }
 
+const componentMap: { [key: string]: React.ComponentType<any> } = {
+  visualTokens: VisualTokens,
+  sentenceBuilder: SentenceBuilder,
+  buildABot: BuildABot,
+  presentationCoach: PresentationCoach,
+  ethicalSimulator: EthicalDilemmaSolver,
+  dataDashboard: DataDashboard,
+  aiJourney: AIJourney,
+  conceptMap: ConceptMap,
+  certificate: CertificateGenerator,
+};
+
 export const InteractiveElementRouter = ({ element }: InteractiveElementProps) => {
   const renderElement = () => {
-    switch (element.type) {
-    case 'visualTokens':
-      return <VisualTokens />;
-
-    case 'sentenceBuilder':
-      return <SentenceBuilder />;
-
-    case 'aiGenerator':
+    if (element.type === 'aiGenerator') {
       if (element.generatorType === 'buildABot') {
-        return <BuildABot />;
+        const Component = componentMap.buildABot;
+        return <Component />;
       }
       return (
         <AIGeneratorComponent
@@ -48,39 +54,26 @@ export const InteractiveElementRouter = ({ element }: InteractiveElementProps) =
           options={element.options}
         />
       );
-
-    case 'simulation':
-      if (element.simulationType === 'presentationCoach') {
-        return <PresentationCoach />;
-      }
-      if (element.simulationType === 'ethicalSimulator') {
-        return <EthicalDilemmaSolver />;
-      }
-      if (element.simulationType === 'dataDashboard') {
-        return <DataDashboard />;
-      }
-      if (element.simulationType === 'aiJourney') {
-        return <AIJourney />;
-      }
-      if (element.simulationType === 'conceptMap') {
-        return (
-          <Suspense fallback={<CardSkeleton />}>
-            <ConceptMap />
-          </Suspense>
-        );
-      }
-      if (element.simulationType === 'certificate') {
-        return (
-          <Suspense fallback={<CardSkeleton />}>
-            <CertificateGenerator />
-          </Suspense>
-        );
-      }
-      return <div>Unknown simulation type</div>;
-
-      default:
-        return <div>Unknown interactive element type: {element.type}</div>;
     }
+
+    if (element.type === 'simulation') {
+      const Component = componentMap[element.simulationType!];
+      if (Component) {
+        return (
+          <Suspense fallback={<CardSkeleton />}>
+            <Component />
+          </Suspense>
+        );
+      }
+      return <div>Unknown simulation type: {element.simulationType}</div>;
+    }
+
+    const Component = componentMap[element.type];
+    if (Component) {
+      return <Component />;
+    }
+
+    return <div>Unknown interactive element type: {element.type}</div>;
   };
 
   return <ErrorBoundary>{renderElement()}</ErrorBoundary>;
