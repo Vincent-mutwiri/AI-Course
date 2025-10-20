@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { CheckCircle, XCircle, ArrowLeft, ArrowRight, Clock, Check } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { QuizQuestionSkeleton } from "@/components/ui/skeleton";
+import { LoadingSpinner } from "@/components/ui/spinner";
 import { useQuiz } from '@/contexts/QuizContext';
 import QuizQuestion from './QuizQuestion';
 
@@ -95,9 +97,26 @@ const EnhancedQuiz: React.FC<EnhancedQuizProps> = ({ quizId, onComplete }) => {
   if (!quiz || !currentQuestion) {
     return (
       <Card>
-        <CardContent className="pt-6 text-center">
-          <p>Loading quiz...</p>
+        <CardHeader className="pb-2">
+          <div className="flex justify-between items-center">
+            <div className="h-6 w-32 bg-muted animate-pulse rounded" />
+            <div className="h-4 w-16 bg-muted animate-pulse rounded" />
+          </div>
+          <div className="pt-2">
+            <div className="h-2 w-full bg-muted animate-pulse rounded" />
+            <div className="flex justify-between mt-1">
+              <div className="h-3 w-20 bg-muted animate-pulse rounded" />
+              <div className="h-3 w-16 bg-muted animate-pulse rounded" />
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="pt-6">
+          <QuizQuestionSkeleton />
         </CardContent>
+        <CardFooter className="flex justify-between">
+          <div className="h-10 w-24 bg-muted animate-pulse rounded" />
+          <div className="h-10 w-20 bg-muted animate-pulse rounded" />
+        </CardFooter>
       </Card>
     );
   }

@@ -4,6 +4,8 @@ import { enrollmentAPI } from "@/services/api";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { StatsCardSkeleton } from "@/components/ui/skeleton";
+import { BookOpen, TrendingUp, Award, Clock } from "lucide-react";
 
 interface Stats {
   totalEnrolled: number;
@@ -36,61 +38,79 @@ export default function DashboardPage() {
       <h1 className="text-3xl font-bold mb-6">Welcome, {user?.name}!</h1>
       
       {loading ? (
-        <div>Loading...</div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
+          {[...Array(4)].map((_, i) => (
+            <StatsCardSkeleton key={i} />
+          ))}
+        </div>
       ) : (
         <>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
-            <Card>
-              <CardHeader>
-                <CardTitle>Enrolled</CardTitle>
-                <CardDescription>Total courses</CardDescription>
+            <Card className="hover:shadow-md transition-shadow">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Enrolled</CardTitle>
+                <BookOpen className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold">{stats?.totalEnrolled || 0}</p>
+                <div className="text-2xl font-bold">{stats?.totalEnrolled || 0}</div>
+                <p className="text-xs text-muted-foreground">Total courses</p>
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>In Progress</CardTitle>
-                <CardDescription>Active courses</CardDescription>
+            <Card className="hover:shadow-md transition-shadow">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">In Progress</CardTitle>
+                <Clock className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold">{stats?.inProgress || 0}</p>
+                <div className="text-2xl font-bold">{stats?.inProgress || 0}</div>
+                <p className="text-xs text-muted-foreground">Active courses</p>
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Completed</CardTitle>
-                <CardDescription>Finished courses</CardDescription>
+            <Card className="hover:shadow-md transition-shadow">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Completed</CardTitle>
+                <Award className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold">{stats?.completed || 0}</p>
+                <div className="text-2xl font-bold">{stats?.completed || 0}</div>
+                <p className="text-xs text-muted-foreground">Finished courses</p>
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Avg Progress</CardTitle>
-                <CardDescription>Overall completion</CardDescription>
+            <Card className="hover:shadow-md transition-shadow">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Avg Progress</CardTitle>
+                <TrendingUp className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold">{stats?.avgProgress || 0}%</p>
+                <div className="text-2xl font-bold">{stats?.avgProgress || 0}%</div>
+                <p className="text-xs text-muted-foreground">Overall completion</p>
               </CardContent>
             </Card>
           </div>
 
           {stats?.totalEnrolled === 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Get Started</CardTitle>
-                <CardDescription>You haven't enrolled in any courses yet</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button asChild>
-                  <Link to="/courses">Browse Courses</Link>
-                </Button>
+            <Card className="text-center py-12">
+              <CardContent className="space-y-6">
+                <div className="space-y-4">
+                  <BookOpen className="h-16 w-16 mx-auto text-muted-foreground" />
+                  <div className="space-y-2">
+                    <CardTitle className="text-xl">Welcome to your learning journey!</CardTitle>
+                    <CardDescription className="max-w-md mx-auto">
+                      You haven't enrolled in any courses yet. Discover amazing courses and start learning today.
+                    </CardDescription>
+                  </div>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <Button asChild size="lg">
+                    <Link to="/courses">Browse Courses</Link>
+                  </Button>
+                  <Button variant="outline" asChild size="lg">
+                    <Link to="/ai-assistant">Get AI Recommendations</Link>
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           )}
