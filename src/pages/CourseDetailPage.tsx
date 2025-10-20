@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Clock, BookOpen, BarChart, ChevronRight, PlayCircle, CheckCircle2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { Badge } from "@/components/ui/badge";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
+import { LoadingSpinner } from "@/components/ui/spinner";
+import { toast } from "@/components/ui/toast";
 
 interface Course {
   _id: string;
@@ -16,6 +19,7 @@ interface Course {
   level: string;
   totalDuration: number;
   enrolledCount: number;
+  thumbnail?: string;
   modules: Array<{
     _id: string;
     title: string;
@@ -64,26 +68,95 @@ export default function CourseDetailPage() {
 
   const handleEnroll = async () => {
     if (!user) {
-      navigate("/login");
+      toast.info("Please log in to enroll in courses", {
+        action: {
+          label: "Login",
+          onClick: () => navigate("/login")
+        }
+      });
       return;
     }
 
     try {
       setEnrolling(true);
       await courseAPI.enroll(id!);
-      navigate("/dashboard");
+      toast.success("Successfully enrolled in course!", {
+        description: "You can now access all course materials.",
+        action: {
+          label: "Go to Dashboard",
+          onClick: () => navigate("/dashboard")
+        }
+      });
+      // Refresh the page to show updated enrollment status
+      window.location.reload();
     } catch (error: any) {
-      alert(error.response?.data?.message || "Failed to enroll");
+      toast.error("Failed to enroll in course", {
+        description: error.response?.data?.message || "Please try again later."
+      });
     } finally {
       setEnrolling(false);
     }
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (!course) return <div>Course not found</div>;
+  if (loading) {
+    return (
+      <div className="max-w-6xl mx-auto p-6 space-y-8">
+        <div className="h-6 w-64 bg-muted animate-pulse rounded" />
+        <div className="bg-gradient-to-r from-primary/20 to-accent/20 rounded-2xl p-8">
+          <div className="space-y-4">
+            <div className="h-6 w-20 bg-white/20 animate-pulse rounded" />
+            <div className="h-10 w-3/4 bg-white/20 animate-pulse rounded" />
+            <div className="h-6 w-full bg-white/20 animate-pulse rounded" />
+            <div className="flex gap-4">
+              <div className="h-4 w-24 bg-white/20 animate-pulse rounded" />
+              <div className="h-4 w-24 bg-white/20 animate-pulse rounded" />
+              <div className="h-4 w-24 bg-white/20 animate-pulse rounded" />
+            </div>
+            <div className="h-12 w-40 bg-white/20 animate-pulse rounded" />
+          </div>
+        </div>
+        <div className="space-y-4">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="border rounded-lg p-6">
+              <div className="flex gap-4">
+                <div className="h-12 w-12 bg-muted animate-pulse rounded-xl" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-6 w-3/4 bg-muted animate-pulse rounded" />
+                  <div className="h-4 w-full bg-muted animate-pulse rounded" />
+                  <div className="h-4 w-1/2 bg-muted animate-pulse rounded" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+  
+  if (!course) {
+    return (
+      <div className="max-w-6xl mx-auto p-6">
+        <Breadcrumb items={[
+          { label: "Courses", href: "/courses" },
+          { label: "Course not found", current: true }
+        ]} className="mb-6" />
+        <div className="text-center py-12">
+          <BookOpen className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+          <h2 className="text-2xl font-semibold mb-2">Course not found</h2>
+          <p className="text-muted-foreground mb-6">The course you're looking for doesn't exist or has been removed.</p>
+          <Button onClick={() => navigate("/courses")}>Browse Courses</Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-8">
+      {/* Breadcrumb Navigation */}
+      <Breadcrumb items={[
+        { label: "Courses", href: "/courses" },
+        { label: course.title, current: true }
+      ]} />
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-2xl p-8 shadow-lg">
         <div className="max-w-3xl">

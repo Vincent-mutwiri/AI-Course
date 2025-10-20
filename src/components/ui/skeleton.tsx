@@ -15,20 +15,24 @@ function Skeleton({
 // Course Card Skeleton
 function CourseCardSkeleton() {
   return (
-    <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
+    <div className="rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden">
+      {/* Thumbnail Skeleton */}
+      <Skeleton className="h-48 w-full" />
+      
+      {/* Content Skeleton */}
       <div className="p-6 space-y-4">
         <div className="space-y-2">
           <Skeleton className="h-6 w-3/4" />
           <Skeleton className="h-4 w-1/2" />
         </div>
-        <Skeleton className="h-16 w-full" />
+        <Skeleton className="h-12 w-full" />
         <div className="flex items-center gap-4">
           <Skeleton className="h-4 w-16" />
           <Skeleton className="h-4 w-20" />
         </div>
         <div className="flex gap-2">
-          <Skeleton className="h-6 w-16" />
-          <Skeleton className="h-6 w-20" />
+          <Skeleton className="h-6 w-16 rounded-full" />
+          <Skeleton className="h-6 w-20 rounded-full" />
         </div>
         <Skeleton className="h-10 w-full" />
       </div>

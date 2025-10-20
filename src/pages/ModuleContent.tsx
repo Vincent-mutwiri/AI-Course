@@ -6,6 +6,7 @@ import api from '@/services/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2, ArrowLeft, Clock, CheckCircle2 } from 'lucide-react';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { ContentRenderer } from '@/components/modules/ContentRenderer';
 import { InteractiveElement } from '@/components/modules/InteractiveElement';
 import { InteractiveElementRouter } from '@/components/interactive/InteractiveElementRouter';
@@ -178,6 +179,16 @@ const ModuleContent = () => {
 
   return (
     <div className="container mx-auto py-8 px-4">
+      {/* Breadcrumb Navigation */}
+      <Breadcrumb 
+        items={[
+          { label: "Courses", href: "/courses" },
+          { label: course.title, href: `/course/${courseId}` },
+          { label: module.title, current: true }
+        ]} 
+        className="mb-6" 
+      />
+      
       <Button
         variant="ghost"
         className="mb-6"

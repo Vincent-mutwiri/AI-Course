@@ -21,7 +21,22 @@ import HelpPage from "./pages/HelpPage";
 function App() {
   return (
     <>
-      <Toaster position="top-right" richColors />
+      <Toaster 
+        position="top-right" 
+        richColors 
+        expand={true}
+        visibleToasts={4}
+        closeButton
+        toastOptions={{
+          style: {
+            background: 'hsl(var(--background))',
+            border: '1px solid hsl(var(--border))',
+            color: 'hsl(var(--foreground))',
+          },
+          className: 'my-toast',
+          duration: 4000,
+        }}
+      />
       <Routes>
       <Route element={<Layout />}>
         <Route path="/" element={<HomePage />} />

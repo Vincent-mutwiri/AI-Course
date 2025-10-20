@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { courseAPI } from "@/services/api";
+import { courseAPI, enrollmentAPI } from "@/services/api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,10 +17,16 @@ interface Course {
   level: string;
   totalDuration: number;
   enrolledCount: number;
+  thumbnail?: string;
+}
+
+interface CourseWithProgress extends Course {
+  progress?: number;
+  isEnrolled?: boolean;
 }
 
 export default function CoursesPage() {
-  const [courses, setCourses] = useState<Course[]>([]);
+  const [courses, setCourses] = useState<CourseWithProgress[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
@@ -31,7 +37,22 @@ export default function CoursesPage() {
     const fetchCourses = async () => {
       try {
         const { courses } = await courseAPI.getAll();
-        setCourses(courses);
+        // Fetch enrollment data to show progress
+        try {
+          const { courses: enrolledCourses } = await enrollmentAPI.getMyCourses();
+          const coursesWithProgress = courses.map((course: Course) => {
+            const enrollment = enrolledCourses?.find((ec: any) => ec.course._id === course._id);
+            return {
+              ...course,
+              progress: enrollment?.progress || 0,
+              isEnrolled: !!enrollment
+            };
+          });
+          setCourses(coursesWithProgress);
+        } catch {
+          // User not logged in or no enrollments
+          setCourses(courses);
+        }
       } catch (error) {
         console.error("Failed to fetch courses", error);
       } finally {
@@ -207,15 +228,63 @@ export default function CoursesPage() {
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {filteredAndSortedCourses.map((course) => (
-            <Card key={course._id} className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <CardTitle className="line-clamp-2">{course.title}</CardTitle>
-                <CardDescription>{course.instructor}</CardDescription>
+            <Card key={course._id} className="hover:shadow-lg transition-shadow overflow-hidden">
+              {/* Course Thumbnail */}
+              <div className="relative h-48 bg-gradient-to-br from-primary/20 to-accent/20">
+                {course.thumbnail ? (
+                  <img
+                    src={course.thumbnail}
+                    alt={course.title}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      // Fallback to gradient background if image fails to load
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <BookOpen className="h-16 w-16 text-primary/40" />
+                  </div>
+                )}
+                
+                {/* Progress Indicator */}
+                {course.isEnrolled && course.progress !== undefined && (
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/50 backdrop-blur-sm p-2">
+                    <div className="flex items-center justify-between text-white text-xs mb-1">
+                      <span>Progress</span>
+                      <span>{Math.round(course.progress)}%</span>
+                    </div>
+                    <div className="w-full bg-white/20 rounded-full h-1.5">
+                      <div 
+                        className="bg-white rounded-full h-1.5 transition-all duration-300"
+                        style={{ width: `${course.progress}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+                
+                {/* Enrollment Badge */}
+                {course.isEnrolled && (
+                  <div className="absolute top-2 right-2">
+                    <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full font-medium">
+                      Enrolled
+                    </span>
+                  </div>
+                )}
+              </div>
+              
+              <CardHeader className="pb-3">
+                <CardTitle className="line-clamp-2 text-lg">{course.title}</CardTitle>
+                <CardDescription className="flex items-center gap-1">
+                  <span>{course.instructor}</span>
+                </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-sm text-muted-foreground line-clamp-3">
+              
+              <CardContent className="space-y-4 pt-0">
+                <p className="text-sm text-muted-foreground line-clamp-2">
                   {course.description}
                 </p>
+                
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
                   <div className="flex items-center gap-1">
                     <Clock className="h-4 w-4" />
@@ -226,16 +295,20 @@ export default function CoursesPage() {
                     {course.enrolledCount} enrolled
                   </div>
                 </div>
+                
                 <div className="flex gap-2">
-                  <span className="text-xs px-2 py-1 bg-primary/10 text-primary rounded-full">
+                  <span className="text-xs px-2 py-1 bg-primary/10 text-primary rounded-full font-medium">
                     {course.level}
                   </span>
-                  <span className="text-xs px-2 py-1 bg-secondary text-secondary-foreground rounded-full">
+                  <span className="text-xs px-2 py-1 bg-secondary text-secondary-foreground rounded-full font-medium">
                     {course.category}
                   </span>
                 </div>
+                
                 <Button asChild className="w-full">
-                  <Link to={`/course/${course._id}`}>View Course</Link>
+                  <Link to={`/course/${course._id}`}>
+                    {course.isEnrolled ? 'Continue Learning' : 'View Course'}
+                  </Link>
                 </Button>
               </CardContent>
             </Card>
