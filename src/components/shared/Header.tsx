@@ -34,7 +34,7 @@ export default function Header() {
       <div className="container h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
           <BookOpen className="h-6 w-6" />
-          <span className="font-bold text-lg">LearnPlatform</span>
+          <span className="font-bold text-lg">Benki ya maarifa</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-2">
