@@ -1,11 +1,14 @@
 import { Card } from "@/components/ui/card";
 import { CheckCircle2, XCircle, AlertCircle, Circle } from "lucide-react";
+import { VideoPlayer } from "@/components/shared/VideoPlayer";
 
 interface ContentSection {
   type: string;
   title?: string;
   subtitle?: string;
   content?: string;
+  s3Key?: string;
+  duration?: string;
   [key: string]: any;
 }
 
@@ -14,6 +17,7 @@ export const ContentRenderer = ({ sections }: { sections: ContentSection[] }) =>
     <div className="space-y-6">
       {sections.map((section, idx) => (
         <div key={idx}>
+          {section.type === "video" && <VideoSection {...section} />}
           {section.type === "text" && <TextSection {...section} />}
           {section.type === "scenarios" && <ScenariosSection {...section} />}
           {section.type === "comparison" && <ComparisonSection {...section} />}
@@ -27,6 +31,15 @@ export const ContentRenderer = ({ sections }: { sections: ContentSection[] }) =>
     </div>
   );
 };
+
+const VideoSection = ({ s3Key, title, duration }: ContentSection) => (
+  <div className="space-y-2">
+    <VideoPlayer s3Key={s3Key} title={title || "Lesson Video"} />
+    {duration && (
+      <p className="text-sm text-muted-foreground">Duration: {duration}</p>
+    )}
+  </div>
+);
 
 const TextSection = ({ title, content }: ContentSection) => (
   <div>

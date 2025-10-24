@@ -212,4 +212,24 @@ export const adminAPI = {
   },
 };
 
+export const mediaAPI = {
+  getPresignedUrl: async (s3Key: string) => {
+    const { data } = await api.get("/media/url", { params: { key: s3Key } });
+    return data;
+  },
+  uploadVideo: async (file: File, folder: string = "videos") => {
+    const formData = new FormData();
+    formData.append("video", file);
+    formData.append("folder", folder);
+    const { data } = await api.post("/media/upload/video", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return data;
+  },
+  deleteMedia: async (s3Key: string) => {
+    const { data } = await api.delete("/media/delete", { data: { key: s3Key } });
+    return data;
+  },
+};
+
 export default api;

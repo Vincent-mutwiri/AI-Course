@@ -7,6 +7,8 @@ import { EthicalDilemmaSolver } from './EthicalDilemmaSolver';
 import { BuildABot } from './BuildABot';
 import { DataDashboard } from './DataDashboard';
 import { AIJourney } from './AIJourney';
+import { PollComponent } from './PollComponent';
+import { DesignFixerComponent } from './DesignFixerComponent';
 import { ErrorBoundary } from '@/components/shared/ErrorBoundary';
 import { CardSkeleton } from '@/components/shared/Skeleton';
 
@@ -36,6 +38,8 @@ const ALL_COMPONENTS = {
   DataDashboard,
   AIJourney,
   AIGeneratorComponent,
+  PollComponent,
+  DesignFixerComponent,
   ConceptMap,
   CertificateGenerator,
 };
@@ -49,6 +53,24 @@ export const InteractiveElementRouter = ({ element }: InteractiveElementProps) =
   
   const renderElement = () => {
     switch (element.type) {
+      case 'poll':
+        return <PollComponent pollData={element} />;
+      
+      case 'designFixer':
+        return <DesignFixerComponent fixerData={element} />;
+      
+      case 'reflection':
+        return (
+          <div className="p-6 border-2 border-dashed rounded-lg bg-muted/30">
+            <h3 className="text-lg font-semibold mb-3">Reflection Prompt</h3>
+            <p className="text-muted-foreground mb-4">{element.prompt}</p>
+            <textarea
+              className="w-full min-h-[120px] p-3 border rounded-md resize-y"
+              placeholder="Type your reflection here..."
+            />
+          </div>
+        );
+      
       case 'visualTokens':
         return <VisualTokens />;
       

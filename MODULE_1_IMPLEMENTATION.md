@@ -166,10 +166,17 @@ The page will automatically:
 3. ✅ Test interactive elements
 4. ✅ Complete quizzes
 
+### Recent Additions (Module 1 Interactive Components)
+- ✅ **VideoPlayer Component** - Video playback with admin upload/delete controls
+- ✅ **PollComponent** - Interactive polls with simulated community results
+- ✅ **DesignFixerComponent** - Cognitive load challenge with hotspot detection
+- ✅ **Reflection Component** - Simple text-based reflection prompts
+- ✅ **Media API Routes** - Pre-signed URLs, video upload, and deletion
+- ✅ **Dialog UI Component** - Modal dialogs for admin actions
+
 ### Future Enhancements
 - [ ] Add progress persistence (save user answers)
 - [ ] Add certificate generation on completion
-- [ ] Add video content support
 - [ ] Add discussion forums per lesson
 - [ ] Add AI tutor integration for questions
 - [ ] Add downloadable resources
