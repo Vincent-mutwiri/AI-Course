@@ -1,7 +1,19 @@
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, AlertCircle } from "lucide-react";
+import { CheckCircle, AlertCircle, Settings } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { ImageUploader } from "@/components/shared/ImageUploader";
+import { useAuth } from "@/context/AuthContext";
+import { HotspotEditor } from "@/components/admin/HotspotEditor";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 interface Hotspot {
   id: string;
@@ -20,17 +32,48 @@ interface DesignFixerComponentProps {
     goodSlideUrl: string;
     hotspots: Hotspot[];
   };
+  onUpdate?: (updatedData: any) => void;
 }
 
-export const DesignFixerComponent: React.FC<DesignFixerComponentProps> = ({ fixerData }) => {
+export const DesignFixerComponent: React.FC<DesignFixerComponentProps> = ({ fixerData, onUpdate }) => {
   const [foundHotspots, setFoundHotspots] = useState<string[]>([]);
   const [lastFeedback, setLastFeedback] = useState<string>(
     `Click on the ${fixerData.hotspots.length} parts of this slide that create 'bad' cognitive load.`
   );
+  const [badSlideUrl, setBadSlideUrl] = useState(fixerData.badSlideUrl);
+  const [goodSlideUrl, setGoodSlideUrl] = useState(fixerData.goodSlideUrl);
+  const [hotspots, setHotspots] = useState<Hotspot[]>(fixerData.hotspots);
+  const [editorOpen, setEditorOpen] = useState(false);
 
-  const totalHotspots = fixerData.hotspots.length;
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin";
+
+  const totalHotspots = hotspots.length;
   const allFound = foundHotspots.length === totalHotspots;
   const progress = (foundHotspots.length / totalHotspots) * 100;
+
+  const handleBadSlideUpdate = (url: string) => {
+    setBadSlideUrl(url);
+    if (onUpdate) {
+      onUpdate({ ...fixerData, badSlideUrl: url, hotspots });
+    }
+  };
+
+  const handleGoodSlideUpdate = (url: string) => {
+    setGoodSlideUrl(url);
+    if (onUpdate) {
+      onUpdate({ ...fixerData, goodSlideUrl: url, hotspots });
+    }
+  };
+
+  const handleHotspotsSave = (updatedHotspots: Hotspot[]) => {
+    setHotspots(updatedHotspots);
+    setLastFeedback(`Click on the ${updatedHotspots.length} parts of this slide that create 'bad' cognitive load.`);
+    if (onUpdate) {
+      onUpdate({ badSlideUrl, goodSlideUrl, hotspots: updatedHotspots });
+    }
+    setEditorOpen(false);
+  };
 
   const handleClick = (hotspot: Hotspot) => {
     if (allFound || foundHotspots.includes(hotspot.id)) return;
@@ -46,10 +89,37 @@ export const DesignFixerComponent: React.FC<DesignFixerComponentProps> = ({ fixe
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Design Fixer Challenge</CardTitle>
-        <CardDescription>
-          Find the cognitive load issues in this slide design
-        </CardDescription>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>Design Fixer Challenge</CardTitle>
+            <CardDescription>
+              Find the cognitive load issues in this slide design
+            </CardDescription>
+          </div>
+          {isAdmin && (
+            <Dialog open={editorOpen} onOpenChange={setEditorOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Settings className="h-4 w-4 mr-2" />
+                  Edit Hotspots
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>Hotspot Editor</DialogTitle>
+                  <DialogDescription>
+                    Adjust hotspot positions and feedback for the Design Fixer challenge
+                  </DialogDescription>
+                </DialogHeader>
+                <HotspotEditor
+                  imageUrl={badSlideUrl}
+                  hotspots={hotspots}
+                  onSave={handleHotspotsSave}
+                />
+              </DialogContent>
+            </Dialog>
+          )}
+        </div>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Progress Indicator */}
@@ -83,22 +153,32 @@ export const DesignFixerComponent: React.FC<DesignFixerComponentProps> = ({ fixe
 
         {/* Bad Slide Container */}
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold">
-            {allFound ? "Before (Issues Found)" : "Find the Issues"}
-          </h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold">
+              {allFound ? "Before (Issues Found)" : "Find the Issues"}
+            </h3>
+            {isAdmin && (
+              <ImageUploader
+                currentUrl={badSlideUrl}
+                onImageUpdate={handleBadSlideUpdate}
+                label="Bad Slide"
+                folder="design-fixer"
+              />
+            )}
+          </div>
           <div
             className={`relative w-full max-w-3xl mx-auto transition-all duration-500 ${
               allFound ? "opacity-60 scale-95" : "opacity-100 scale-100"
             }`}
           >
             <img
-              src={fixerData.badSlideUrl}
+              src={badSlideUrl}
               alt="Slide with design issues"
               className="w-full h-auto rounded-md shadow-lg"
             />
 
             {/* Hotspot Overlays */}
-            {fixerData.hotspots.map((hotspot) => {
+            {hotspots.map((hotspot) => {
               const isFound = foundHotspots.includes(hotspot.id);
               return (
                 <button
@@ -133,13 +213,23 @@ export const DesignFixerComponent: React.FC<DesignFixerComponentProps> = ({ fixe
         {allFound && (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-8 duration-700">
             <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-            <h3 className="text-lg font-semibold text-green-600 dark:text-green-400 flex items-center gap-2">
-              <CheckCircle className="h-5 w-5" />
-              After (Fixed Version)
-            </h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-green-600 dark:text-green-400 flex items-center gap-2">
+                <CheckCircle className="h-5 w-5" />
+                After (Fixed Version)
+              </h3>
+              {isAdmin && (
+                <ImageUploader
+                  currentUrl={goodSlideUrl}
+                  onImageUpdate={handleGoodSlideUpdate}
+                  label="Good Slide"
+                  folder="design-fixer"
+                />
+              )}
+            </div>
             <div className="relative w-full max-w-3xl mx-auto">
               <img
-                src={fixerData.goodSlideUrl}
+                src={goodSlideUrl}
                 alt="Slide with improved design"
                 className="w-full h-auto rounded-md shadow-xl ring-2 ring-green-500/50"
               />

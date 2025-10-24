@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle2 } from "lucide-react";
@@ -25,10 +25,27 @@ export const PollComponent: React.FC<PollComponentProps> = ({ pollData }) => {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
+  // Load saved response from localStorage
+  useEffect(() => {
+    const savedResponse = localStorage.getItem(`poll_${pollData.question}`);
+    if (savedResponse) {
+      const { selectedId: saved, isSubmitted: submitted } = JSON.parse(savedResponse);
+      setSelectedId(saved);
+      setIsSubmitted(submitted);
+    }
+  }, [pollData.question]);
+
   const handleSelect = (optionId: string) => {
     if (isSubmitted) return;
     setSelectedId(optionId);
     setIsSubmitted(true);
+    
+    // Save response to localStorage
+    localStorage.setItem(`poll_${pollData.question}`, JSON.stringify({
+      selectedId: optionId,
+      isSubmitted: true,
+      timestamp: new Date().toISOString()
+    }));
   };
 
   return (

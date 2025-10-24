@@ -12,12 +12,28 @@ interface ContentSection {
   [key: string]: any;
 }
 
-export const ContentRenderer = ({ sections }: { sections: ContentSection[] }) => {
+interface ContentRendererProps {
+  sections: ContentSection[];
+  courseId?: string;
+  moduleId?: string;
+  lessonIndex?: number;
+  onContentUpdate?: () => void;
+}
+
+export const ContentRenderer = ({ sections, courseId, moduleId, lessonIndex, onContentUpdate }: ContentRendererProps) => {
   return (
     <div className="space-y-6">
       {sections.map((section, idx) => (
         <div key={idx}>
-          {section.type === "video" && <VideoSection {...section} />}
+          {section.type === "video" && (
+            <VideoSection 
+              {...section} 
+              courseId={courseId}
+              moduleId={moduleId}
+              lessonIndex={lessonIndex}
+              onContentUpdate={onContentUpdate}
+            />
+          )}
           {section.type === "text" && <TextSection {...section} />}
           {section.type === "scenarios" && <ScenariosSection {...section} />}
           {section.type === "comparison" && <ComparisonSection {...section} />}
@@ -32,14 +48,96 @@ export const ContentRenderer = ({ sections }: { sections: ContentSection[] }) =>
   );
 };
 
-const VideoSection = ({ s3Key, title, duration }: ContentSection) => (
-  <div className="space-y-2">
-    <VideoPlayer s3Key={s3Key} title={title || "Lesson Video"} />
-    {duration && (
-      <p className="text-sm text-muted-foreground">Duration: {duration}</p>
-    )}
-  </div>
-);
+interface VideoSectionProps extends ContentSection {
+  courseId?: string;
+  moduleId?: string;
+  lessonIndex?: number;
+  onContentUpdate?: () => void;
+}
+
+const VideoSection = ({ s3Key, title, duration, courseId, moduleId, lessonIndex, onContentUpdate }: VideoSectionProps) => {
+  const handleVideoUpdate = async (newS3Key: string) => {
+    // Update the lesson content in the database
+    if (courseId && moduleId !== undefined && lessonIndex !== undefined) {
+      try {
+        // Call admin API to update the lesson content
+        const { adminAPI } = await import("@/services/api");
+        const { courseAPI } = await import("@/services/api");
+        
+        // Fetch current course
+        const { course } = await courseAPI.getById(courseId);
+        
+        // Find the module and lesson
+        const moduleToUpdate = course.modules.find((m: any) => m._id === moduleId);
+        if (moduleToUpdate && moduleToUpdate.lessons[lessonIndex]) {
+          // Update the video s3Key in the content array
+          const lesson = moduleToUpdate.lessons[lessonIndex];
+          if (Array.isArray(lesson.content)) {
+            const videoContent = lesson.content.find((c: any) => c.type === 'video');
+            if (videoContent) {
+              videoContent.s3Key = newS3Key;
+            }
+          }
+          
+          // Save the updated course
+          await adminAPI.updateCourse(courseId, course);
+          
+          // Trigger refresh
+          if (onContentUpdate) {
+            onContentUpdate();
+          }
+        }
+      } catch (error) {
+        console.error("Failed to update video in database:", error);
+      }
+    }
+  };
+
+  const handleVideoDelete = async () => {
+    // Remove the video from lesson content
+    if (courseId && moduleId !== undefined && lessonIndex !== undefined) {
+      try {
+        const { adminAPI } = await import("@/services/api");
+        const { courseAPI } = await import("@/services/api");
+        
+        const { course } = await courseAPI.getById(courseId);
+        const moduleToUpdate = course.modules.find((m: any) => m._id === moduleId);
+        
+        if (moduleToUpdate && moduleToUpdate.lessons[lessonIndex]) {
+          const lesson = moduleToUpdate.lessons[lessonIndex];
+          if (Array.isArray(lesson.content)) {
+            const videoContent = lesson.content.find((c: any) => c.type === 'video');
+            if (videoContent) {
+              videoContent.s3Key = undefined;
+            }
+          }
+          
+          await adminAPI.updateCourse(courseId, course);
+          
+          if (onContentUpdate) {
+            onContentUpdate();
+          }
+        }
+      } catch (error) {
+        console.error("Failed to delete video from database:", error);
+      }
+    }
+  };
+
+  return (
+    <div className="space-y-2">
+      <VideoPlayer 
+        s3Key={s3Key} 
+        title={title || "Lesson Video"}
+        onVideoUpdate={handleVideoUpdate}
+        onVideoDelete={handleVideoDelete}
+      />
+      {duration && (
+        <p className="text-sm text-muted-foreground">Duration: {duration}</p>
+      )}
+    </div>
+  );
+};
 
 const TextSection = ({ title, content }: ContentSection) => (
   <div>

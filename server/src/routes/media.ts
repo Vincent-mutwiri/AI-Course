@@ -87,6 +87,46 @@ router.post(
   }
 );
 
+// Upload image (admin only)
+router.post(
+  "/upload/image",
+  authenticate,
+  requireAdmin,
+  upload.single("image"),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      const { folder = "images" } = req.body;
+      const timestamp = Date.now();
+      const fileName = `${folder}/${timestamp}_${req.file.originalname}`;
+
+      const command = new PutObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: fileName,
+        Body: req.file.buffer,
+        ContentType: req.file.mimetype,
+      });
+
+      await s3Client.send(command);
+
+      // Generate public URL
+      const publicUrl = `https://${BUCKET_NAME}.s3.amazonaws.com/${fileName}`;
+
+      res.status(201).json({
+        message: "Image uploaded successfully",
+        s3Key: fileName,
+        url: publicUrl,
+      });
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      res.status(500).json({ message: "Failed to upload image" });
+    }
+  }
+);
+
 // Delete media (admin only)
 router.delete("/delete", authenticate, requireAdmin, async (req: AuthRequest, res: Response) => {
   try {

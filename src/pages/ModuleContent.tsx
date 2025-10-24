@@ -51,9 +51,15 @@ const ModuleContent = () => {
   const [currentLesson, setCurrentLesson] = useState(0);
   const [progress, setProgress] = useState<any>(null);
   const [completedLessons, setCompletedLessons] = useState<number[]>([]);
+  const [refreshKey, setRefreshKey] = useState(0);
   const navigate = useNavigate();
 
   const module = course?.modules?.find((m: CourseModule) => m._id === moduleId);
+
+  const handleContentUpdate = () => {
+    // Refresh the course data
+    setRefreshKey(prev => prev + 1);
+  };
 
   useEffect(() => {
     if (!module) return;
@@ -105,7 +111,7 @@ const ModuleContent = () => {
     };
     
     fetchData();
-  }, [courseId, moduleId]);
+  }, [courseId, moduleId, refreshKey]);
 
   const lesson = module?.lessons?.[currentLesson];
 
@@ -236,8 +242,14 @@ const ModuleContent = () => {
               </div>
 
               {/* Lesson Content */}
-              {lesson.content?.sections && (
-                <ContentRenderer sections={lesson.content.sections} />
+              {lesson.content && (
+                <ContentRenderer 
+                  sections={Array.isArray(lesson.content) ? lesson.content : lesson.content.sections || []}
+                  courseId={courseId}
+                  moduleId={moduleId}
+                  lessonIndex={currentLesson}
+                  onContentUpdate={handleContentUpdate}
+                />
               )}
 
               {/* Interactive Element */}

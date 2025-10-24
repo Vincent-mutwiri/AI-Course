@@ -24,7 +24,7 @@ async function addModule1Content() {
       return;
     }
 
-    // Update Module 1, Lesson 1.1 with video and poll
+    // Update Module 1, Lesson 1.1 with video, core concept, and poll
     if (course.modules[0] && course.modules[0].lessons[0]) {
       course.modules[0].lessons[0].content = [
         {
@@ -32,6 +32,22 @@ async function addModule1Content() {
           s3Key: "videos/lesson_1_1_hook.mp4", // Admin will upload this
           title: "The 'Forgotten Lesson' Hook",
           duration: "2 min"
+        },
+        {
+          type: "text",
+          title: "What is Learning Science?",
+          content: "Learning Science is the practical study of what makes learning stick. It combines insights from cognitive psychology, neuroscience, and education research to understand how people learn most effectively. Rather than relying on intuition or tradition, Learning Science gives us evidence-based strategies to help students retain information, develop skills, and transfer knowledge to new situations."
+        },
+        {
+          type: "callout",
+          style: "info",
+          title: "Core Definition",
+          content: "Learning Science = Understanding how the brain processes, stores, and retrieves information + Applying that knowledge to create better learning experiences."
+        },
+        {
+          type: "text",
+          title: "Why It Matters for Educators",
+          content: "As educators, we often see students struggle to remember what we taught them last week, last month, or even yesterday. This isn't because our students aren't trying hard enough—it's because traditional teaching methods don't always align with how the brain actually learns. Learning Science provides a roadmap for designing instruction that works with the brain, not against it."
         }
       ];
 
@@ -52,13 +68,35 @@ async function addModule1Content() {
       ];
     }
 
-    // Update Module 1, Lesson 1.2 with Design Fixer interactive
+    // Update Module 1, Lesson 1.2 with comprehensive content and Design Fixer
     if (course.modules[0] && course.modules[0].lessons[1]) {
       course.modules[0].lessons[1].content = [
         {
           type: "text",
-          title: "Understanding Cognitive Load",
-          content: "Our brains have limited working memory capacity. When we overload students with too much information at once, or present it in confusing ways, we create unnecessary cognitive load that prevents learning."
+          title: "The Brain's Bottleneck: Understanding Cognitive Load",
+          content: "Imagine your brain's working memory as a small desk where you process new information. This desk can only hold 3-5 items at once. When we try to cram too much onto this desk—complex jargon, cluttered visuals, confusing layouts—students can't process the actual learning. This is cognitive load in action."
+        },
+        {
+          type: "callout",
+          style: "warning",
+          title: "The Problem",
+          content: "Traditional teaching often creates EXTRANEOUS cognitive load—mental effort wasted on poor design, confusing presentation, or irrelevant information—instead of GERMANE cognitive load, which is the good kind that helps students build understanding."
+        },
+        {
+          type: "text",
+          title: "Three Types of Cognitive Load",
+          content: "1. **Intrinsic Load**: The inherent difficulty of the content itself. (We can't change this much)\n\n2. **Extraneous Load**: Mental effort wasted on poor design, confusing presentation, or irrelevant information. (We CAN reduce this!)\n\n3. **Germane Load**: Productive mental effort that builds understanding and creates learning. (We WANT to maximize this!)"
+        },
+        {
+          type: "callout",
+          style: "success",
+          title: "The Solution",
+          content: "By reducing extraneous load (bad design, clutter, jargon), we free up mental space for germane load (actual learning). This is the core principle behind effective instructional design."
+        },
+        {
+          type: "text",
+          title: "Try It Yourself",
+          content: "In the interactive challenge below, you'll identify three common design mistakes that create unnecessary cognitive load. Click on the problem areas to see why they're problematic and how to fix them."
         }
       ];
 

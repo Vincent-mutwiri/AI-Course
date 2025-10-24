@@ -10,7 +10,7 @@ interface ILesson {
   content?: any;
   interactive?: any;
   interactiveElements?: Array<{
-    type: 'reflection' | 'visualTokens' | 'sentenceBuilder' | 'aiGenerator' | 'simulation' | 'dragAndDropQuiz' | 'buildABot' | 'ethicalSimulator';
+    type: 'reflection' | 'visualTokens' | 'sentenceBuilder' | 'aiGenerator' | 'simulation' | 'dragAndDropQuiz' | 'buildABot' | 'ethicalSimulator' | 'poll' | 'designFixer';
     [key: string]: any;
   }>;
   quiz?: any;

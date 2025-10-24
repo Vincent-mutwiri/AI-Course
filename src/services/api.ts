@@ -226,6 +226,15 @@ export const mediaAPI = {
     });
     return data;
   },
+  uploadImage: async (file: File, folder: string = "images") => {
+    const formData = new FormData();
+    formData.append("image", file);
+    formData.append("folder", folder);
+    const { data } = await api.post("/media/upload/image", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return data;
+  },
   deleteMedia: async (s3Key: string) => {
     const { data } = await api.delete("/media/delete", { data: { key: s3Key } });
     return data;

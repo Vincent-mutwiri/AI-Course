@@ -54,10 +54,10 @@ export const InteractiveElementRouter = ({ element }: InteractiveElementProps) =
   const renderElement = () => {
     switch (element.type) {
       case 'poll':
-        return <PollComponent pollData={element} />;
+        return <PollComponent pollData={element as any} />;
       
       case 'designFixer':
-        return <DesignFixerComponent fixerData={element} />;
+        return <DesignFixerComponent fixerData={element as any} />;
       
       case 'reflection':
         return (
