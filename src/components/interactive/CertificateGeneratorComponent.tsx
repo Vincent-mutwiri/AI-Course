@@ -29,25 +29,25 @@ export const CertificateGeneratorComponent: React.FC<CertificateGeneratorCompone
       });
 
       // Set up colors and fonts
-      const primaryColor = [59, 130, 246]; // Blue
-      const accentColor = [139, 92, 246]; // Purple
+      const primaryColor: [number, number, number] = [59, 130, 246]; // Blue
+      const accentColor: [number, number, number] = [139, 92, 246]; // Purple
       
       // Add decorative border
-      doc.setDrawColor(...primaryColor);
+      doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
       doc.setLineWidth(2);
       doc.rect(10, 10, 277, 190);
       
-      doc.setDrawColor(...accentColor);
+      doc.setDrawColor(accentColor[0], accentColor[1], accentColor[2]);
       doc.setLineWidth(1);
       doc.rect(15, 15, 267, 180);
 
       // Title
       doc.setFontSize(36);
-      doc.setTextColor(...primaryColor);
+      doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
       doc.text('Certificate of Completion', 148.5, 50, { align: 'center' });
 
       // Decorative line
-      doc.setDrawColor(...accentColor);
+      doc.setDrawColor(accentColor[0], accentColor[1], accentColor[2]);
       doc.setLineWidth(0.5);
       doc.line(60, 60, 237, 60);
 
@@ -58,7 +58,7 @@ export const CertificateGeneratorComponent: React.FC<CertificateGeneratorCompone
 
       // User name (larger and bold)
       doc.setFontSize(28);
-      doc.setTextColor(...primaryColor);
+      doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
       doc.setFont('helvetica', 'bold');
       doc.text(userName, 148.5, 100, { align: 'center' });
 
@@ -70,7 +70,7 @@ export const CertificateGeneratorComponent: React.FC<CertificateGeneratorCompone
 
       // Course name
       doc.setFontSize(22);
-      doc.setTextColor(...accentColor);
+      doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
       doc.setFont('helvetica', 'bold');
       doc.text(courseName, 148.5, 135, { align: 'center' });
 

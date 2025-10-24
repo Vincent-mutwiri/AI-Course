@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 
 interface WordCloudProps {
   title?: string;
-  dataKey: keyof typeof simData;
+  dataKey?: keyof typeof simData;
   description?: string;
 }
 
@@ -18,13 +18,14 @@ export const WordCloudComponent: React.FC<WordCloudProps> = ({
   const [selectedWord, setSelectedWord] = useState<string | null>(null);
   const [mapping, setMapping] = useState<string | null>(null);
 
-  const data = simData[dataKey];
+  // Default to lesson2_2_Cloud if no dataKey provided
+  const data = dataKey ? simData[dataKey] : simData.lesson2_2_Cloud;
   
   if (!data) {
     return (
       <Card className="w-full">
         <CardContent className="p-6">
-          <p className="text-destructive">Error: Could not load simulation data for "{dataKey}"</p>
+          <p className="text-destructive">Error: Could not load simulation data{dataKey ? ` for "${dataKey}"` : ''}</p>
         </CardContent>
       </Card>
     );
