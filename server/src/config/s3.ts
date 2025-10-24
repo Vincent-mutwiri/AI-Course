@@ -1,15 +1,19 @@
 import { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
+const AWS_REGION = process.env.AWS_REGION || process.env.AWS_S3_REGION || "eu-north-1";
+const BUCKET_NAME = process.env.AWS_S3_BUCKET_NAME!;
+
 const s3Client = new S3Client({
-  region: process.env.AWS_S3_REGION!,
+  region: AWS_REGION,
   credentials: {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
   },
+  forcePathStyle: false,
 });
 
-const BUCKET_NAME = process.env.AWS_S3_BUCKET_NAME!;
+console.log('[S3 Config] Initialized with region:', AWS_REGION, 'bucket:', BUCKET_NAME);
 
 export const uploadToS3 = async (file: Express.Multer.File, folder: string) => {
   const key = `${folder}/${Date.now()}-${file.originalname}`;
@@ -22,7 +26,7 @@ export const uploadToS3 = async (file: Express.Multer.File, folder: string) => {
   });
 
   await s3Client.send(command);
-  return `https://${BUCKET_NAME}.s3.${process.env.AWS_S3_REGION}.amazonaws.com/${key}`;
+  return `https://${BUCKET_NAME}.s3.${AWS_REGION}.amazonaws.com/${key}`;
 };
 
 export const deleteFromS3 = async (fileUrl: string) => {
@@ -46,7 +50,7 @@ export const getSignedUrlForUpload = async (fileName: string, fileType: string, 
   });
 
   const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
-  const fileUrl = `https://${BUCKET_NAME}.s3.${process.env.AWS_S3_REGION}.amazonaws.com/${key}`;
+  const fileUrl = `https://${BUCKET_NAME}.s3.${AWS_REGION}.amazonaws.com/${key}`;
   
   return { signedUrl, fileUrl };
 };
