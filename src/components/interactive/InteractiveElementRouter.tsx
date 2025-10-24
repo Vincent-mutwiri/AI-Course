@@ -9,6 +9,8 @@ import { DataDashboard } from './DataDashboard';
 import { AIJourney } from './AIJourney';
 import { PollComponent } from './PollComponent';
 import { DesignFixerComponent } from './DesignFixerComponent';
+import { ReflectionComponent } from './ReflectionComponent';
+import { WordCloudComponent } from './WordCloudComponent';
 import { ErrorBoundary } from '@/components/shared/ErrorBoundary';
 import { CardSkeleton } from '@/components/shared/Skeleton';
 
@@ -40,6 +42,8 @@ const ALL_COMPONENTS = {
   AIGeneratorComponent,
   PollComponent,
   DesignFixerComponent,
+  ReflectionComponent,
+  WordCloudComponent,
   ConceptMap,
   CertificateGenerator,
 };
@@ -60,16 +64,10 @@ export const InteractiveElementRouter = ({ element }: InteractiveElementProps) =
         return <DesignFixerComponent fixerData={element as any} />;
       
       case 'reflection':
-        return (
-          <div className="p-6 border-2 border-dashed rounded-lg bg-muted/30">
-            <h3 className="text-lg font-semibold mb-3">Reflection Prompt</h3>
-            <p className="text-muted-foreground mb-4">{element.prompt}</p>
-            <textarea
-              className="w-full min-h-[120px] p-3 border rounded-md resize-y"
-              placeholder="Type your reflection here..."
-            />
-          </div>
-        );
+        return <ReflectionComponent question={element.question || element.prompt || "Reflect on this lesson"} {...element} />;
+      
+      case 'wordCloud':
+        return <WordCloudComponent {...element} />;
       
       case 'visualTokens':
         return <VisualTokens />;
