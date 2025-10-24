@@ -17,6 +17,8 @@ import { CardSkeleton } from '@/components/shared/Skeleton';
 
 const ConceptMap = lazy(() => import('./ConceptMap').then(m => ({ default: m.ConceptMap })));
 const CertificateGenerator = lazy(() => import('./CertificateGenerator').then(m => ({ default: m.CertificateGenerator })));
+const AIJourneyComponent = lazy(() => import('./AIJourneyComponent').then(m => ({ default: m.AIJourneyComponent })));
+const FinalAssessmentComponent = lazy(() => import('./FinalAssessmentComponent').then(m => ({ default: m.FinalAssessmentComponent })));
 
 interface InteractiveElementProps {
   element: {
@@ -48,6 +50,8 @@ const ALL_COMPONENTS = {
   ChoiceComparisonComponent,
   ConceptMap,
   CertificateGenerator,
+  AIJourneyComponent,
+  FinalAssessmentComponent,
 };
 
 // Prevent tree-shaking by referencing all components
@@ -119,6 +123,20 @@ export const InteractiveElementRouter = ({ element }: InteractiveElementProps) =
           default:
             return <div>Unknown simulation type: {element.simulationType}</div>;
         }
+      
+      case 'journeyTimeline':
+        return (
+          <Suspense fallback={<CardSkeleton />}>
+            <AIJourneyComponent data={element} />
+          </Suspense>
+        );
+      
+      case 'finalAssessment':
+        return (
+          <Suspense fallback={<CardSkeleton />}>
+            <FinalAssessmentComponent data={element as any} />
+          </Suspense>
+        );
       
       default:
         return <div>Unknown interactive element type: {element.type}</div>;
