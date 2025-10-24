@@ -11,6 +11,7 @@ import { PollComponent } from './PollComponent';
 import { DesignFixerComponent } from './DesignFixerComponent';
 import { ReflectionComponent } from './ReflectionComponent';
 import { WordCloudComponent } from './WordCloudComponent';
+import { ChoiceComparisonComponent } from './ChoiceComparisonComponent';
 import { ErrorBoundary } from '@/components/shared/ErrorBoundary';
 import { CardSkeleton } from '@/components/shared/Skeleton';
 
@@ -44,6 +45,7 @@ const ALL_COMPONENTS = {
   DesignFixerComponent,
   ReflectionComponent,
   WordCloudComponent,
+  ChoiceComparisonComponent,
   ConceptMap,
   CertificateGenerator,
 };
@@ -68,6 +70,9 @@ export const InteractiveElementRouter = ({ element }: InteractiveElementProps) =
       
       case 'wordCloud':
         return <WordCloudComponent {...element} />;
+      
+      case 'choiceComparison':
+        return <ChoiceComparisonComponent data={element as any} />;
       
       case 'visualTokens':
         return <VisualTokens />;
