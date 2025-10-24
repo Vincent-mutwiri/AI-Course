@@ -126,9 +126,21 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       // Refresh the video URL
       const { url } = await mediaAPI.getPresignedUrl(newS3Key);
       setVideoUrl(url);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error uploading video:", err);
-      setError("Failed to upload video");
+      
+      // Extract detailed error message
+      let errorMessage = "Failed to upload video";
+      if (err.response?.data?.message) {
+        errorMessage = err.response.data.message;
+        if (err.response.data.details) {
+          errorMessage += `: ${err.response.data.details}`;
+        }
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      setError(errorMessage);
     } finally {
       setUploading(false);
       if (fileInputRef.current) {

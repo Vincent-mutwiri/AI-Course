@@ -7,16 +7,28 @@ import multer from "multer";
 
 const router = Router();
 
+// Validate AWS credentials
+const AWS_REGION = process.env.AWS_REGION || "us-east-1";
+const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID || "";
+const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY || "";
+const BUCKET_NAME = process.env.AWS_S3_BUCKET_NAME || "";
+
+if (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY || !BUCKET_NAME) {
+  console.error('[Media] AWS credentials not configured properly:');
+  console.error('[Media] - AWS_ACCESS_KEY_ID:', AWS_ACCESS_KEY_ID ? 'Set' : 'Missing');
+  console.error('[Media] - AWS_SECRET_ACCESS_KEY:', AWS_SECRET_ACCESS_KEY ? 'Set' : 'Missing');
+  console.error('[Media] - AWS_S3_BUCKET_NAME:', BUCKET_NAME || 'Missing');
+  console.error('[Media] - AWS_REGION:', AWS_REGION);
+}
+
 // Configure S3 client
 const s3Client = new S3Client({
-  region: process.env.AWS_REGION || "us-east-1",
+  region: AWS_REGION,
   credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "",
+    accessKeyId: AWS_ACCESS_KEY_ID,
+    secretAccessKey: AWS_SECRET_ACCESS_KEY,
   },
 });
-
-const BUCKET_NAME = process.env.AWS_S3_BUCKET_NAME || "";
 
 // Configure multer for memory storage
 const upload = multer({
@@ -58,13 +70,32 @@ router.post(
   upload.single("video"),
   async (req: AuthRequest, res: Response) => {
     try {
+      console.log('[Media] Video upload request from user:', req.userId);
+      
+      if (!BUCKET_NAME || !AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY) {
+        console.error('[Media] AWS credentials not configured');
+        return res.status(500).json({ 
+          message: "Server configuration error: AWS credentials not set",
+          details: "Please contact the administrator"
+        });
+      }
+      
       if (!req.file) {
+        console.log('[Media] No file in request');
         return res.status(400).json({ message: "No file uploaded" });
       }
+
+      console.log('[Media] File details:', {
+        originalname: req.file.originalname,
+        mimetype: req.file.mimetype,
+        size: req.file.size
+      });
 
       const { folder = "videos" } = req.body;
       const timestamp = Date.now();
       const fileName = `${folder}/${timestamp}_${req.file.originalname}`;
+
+      console.log('[Media] Uploading to S3:', fileName);
 
       const command = new PutObjectCommand({
         Bucket: BUCKET_NAME,
@@ -75,14 +106,21 @@ router.post(
 
       await s3Client.send(command);
 
+      console.log('[Media] Video uploaded successfully:', fileName);
+
       res.status(201).json({
         message: "Video uploaded successfully",
         s3Key: fileName,
         url: `https://${BUCKET_NAME}.s3.amazonaws.com/${fileName}`,
       });
     } catch (error) {
-      console.error("Error uploading video:", error);
-      res.status(500).json({ message: "Failed to upload video" });
+      console.error('[Media] Error uploading video:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      res.status(500).json({ 
+        message: "Failed to upload video",
+        error: errorMessage,
+        details: error instanceof Error ? error.stack : undefined
+      });
     }
   }
 );
@@ -95,13 +133,32 @@ router.post(
   upload.single("image"),
   async (req: AuthRequest, res: Response) => {
     try {
+      console.log('[Media] Image upload request from user:', req.userId);
+      
+      if (!BUCKET_NAME || !AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY) {
+        console.error('[Media] AWS credentials not configured');
+        return res.status(500).json({ 
+          message: "Server configuration error: AWS credentials not set",
+          details: "Please contact the administrator"
+        });
+      }
+      
       if (!req.file) {
+        console.log('[Media] No file in request');
         return res.status(400).json({ message: "No file uploaded" });
       }
+
+      console.log('[Media] File details:', {
+        originalname: req.file.originalname,
+        mimetype: req.file.mimetype,
+        size: req.file.size
+      });
 
       const { folder = "images" } = req.body;
       const timestamp = Date.now();
       const fileName = `${folder}/${timestamp}_${req.file.originalname}`;
+
+      console.log('[Media] Uploading to S3:', fileName);
 
       const command = new PutObjectCommand({
         Bucket: BUCKET_NAME,
@@ -112,6 +169,8 @@ router.post(
 
       await s3Client.send(command);
 
+      console.log('[Media] Image uploaded successfully:', fileName);
+
       // Generate public URL
       const publicUrl = `https://${BUCKET_NAME}.s3.amazonaws.com/${fileName}`;
 
@@ -121,8 +180,13 @@ router.post(
         url: publicUrl,
       });
     } catch (error) {
-      console.error("Error uploading image:", error);
-      res.status(500).json({ message: "Failed to upload image" });
+      console.error('[Media] Error uploading image:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      res.status(500).json({ 
+        message: "Failed to upload image",
+        error: errorMessage,
+        details: error instanceof Error ? error.stack : undefined
+      });
     }
   }
 );

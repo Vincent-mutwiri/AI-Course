@@ -12,22 +12,29 @@ export const authenticate = async (
   next: NextFunction
 ) => {
   try {
-    const token = req.headers.authorization?.replace("Bearer ", "");
+    const authHeader = req.headers.authorization;
+    console.log('[Auth] Authorization header:', authHeader ? 'Present' : 'Missing');
+    
+    const token = authHeader?.replace("Bearer ", "");
 
     if (!token) {
+      console.log('[Auth] No token provided');
       return res.status(401).json({ message: "No token provided" });
     }
 
     const decoded = verifyToken(token) as { id: string; email?: string; role?: string };
 
     if (!decoded || !decoded.id) {
+      console.log('[Auth] Invalid token payload:', decoded);
       return res.status(401).json({ message: "Invalid token payload" });
     }
 
+    console.log('[Auth] Token verified for user:', decoded.id, 'role:', decoded.role);
     req.userId = decoded.id;
     req.user = { id: decoded.id, email: decoded.email || '', role: decoded.role };
     next();
   } catch (error) {
-    res.status(401).json({ message: "Invalid token" });
+    console.error('[Auth] Token verification error:', error);
+    res.status(401).json({ message: "Invalid token", error: error instanceof Error ? error.message : 'Unknown error' });
   }
 };

@@ -21,9 +21,19 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Log detailed error information
+    console.error('[API] Request failed:', {
+      url: error.config?.url,
+      method: error.config?.method,
+      status: error.response?.status,
+      message: error.response?.data?.message || error.message,
+      data: error.response?.data
+    });
+    
     if (error.response?.status === 401) {
       const currentPath = window.location.pathname;
       if (currentPath !== '/login' && currentPath !== '/signup') {
+        console.log('[API] Unauthorized - redirecting to login');
         removeToken();
         localStorage.setItem('redirectAfterLogin', currentPath);
         window.location.href = "/login";
