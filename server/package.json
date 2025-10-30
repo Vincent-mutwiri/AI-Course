@@ -5,7 +5,8 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc --skipLibCheck",
     "start": "node dist/index.js",
-    "seed": "tsx src/seed.ts"
+    "seed": "tsx src/seed.ts",
+    "seed:profile": "tsx src/seed/seed-profile.ts"
   },
   "dependencies": {
     "express": "^5.1.0",

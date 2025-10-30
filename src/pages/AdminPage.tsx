@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Users, BookOpen, GraduationCap, TrendingUp, Activity, Award, Zap } from "lucide-react";
+import { ProfileWidget } from "@/components/admin/ProfileWidget";
 
 export default function AdminPage() {
   const [stats, setStats] = useState<any>(null);
@@ -97,7 +98,16 @@ export default function AdminPage() {
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">Admin Dashboard</h1>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      {/* Main Grid Layout */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* Left Column - Profile Widget */}
+        <div className="lg:col-span-1">
+          <ProfileWidget />
+        </div>
+
+        {/* Right Column - Stats */}
+        <div className="lg:col-span-2 space-y-6">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Users</CardTitle>
@@ -137,6 +147,8 @@ export default function AdminPage() {
             <div className="text-2xl font-bold">{stats?.totalEnrollments || 0}</div>
           </CardContent>
         </Card>
+          </div>
+        </div>
       </div>
 
       {analytics && (

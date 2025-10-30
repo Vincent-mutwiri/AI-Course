@@ -15,6 +15,7 @@ import inflectionRoutes from "./routes/inflection";
 import progressRoutes from "./routes/progress";
 import analyticsRoutes from "./routes/analytics";
 import mediaRoutes from "./routes/media";
+import profileRoutes from "./routes/profile";
 
 const app = express();
 
@@ -64,6 +65,7 @@ app.use("/api/inflection-ai", inflectionRoutes);
 app.use("/api/progress", progressRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/media", mediaRoutes);
+app.use("/api/profile", profileRoutes);
 
 connectDB()
   .then(() => {

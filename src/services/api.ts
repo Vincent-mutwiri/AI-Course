@@ -251,4 +251,11 @@ export const mediaAPI = {
   },
 };
 
+export const profileAPI = {
+  getProfile: async () => {
+    const { data } = await api.get("/profile");
+    return data;
+  },
+};
+
 export default api;
