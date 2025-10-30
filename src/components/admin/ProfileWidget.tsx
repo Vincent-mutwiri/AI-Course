@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { profileAPI } from '../../services/api';
-import { User, Mail, Linkedin, MapPin, Briefcase, GraduationCap, Award } from 'lucide-react';
+import { User, Mail, Linkedin, MapPin, Briefcase, GraduationCap, Award, Github, Twitter } from 'lucide-react';
 
 interface Profile {
   name: string;
@@ -9,6 +9,8 @@ interface Profile {
     phone: string;
     email: string;
     linkedin: string;
+    github?: string;
+    twitter?: string;
   };
   professionalProfile: string;
   keySkills: string[];
@@ -45,6 +47,15 @@ export const ProfileWidget: React.FC = () => {
     };
     fetchProfile();
   }, []);
+
+  // Helper function to ensure URL has protocol
+  const ensureProtocol = (url: string | undefined): string | undefined => {
+    if (!url) return url;
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    return `https://${url}`;
+  };
 
   if (loading) {
     return (
@@ -106,14 +117,36 @@ export const ProfileWidget: React.FC = () => {
           <span className="truncate">{profile.contact.email}</span>
         </a>
         <a
-          href={`https://${profile.contact.linkedin}`}
+          href={ensureProtocol(profile.contact.linkedin)}
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center text-sm text-gray-600 hover:text-blue-600 transition-colors"
         >
           <Linkedin className="h-4 w-4 mr-2 flex-shrink-0" />
-          <span className="truncate">LinkedIn Profile</span>
+          <span className="truncate">LinkedIn</span>
         </a>
+        {profile.contact.github && (
+          <a
+            href={ensureProtocol(profile.contact.github)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center text-sm text-gray-600 hover:text-gray-900 transition-colors"
+          >
+            <Github className="h-4 w-4 mr-2 flex-shrink-0" />
+            <span className="truncate">GitHub</span>
+          </a>
+        )}
+        {profile.contact.twitter && (
+          <a
+            href={ensureProtocol(profile.contact.twitter)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center text-sm text-gray-600 hover:text-sky-600 transition-colors"
+          >
+            <Twitter className="h-4 w-4 mr-2 flex-shrink-0" />
+            <span className="truncate">X (Twitter)</span>
+          </a>
+        )}
       </div>
 
       {/* Key Skills */}

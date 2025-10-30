@@ -7,6 +7,8 @@ export interface IInstructorProfile extends Document {
     phone: string;
     email: string;
     linkedin: string;
+    github?: string;
+    twitter?: string;
   };
   professionalProfile: string;
   keySkills: string[];
@@ -32,6 +34,8 @@ const InstructorProfileSchema: Schema = new Schema(
       phone: { type: String },
       email: { type: String },
       linkedin: { type: String },
+      github: { type: String },
+      twitter: { type: String },
     },
     professionalProfile: { type: String },
     keySkills: [{ type: String }],

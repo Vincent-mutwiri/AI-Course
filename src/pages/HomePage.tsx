@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { profileAPI } from "@/services/api";
+import profileImage from "@/assets/Vincent profile.png";
 import {
   User,
   Mail,
@@ -16,6 +17,8 @@ import {
   Code,
   Lightbulb,
   Users,
+  Github,
+  Twitter,
 } from "lucide-react";
 
 interface Profile {
@@ -25,6 +28,8 @@ interface Profile {
     phone: string;
     email: string;
     linkedin: string;
+    github?: string;
+    twitter?: string;
   };
   professionalProfile: string;
   keySkills: string[];
@@ -59,6 +64,15 @@ export default function HomePage() {
     };
     fetchProfile();
   }, []);
+
+  // Helper function to ensure URL has protocol
+  const ensureProtocol = (url: string | undefined, fallback: string): string => {
+    if (!url) return fallback;
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    return `https://${url}`;
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -96,6 +110,27 @@ export default function HomePage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left Column - Profile Info */}
             <motion.div variants={itemVariants} className="space-y-6">
+              {/* Profile Image - Mobile/Tablet */}
+              <div className="lg:hidden flex justify-center mb-8">
+                <motion.div
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.5 }}
+                  className="relative"
+                >
+                  <div className="w-48 h-48 rounded-full overflow-hidden border-4 border-white shadow-2xl">
+                    <img
+                      src={profileImage}
+                      alt="Vincent Mutwiri"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="absolute -bottom-2 -right-2 w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center border-4 border-white">
+                    <Award className="h-8 w-8 text-white" />
+                  </div>
+                </motion.div>
+              </div>
+
               <div className="inline-block">
                 <span className="px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
                   Instructional Designer & EdTech Professional
@@ -144,21 +179,60 @@ export default function HomePage() {
                 </Button>
               </div>
 
-              <div className="flex gap-4 pt-2">
+              <div className="flex flex-wrap gap-4 pt-2">
                 <a
-                  href={`https://${profile?.contact.linkedin || "linkedin.com/in/vincentmutwiri"}`}
+                  href={ensureProtocol(profile?.contact.linkedin, "https://www.linkedin.com/in/vincentmutwiri/")}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors"
                 >
                   <Linkedin className="h-5 w-5" />
-                  <span>LinkedIn</span>
+                  <span className="font-medium">LinkedIn</span>
+                </a>
+                <a
+                  href={ensureProtocol(profile?.contact.github, "https://github.com/Vincent-mutwiri")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+                >
+                  <Github className="h-5 w-5" />
+                  <span className="font-medium">GitHub</span>
+                </a>
+                <a
+                  href={ensureProtocol(profile?.contact.twitter, "https://x.com/Mu_twiry")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-sky-50 text-sky-700 hover:bg-sky-100 transition-colors"
+                >
+                  <Twitter className="h-5 w-5" />
+                  <span className="font-medium">X (Twitter)</span>
                 </a>
               </div>
             </motion.div>
 
-            {/* Right Column - Stats & Highlights */}
+            {/* Right Column - Profile Image & Highlights */}
             <motion.div variants={itemVariants} className="space-y-6">
+              {/* Profile Image - Desktop */}
+              <div className="hidden lg:flex justify-center mb-8">
+                <motion.div
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                  className="relative"
+                >
+                  <div className="w-64 h-64 rounded-full overflow-hidden border-8 border-white shadow-2xl">
+                    <img
+                      src={profileImage}
+                      alt="Vincent Mutwiri"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="absolute -bottom-4 -right-4 w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center border-4 border-white shadow-lg">
+                    <Award className="h-10 w-10 text-white" />
+                  </div>
+                </motion.div>
+              </div>
+
               <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
                 <h3 className="text-2xl font-bold text-gray-900 mb-6">
                   What I Bring

@@ -12,7 +12,9 @@ const profileData = {
   contact: {
     phone: '+254715279851',
     email: 'vincentmutwir9i@email.com',
-    linkedin: 'linkedin.com/in/vincentmutwiri',
+    linkedin: 'https://www.linkedin.com/in/vincentmutwiri/',
+    github: 'https://github.com/Vincent-mutwiri',
+    twitter: 'https://x.com/Mu_twiry',
   },
   professionalProfile:
     'A results-oriented Instructional Designer and EdTech professional with a proven record of developing engaging learning experiences and innovative educational solutions. Combines hands-on teaching fellowship experience with extensive certifications in Learning Sciences, Software Product Management, and Data Storytelling. Adept at applying instructional design principles and data analysis to enhance learner outcomes and drive educational innovation.',
