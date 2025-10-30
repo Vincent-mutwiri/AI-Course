@@ -43,8 +43,22 @@ interface Profile {
     degree: string;
     institution: string;
     year: string;
+    description?: string;
   }>;
   certifications?: string[];
+  volunteerExperience?: Array<{
+    title: string;
+    organization: string;
+    period: string;
+    description: string;
+  }>;
+  projects?: Array<{
+    title: string;
+    role: string;
+    url?: string;
+    period: string;
+    description: string;
+  }>;
 }
 
 export default function HomePage() {
@@ -327,6 +341,66 @@ export default function HomePage() {
         </motion.div>
       </section>
 
+      {/* Projects Section */}
+      {profile?.projects && profile.projects.length > 0 && (
+        <section className="py-16 px-4 bg-white">
+          <div className="max-w-7xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-12"
+            >
+              <h2 className="text-4xl font-bold text-gray-900 mb-4">
+                Featured Projects
+              </h2>
+              <p className="text-xl text-gray-600">
+                Innovative educational technology solutions I've developed
+              </p>
+            </motion.div>
+
+            <div className="grid md:grid-cols-2 gap-8">
+              {profile.projects.map((project, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  className="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg p-8 border border-gray-200 hover:shadow-xl transition-shadow"
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex-1">
+                      <h3 className="text-xl font-bold text-gray-900 mb-2">
+                        {project.title}
+                      </h3>
+                      <p className="text-sm font-medium text-blue-600 mb-1">
+                        {project.role}
+                      </p>
+                      <p className="text-sm text-gray-500">{project.period}</p>
+                    </div>
+                  </div>
+                  <p className="text-gray-700 mb-4 leading-relaxed">
+                    {project.description}
+                  </p>
+                  {project.url && (
+                    <a
+                      href={project.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium transition-colors"
+                    >
+                      <span>View Project</span>
+                      <ArrowRight className="h-4 w-4" />
+                    </a>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Experience & Education Section */}
       <section className="py-16 px-4">
         <div className="max-w-7xl mx-auto">
@@ -388,14 +462,19 @@ export default function HomePage() {
                     </div>
                   ) : (
                     profile?.education?.map((edu, index) => (
-                      <div key={index}>
+                      <div key={index} className="pb-4 last:pb-0">
                         <h4 className="font-semibold text-gray-900">
                           {edu.degree}
                         </h4>
                         <p className="text-purple-600 font-medium">
                           {edu.institution}
                         </p>
-                        <p className="text-sm text-gray-500">{edu.year}</p>
+                        <p className="text-sm text-gray-500 mb-2">{edu.year}</p>
+                        {edu.description && (
+                          <p className="text-sm text-gray-600 italic">
+                            {edu.description}
+                          </p>
+                        )}
                       </div>
                     ))
                   )}

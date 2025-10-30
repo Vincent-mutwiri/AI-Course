@@ -101,7 +101,44 @@ const ModuleContent = () => {
             setCompletedLessons(moduleProgress.completedLessons || []);
           }
         } catch (progressErr) {
-          console.log('No progress found, starting fresh');
+          console.log('No progress found, attempting auto-enrollment...', progressErr);
+          
+          // Auto-enroll user if they're not enrolled yet
+          try {
+            console.log('Enrolling in course:', courseId);
+            const enrollmentResult = await courseAPI.enroll(courseId);
+            console.log('Enrollment successful:', enrollmentResult);
+            
+            toast.success('Welcome! You have been enrolled in this course.', {
+              description: 'You can now access all course materials.'
+            });
+            
+            // Fetch progress again after enrollment
+            try {
+              const progressData = await progressAPI.get(courseId);
+              setProgress(progressData.progress);
+              console.log('Progress fetched after enrollment:', progressData);
+            } catch (err) {
+              console.log('Progress will be created as you learn', err);
+            }
+          } catch (enrollErr: any) {
+            console.error('Auto-enrollment error details:', {
+              status: enrollErr.response?.status,
+              message: enrollErr.response?.data?.message,
+              fullError: enrollErr
+            });
+            
+            // Check if already enrolled
+            if (enrollErr.response?.status === 400 && enrollErr.response?.data?.message === 'Already enrolled') {
+              console.log('User already enrolled, progress will be created');
+              toast.info('You are already enrolled in this course');
+            } else {
+              console.error('Auto-enrollment failed:', enrollErr);
+              toast.error('Failed to enroll in course', {
+                description: enrollErr.response?.data?.message || 'Please try enrolling from the course page.'
+              });
+            }
+          }
         }
       } catch (err) {
         setError(err instanceof Error ? err : new Error('An error occurred'));

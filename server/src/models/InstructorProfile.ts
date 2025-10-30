@@ -22,8 +22,22 @@ export interface IInstructorProfile extends Document {
     degree: string;
     institution: string;
     year: string;
+    description?: string;
   }>;
   certifications?: string[];
+  volunteerExperience?: Array<{
+    title: string;
+    organization: string;
+    period: string;
+    description: string;
+  }>;
+  projects?: Array<{
+    title: string;
+    role: string;
+    url?: string;
+    period: string;
+    description: string;
+  }>;
 }
 
 const InstructorProfileSchema: Schema = new Schema(
@@ -52,9 +66,27 @@ const InstructorProfileSchema: Schema = new Schema(
         degree: { type: String },
         institution: { type: String },
         year: { type: String },
+        description: { type: String },
       },
     ],
     certifications: [{ type: String }],
+    volunteerExperience: [
+      {
+        title: { type: String },
+        organization: { type: String },
+        period: { type: String },
+        description: { type: String },
+      },
+    ],
+    projects: [
+      {
+        title: { type: String },
+        role: { type: String },
+        url: { type: String },
+        period: { type: String },
+        description: { type: String },
+      },
+    ],
   },
   { timestamps: true }
 );

@@ -24,8 +24,22 @@ interface Profile {
     degree: string;
     institution: string;
     year: string;
+    description?: string;
   }>;
   certifications?: string[];
+  volunteerExperience?: Array<{
+    title: string;
+    organization: string;
+    period: string;
+    description: string;
+  }>;
+  projects?: Array<{
+    title: string;
+    role: string;
+    url?: string;
+    period: string;
+    description: string;
+  }>;
 }
 
 export const ProfileWidget: React.FC = () => {

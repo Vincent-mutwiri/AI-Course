@@ -202,6 +202,24 @@ export default function CourseDetailPage() {
                 Continue Learning
               </Button>
             </div>
+          ) : user ? (
+            <div className="space-y-3">
+              <Button 
+                size="lg" 
+                onClick={() => {
+                  // Navigate to first module - auto-enrollment will happen there
+                  if (course.modules && course.modules.length > 0) {
+                    navigate(`/course/${id}/module/${course.modules[0]._id}`);
+                  }
+                }} 
+                className="bg-white text-blue-600 hover:bg-blue-50 w-full"
+              >
+                Start Learning
+              </Button>
+              <p className="text-xs text-white/80 text-center">
+                You'll be automatically enrolled when you start
+              </p>
+            </div>
           ) : (
             <Button size="lg" onClick={handleEnroll} disabled={enrolling} className="bg-white text-blue-600 hover:bg-blue-50">
               {enrolling ? "Enrolling..." : "Enroll in Course"}

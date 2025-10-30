@@ -15,7 +15,21 @@ router.get("/", async (req: Request, res: Response) => {
     if (search) filter.title = { $regex: search, $options: "i" };
 
     const courses = await Course.find(filter).sort({ createdAt: -1 });
-    res.json({ courses });
+    
+    // Calculate actual enrollment counts from Enrollment collection
+    const coursesWithCounts = await Promise.all(
+      courses.map(async (course) => {
+        const enrollmentCount = await Enrollment.countDocuments({ courseId: course._id });
+        console.log(`Course ${course.title} (${course._id}): ${enrollmentCount} enrollments`);
+        return {
+          ...course.toObject(),
+          enrolledCount: enrollmentCount
+        };
+      })
+    );
+    
+    console.log(`Returning ${coursesWithCounts.length} courses with enrollment counts`);
+    res.json({ courses: coursesWithCounts });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
@@ -27,7 +41,15 @@ router.get("/:id", async (req: Request, res: Response) => {
     if (!course) {
       return res.status(404).json({ message: "Course not found" });
     }
-    res.json({ course });
+    
+    // Calculate actual enrollment count from Enrollment collection
+    const enrollmentCount = await Enrollment.countDocuments({ courseId: course._id });
+    const courseWithCount = {
+      ...course.toObject(),
+      enrolledCount: enrollmentCount
+    };
+    
+    res.json({ course: courseWithCount });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
@@ -66,8 +88,7 @@ router.post("/:id/enroll", authenticate, async (req: AuthRequest, res: Response)
       totalLessons,
     });
 
-    course.enrolledCount += 1;
-    await course.save();
+    // No need to manually increment enrolledCount - it's calculated dynamically from Enrollment collection
 
     res.status(201).json({ enrollment });
   } catch (error) {

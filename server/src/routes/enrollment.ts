@@ -10,7 +10,18 @@ router.get("/my-courses", authenticate, async (req: AuthRequest, res: Response) 
     const enrollments = await Enrollment.find({ userId: req.userId })
       .populate("courseId")
       .sort({ enrolledAt: -1 });
-    res.json({ enrollments });
+    
+    // Format response to match frontend expectations
+    const courses = enrollments.map(enrollment => ({
+      course: enrollment.courseId,
+      progress: enrollment.progressPercentage,
+      enrolledAt: enrollment.enrolledAt,
+      isCompleted: enrollment.isCompleted,
+      completedLessons: enrollment.completedLessons,
+      totalLessons: enrollment.totalLessons
+    }));
+    
+    res.json({ courses, enrollments });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }

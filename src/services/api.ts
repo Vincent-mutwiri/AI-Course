@@ -32,7 +32,11 @@ api.interceptors.response.use(
     
     if (error.response?.status === 401) {
       const currentPath = window.location.pathname;
-      if (currentPath !== '/login' && currentPath !== '/signup') {
+      // List of public pages that should not trigger auto-redirect
+      const publicPages = ['/login', '/signup', '/courses', '/forgot-password', '/', '/help'];
+      const isPublicPage = publicPages.some(page => currentPath === page || currentPath.startsWith('/course/'));
+      
+      if (!isPublicPage) {
         console.log('[API] Unauthorized - redirecting to login');
         removeToken();
         localStorage.setItem('redirectAfterLogin', currentPath);
