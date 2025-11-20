@@ -13,6 +13,7 @@ import { InteractiveElementRouter } from '@/components/interactive/InteractiveEl
 import { QuizComponent } from '@/components/modules/QuizComponent';
 import { CodeSnippet } from '@/components/modules/CodeSnippet';
 import { ProgressBar } from '@/components/modules/ProgressBar';
+import { useAuth } from '@/context/AuthContext';
 
 interface Lesson {
   title: string;
@@ -45,6 +46,7 @@ interface Course {
 
 const ModuleContent = () => {
   const { courseId, moduleId } = useParams<{ courseId: string; moduleId: string }>();
+  const { user } = useAuth();
   const [course, setCourse] = useState<Course | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -63,7 +65,7 @@ const ModuleContent = () => {
 
   useEffect(() => {
     if (!module) return;
-    
+
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.ctrlKey || e.metaKey) {
         if (e.key === 'ArrowLeft' && currentLesson > 0) {
@@ -83,36 +85,36 @@ const ModuleContent = () => {
   useEffect(() => {
     const fetchData = async () => {
       if (!courseId) return;
-      
+
       try {
         const courseData = await courseAPI.getById(courseId + '?t=' + Date.now());
         setCourse(courseData.course);
-        
+
         try {
           const progressData = await progressAPI.get(courseId);
           setProgress(progressData.progress);
-          
+
           const moduleProgress = progressData.progress?.moduleProgress?.find(
             (m: any) => m.moduleId === moduleId
           );
-          
+
           if (moduleProgress) {
             setCurrentLesson(moduleProgress.currentLesson || 0);
             setCompletedLessons(moduleProgress.completedLessons || []);
           }
         } catch (progressErr) {
           console.log('No progress found, attempting auto-enrollment...', progressErr);
-          
+
           // Auto-enroll user if they're not enrolled yet
           try {
             console.log('Enrolling in course:', courseId);
             const enrollmentResult = await courseAPI.enroll(courseId);
             console.log('Enrollment successful:', enrollmentResult);
-            
+
             toast.success('Welcome! You have been enrolled in this course.', {
               description: 'You can now access all course materials.'
             });
-            
+
             // Fetch progress again after enrollment
             try {
               const progressData = await progressAPI.get(courseId);
@@ -127,7 +129,7 @@ const ModuleContent = () => {
               message: enrollErr.response?.data?.message,
               fullError: enrollErr
             });
-            
+
             // Check if already enrolled
             if (enrollErr.response?.status === 400 && enrollErr.response?.data?.message === 'Already enrolled') {
               console.log('User already enrolled, progress will be created');
@@ -146,7 +148,7 @@ const ModuleContent = () => {
         setIsLoading(false);
       }
     };
-    
+
     fetchData();
   }, [courseId, moduleId, refreshKey]);
 
@@ -193,7 +195,7 @@ const ModuleContent = () => {
         const moduleProgress = updated.progress.moduleProgress.find((m: any) => m.moduleId === moduleId);
         setCompletedLessons(moduleProgress?.completedLessons || []);
         toast.success('Lesson completed! Great job!');
-        
+
         // Track analytics
         api.post('/analytics/track', {
           courseId,
@@ -223,15 +225,15 @@ const ModuleContent = () => {
   return (
     <div className="container mx-auto py-8 px-4">
       {/* Breadcrumb Navigation */}
-      <Breadcrumb 
+      <Breadcrumb
         items={[
           { label: "Courses", href: "/courses" },
           { label: course.title, href: `/course/${courseId}` },
           { label: module.title, current: true }
-        ]} 
-        className="mb-6" 
+        ]}
+        className="mb-6"
       />
-      
+
       <Button
         variant="ghost"
         className="mb-6"
@@ -280,7 +282,7 @@ const ModuleContent = () => {
 
               {/* Lesson Content */}
               {lesson.content && (
-                <ContentRenderer 
+                <ContentRenderer
                   sections={Array.isArray(lesson.content) ? lesson.content : lesson.content.sections || []}
                   courseId={courseId}
                   moduleId={moduleId}
@@ -294,12 +296,15 @@ const ModuleContent = () => {
                 <InteractiveElement interactive={lesson.interactive} />
               )}
 
-              {/* Interactive Elements (New) */}
+              {/* Interactive Elements */}
               {lesson.interactiveElements && lesson.interactiveElements.length > 0 && (
-                <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-                  <h3 className="font-semibold mb-2">Interactive Elements ({lesson.interactiveElements.length})</h3>
+                <div className="space-y-6">
                   {lesson.interactiveElements.map((element, idx) => (
-                    <InteractiveElementRouter key={idx} element={element} />
+                    <InteractiveElementRouter
+                      key={`interactive-${moduleId}-${currentLesson}-${idx}`}
+                      element={element}
+                      userName={user?.name || 'Learner'}
+                    />
                   ))}
                 </div>
               )}

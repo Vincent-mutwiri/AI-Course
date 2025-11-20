@@ -204,7 +204,7 @@ export const InteractiveElementRouter = ({ element, userName }: InteractiveEleme
       case 'certificateGenerator':
         return (
           <Suspense fallback={<CardSkeleton />}>
-            <CertificateGenerator />
+            <CertificateGenerator userName={userName} />
           </Suspense>
         );
 

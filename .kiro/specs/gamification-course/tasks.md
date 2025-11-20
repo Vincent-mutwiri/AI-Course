@@ -134,7 +134,7 @@
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7_
 
 - [ ] 10. Integrate components into course rendering system
-  - [ ] 10.1 Update lesson rendering logic
+  - [x] 10.1 Update lesson rendering logic
     - Import InteractiveElementRouter component
     - Map over lesson.interactiveElements array
     - Render InteractiveElementRouter for each element
