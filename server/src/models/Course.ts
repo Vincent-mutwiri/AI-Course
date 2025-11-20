@@ -1,5 +1,24 @@
 import mongoose, { Document, Schema } from "mongoose";
 
+// Interactive Element Type Enum
+export type InteractiveElementType =
+  | 'reflection'
+  | 'playerTypeSimulator'
+  | 'rewardScheduleDesigner'
+  | 'flowChannelEvaluator'
+  | 'pitchAnalysisGenerator'
+  | 'narrativeGenerator'
+  | 'darkPatternRedesigner'
+  | 'roeDashboard'
+  | 'certificateGenerator';
+
+// Interactive Element Interface
+export interface IInteractiveElement {
+  type: InteractiveElementType;
+  promptTemplate?: string;
+  config?: any;
+}
+
 interface ILesson {
   title: string;
   description: string;
@@ -9,10 +28,7 @@ interface ILesson {
   objective?: string;
   content?: any;
   interactive?: any;
-  interactiveElements?: Array<{
-    type: 'reflection' | 'visualTokens' | 'sentenceBuilder' | 'aiGenerator' | 'simulation' | 'dragAndDropQuiz' | 'buildABot' | 'ethicalSimulator' | 'poll' | 'designFixer' | 'wordCloud' | 'choiceComparison' | 'journeyTimeline' | 'finalAssessment' | 'playerTypeSimulator' | 'rewardScheduleDesigner' | 'flowChannelEvaluator' | 'pitchAnalysisGenerator' | 'narrativeGenerator' | 'darkPatternRedesigner' | 'roeDashboard';
-    [key: string]: any;
-  }>;
+  interactiveElements?: IInteractiveElement[];
   quiz?: any;
   codeSnippet?: any;
 }
@@ -46,7 +62,25 @@ const lessonSchema = new Schema<ILesson>({
   objective: { type: String },
   content: { type: Schema.Types.Mixed },
   interactive: { type: Schema.Types.Mixed },
-  interactiveElements: [{ type: Schema.Types.Mixed }],
+  interactiveElements: [{
+    type: {
+      type: String,
+      enum: [
+        'reflection',
+        'playerTypeSimulator',
+        'rewardScheduleDesigner',
+        'flowChannelEvaluator',
+        'pitchAnalysisGenerator',
+        'narrativeGenerator',
+        'darkPatternRedesigner',
+        'roeDashboard',
+        'certificateGenerator'
+      ],
+      required: true
+    },
+    promptTemplate: { type: String },
+    config: { type: Schema.Types.Mixed }
+  }],
   quiz: { type: Schema.Types.Mixed },
   codeSnippet: { type: Schema.Types.Mixed },
 });

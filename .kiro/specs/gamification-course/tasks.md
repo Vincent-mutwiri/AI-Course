@@ -6,8 +6,8 @@
   - Configure `.gitignore` to exclude `.env.local` from version control
   - _Requirements: 8.1, 8.2, 8.3, 8.4_
 
-- [ ] 2. Extend MongoDB schema for gamification course structure
-  - [ ] 2.1 Update Course model to support interactive elements
+- [x] 2. Extend MongoDB schema for gamification course structure
+  - [x] 2.1 Update Course model to support interactive elements
     - Add `InteractiveElementType` enum with all 9 element types (reflection, playerTypeSimulator, rewardScheduleDesigner, flowChannelEvaluator, pitchAnalysisGenerator, narrativeGenerator, darkPatternRedesigner, roeDashboard, certificateGenerator)
     - Create `IInteractiveElement` interface with type, promptTemplate, and config fields
     - Update `ILesson` interface to include interactiveElements array
