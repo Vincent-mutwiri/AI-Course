@@ -39,6 +39,7 @@ interface InteractiveElementProps {
     options?: Record<string, any>;
     [key: string]: any;
   };
+  userName?: string;
 }
 
 // Force all components to be included in bundle
@@ -75,7 +76,7 @@ if (false) {
   console.log(ALL_COMPONENTS);
 }
 
-export const InteractiveElementRouter = ({ element }: InteractiveElementProps) => {
+export const InteractiveElementRouter = ({ element, userName }: InteractiveElementProps) => {
 
   const renderElement = () => {
     switch (element.type) {
@@ -200,8 +201,24 @@ export const InteractiveElementRouter = ({ element }: InteractiveElementProps) =
       case 'gamificationConceptMap':
         return <GamificationConceptMap />;
 
+      case 'certificateGenerator':
+        return (
+          <Suspense fallback={<CardSkeleton />}>
+            <CertificateGenerator />
+          </Suspense>
+        );
+
       default:
-        return <div>Unknown interactive element type: {element.type}</div>;
+        return (
+          <div className="p-4 border border-red-500 bg-red-50 dark:bg-red-950/20 rounded-lg">
+            <p className="text-red-600 dark:text-red-400 font-semibold">
+              Unknown interactive element type: {element.type}
+            </p>
+            <p className="text-sm text-muted-foreground mt-2">
+              This element type is not recognized by the system. Please check the element configuration.
+            </p>
+          </div>
+        );
     }
   };
 
