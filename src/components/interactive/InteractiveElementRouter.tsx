@@ -19,6 +19,7 @@ import { FlowChannelEvaluator } from './FlowChannelEvaluator';
 import { GameMasterGenerator } from './GameMasterGenerator';
 import { AIGameMasterGenerator } from './AIGameMasterGenerator';
 import { ROEDashboard } from './ROEDashboard';
+import { GamificationConceptMap } from './GamificationConceptMap';
 import { ErrorBoundary } from '@/components/shared/ErrorBoundary';
 import { CardSkeleton } from '@/components/shared/Skeleton';
 
@@ -62,6 +63,7 @@ const ALL_COMPONENTS = {
   GameMasterGenerator,
   AIGameMasterGenerator,
   ROEDashboard,
+  GamificationConceptMap,
   ConceptMap,
   CertificateGenerator,
   AIJourneyComponent,
@@ -194,6 +196,9 @@ export const InteractiveElementRouter = ({ element }: InteractiveElementProps) =
 
       case 'roeDashboard':
         return <ROEDashboard />;
+
+      case 'gamificationConceptMap':
+        return <GamificationConceptMap />;
 
       default:
         return <div>Unknown interactive element type: {element.type}</div>;
