@@ -13,6 +13,7 @@ import { ReflectionComponent } from './ReflectionComponent';
 import { WordCloudComponent } from './WordCloudComponent';
 import { ChoiceComparisonComponent } from './ChoiceComparisonComponent';
 import { PlayerTypeSimulator } from './PlayerTypeSimulator';
+import { PlayerTypeAnalyzer } from './PlayerTypeAnalyzer';
 import { RewardScheduleDesigner } from './RewardScheduleDesigner';
 import { FlowChannelEvaluator } from './FlowChannelEvaluator';
 import { GameMasterGenerator } from './GameMasterGenerator';
@@ -54,6 +55,7 @@ const ALL_COMPONENTS = {
   WordCloudComponent,
   ChoiceComparisonComponent,
   PlayerTypeSimulator,
+  PlayerTypeAnalyzer,
   RewardScheduleDesigner,
   FlowChannelEvaluator,
   GameMasterGenerator,
@@ -151,6 +153,9 @@ export const InteractiveElementRouter = ({ element }: InteractiveElementProps) =
       // Gamification Course Components
       case 'playerTypeSimulator':
         return <PlayerTypeSimulator {...element} />;
+
+      case 'playerTypeAnalyzer':
+        return <PlayerTypeAnalyzer />;
 
       case 'rewardScheduleDesigner':
         return <RewardScheduleDesigner />;
