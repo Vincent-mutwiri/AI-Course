@@ -19,6 +19,7 @@ import progressRoutes from "./routes/progress";
 import analyticsRoutes from "./routes/analytics";
 import mediaRoutes from "./routes/media";
 import profileRoutes from "./routes/profile";
+import simulationsRoutes from "./routes/simulations";
 
 const app = express();
 
@@ -69,6 +70,7 @@ app.use("/api/progress", progressRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/media", mediaRoutes);
 app.use("/api/profile", profileRoutes);
+app.use("/api/simulations", simulationsRoutes);
 
 connectDB()
   .then(() => {

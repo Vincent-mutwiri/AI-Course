@@ -78,14 +78,14 @@
     - Implement error handling with toast notifications
     - _Requirements: 1.1, 9.1, 9.2, 9.3, 9.4, 9.5, 9.6_
 
-- [ ] 6. Implement ROE analytics dashboard
-  - [ ] 6.1 Create simulations backend route
+- [x] 6. Implement ROE analytics dashboard
+  - [x] 6.1 Create simulations backend route
     - Create `/api/simulations/roe-data` GET endpoint
     - Return mock data array with monthly metrics (enrollments, completions, aiRequests, timeSpent)
     - Add comment noting future migration to real MongoDB aggregation
     - _Requirements: 4.1_
   
-  - [ ] 6.2 Build ROEDashboard component
+  - [x] 6.2 Build ROEDashboard component
     - Create component with ROEData interface
     - Implement useEffect to fetch data from `/api/simulations/roe-data`
     - Build Recharts BarChart with multiple data series

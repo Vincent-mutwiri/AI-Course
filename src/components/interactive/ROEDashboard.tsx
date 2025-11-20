@@ -1,175 +1,230 @@
 import { useEffect, useState } from 'react';
-import { Card } from '@/components/ui/card';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from 'recharts';
-import { TrendingUp, Users, Clock, Zap } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { TrendingUp, Users, CheckCircle, MessageSquare, Clock } from 'lucide-react';
+import axios from 'axios';
+import { toast } from 'sonner';
 
 interface ROEData {
     month: string;
     enrollments: number;
     completions: number;
     aiRequests: number;
-    timeSpent: number;
+    timeSpent: number; // in minutes
 }
 
-const simulatedData: ROEData[] = [
-    { month: 'Jan', enrollments: 120, completions: 85, aiRequests: 500, timeSpent: 1250 },
-    { month: 'Feb', enrollments: 150, completions: 100, aiRequests: 620, timeSpent: 1550 },
-    { month: 'Mar', enrollments: 145, completions: 110, aiRequests: 700, timeSpent: 1600 },
-    { month: 'Apr', enrollments: 160, completions: 130, aiRequests: 800, timeSpent: 1800 },
-    { month: 'May', enrollments: 175, completions: 145, aiRequests: 920, timeSpent: 2100 },
-    { month: 'Jun', enrollments: 190, completions: 165, aiRequests: 1050, timeSpent: 2400 },
-];
-
-export const ROEDashboard = () => {
+export const ROEDashboard: React.FC = () => {
     const [data, setData] = useState<ROEData[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        // Simulate API call
-        setTimeout(() => {
-            setData(simulatedData);
-            setLoading(false);
-        }, 500);
+        const fetchROEData = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                const response = await axios.get<ROEData[]>(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/simulations/roe-data`);
+                setData(response.data);
+            } catch (err) {
+                console.error('Failed to fetch ROE data:', err);
+                setError('Failed to load engagement metrics. Please try again later.');
+                toast.error('Failed to load ROE dashboard data');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchROEData();
     }, []);
+
+    // Calculate summary statistics
+    const totalEnrollments = data.reduce((sum, item) => sum + item.enrollments, 0);
+    const totalCompletions = data.reduce((sum, item) => sum + item.completions, 0);
+    const totalAIRequests = data.reduce((sum, item) => sum + item.aiRequests, 0);
+    const totalTimeSpent = data.reduce((sum, item) => sum + item.timeSpent, 0);
+    const completionRate = totalEnrollments > 0 ? ((totalCompletions / totalEnrollments) * 100).toFixed(1) : '0';
+    const avgTimePerLearner = totalEnrollments > 0 ? (totalTimeSpent / totalEnrollments).toFixed(0) : '0';
 
     if (loading) {
         return (
-            <Card className="p-6">
-                <div className="animate-pulse space-y-4">
-                    <div className="h-8 bg-gray-200 rounded w-1/3"></div>
-                    <div className="h-64 bg-gray-200 rounded"></div>
-                </div>
+            <Card className="w-full">
+                <CardHeader>
+                    <CardTitle className="text-2xl">ROE Analytics Dashboard</CardTitle>
+                    <CardDescription>Loading engagement metrics...</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex items-center justify-center h-64">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                    </div>
+                </CardContent>
             </Card>
         );
     }
 
-    const latestMonth = data[data.length - 1];
-    const completionRate = ((latestMonth.completions / latestMonth.enrollments) * 100).toFixed(1);
-    const avgTimePerUser = (latestMonth.timeSpent / latestMonth.enrollments).toFixed(1);
-    const engagementScore = ((latestMonth.aiRequests / latestMonth.enrollments) * 10).toFixed(1);
+    if (error) {
+        return (
+            <Card className="w-full">
+                <CardHeader>
+                    <CardTitle className="text-2xl">ROE Analytics Dashboard</CardTitle>
+                    <CardDescription>Return on Engagement Metrics</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex flex-col items-center justify-center h-64 text-center">
+                        <TrendingUp className="h-12 w-12 text-muted-foreground mb-4" />
+                        <p className="text-muted-foreground">{error}</p>
+                    </div>
+                </CardContent>
+            </Card>
+        );
+    }
 
     return (
-        <Card className="p-6 space-y-6">
-            <div>
-                <h3 className="text-2xl font-bold text-purple-700 mb-2">
-                    Return on Engagement (ROE) Dashboard
-                </h3>
-                <p className="text-gray-600">
-                    Gamification metrics showing increased engagement and completion rates over time.
-                </p>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                    <div className="flex items-center gap-2 mb-2">
-                        <Users className="w-5 h-5 text-blue-600" />
-                        <p className="text-sm font-semibold text-blue-900">Completion Rate</p>
+        <Card className="w-full">
+            <CardHeader>
+                <div className="flex items-center gap-3">
+                    <TrendingUp className="h-8 w-8 text-primary" />
+                    <div>
+                        <CardTitle className="text-2xl">ROE Analytics Dashboard</CardTitle>
+                        <CardDescription>
+                            Return on Engagement: Track learner enrollments, completions, AI interactions, and time investment
+                        </CardDescription>
                     </div>
-                    <p className="text-3xl font-bold text-blue-600">{completionRate}%</p>
-                    <p className="text-xs text-blue-700 mt-1">↑ 15% from baseline</p>
+                </div>
+            </CardHeader>
+            <CardContent className="space-y-6">
+                {/* Summary Statistics */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="p-4 border rounded-lg bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Users className="h-5 w-5 text-blue-600" />
+                            <span className="text-sm font-semibold text-muted-foreground">Total Enrollments</span>
+                        </div>
+                        <p className="text-3xl font-bold text-blue-600">{totalEnrollments}</p>
+                    </div>
+
+                    <div className="p-4 border rounded-lg bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-800">
+                        <div className="flex items-center gap-2 mb-2">
+                            <CheckCircle className="h-5 w-5 text-green-600" />
+                            <span className="text-sm font-semibold text-muted-foreground">Completions</span>
+                        </div>
+                        <p className="text-3xl font-bold text-green-600">{totalCompletions}</p>
+                        <p className="text-xs text-muted-foreground mt-1">{completionRate}% completion rate</p>
+                    </div>
+
+                    <div className="p-4 border rounded-lg bg-purple-50 dark:bg-purple-950/20 border-purple-200 dark:border-purple-800">
+                        <div className="flex items-center gap-2 mb-2">
+                            <MessageSquare className="h-5 w-5 text-purple-600" />
+                            <span className="text-sm font-semibold text-muted-foreground">AI Interactions</span>
+                        </div>
+                        <p className="text-3xl font-bold text-purple-600">{totalAIRequests}</p>
+                    </div>
+
+                    <div className="p-4 border rounded-lg bg-orange-50 dark:bg-orange-950/20 border-orange-200 dark:border-orange-800">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Clock className="h-5 w-5 text-orange-600" />
+                            <span className="text-sm font-semibold text-muted-foreground">Total Time</span>
+                        </div>
+                        <p className="text-3xl font-bold text-orange-600">{(totalTimeSpent / 60).toFixed(0)}h</p>
+                        <p className="text-xs text-muted-foreground mt-1">{avgTimePerLearner} min/learner</p>
+                    </div>
                 </div>
 
-                <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-                    <div className="flex items-center gap-2 mb-2">
-                        <Clock className="w-5 h-5 text-green-600" />
-                        <p className="text-sm font-semibold text-green-900">Avg Time/User</p>
-                    </div>
-                    <p className="text-3xl font-bold text-green-600">{avgTimePerUser}m</p>
-                    <p className="text-xs text-green-700 mt-1">↑ 25% engagement</p>
-                </div>
-
-                <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
-                    <div className="flex items-center gap-2 mb-2">
-                        <Zap className="w-5 h-5 text-purple-600" />
-                        <p className="text-sm font-semibold text-purple-900">AI Interactions</p>
-                    </div>
-                    <p className="text-3xl font-bold text-purple-600">{latestMonth.aiRequests}</p>
-                    <p className="text-xs text-purple-700 mt-1">↑ 110% growth</p>
-                </div>
-
-                <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
-                    <div className="flex items-center gap-2 mb-2">
-                        <TrendingUp className="w-5 h-5 text-orange-600" />
-                        <p className="text-sm font-semibold text-orange-900">Engagement Score</p>
-                    </div>
-                    <p className="text-3xl font-bold text-orange-600">{engagementScore}</p>
-                    <p className="text-xs text-orange-700 mt-1">Interactions per user</p>
-                </div>
-            </div>
-
-            <div className="space-y-4">
-                <div>
-                    <h4 className="font-semibold mb-3">Completion Trends</h4>
-                    <ResponsiveContainer width="100%" height={250}>
-                        <BarChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                {/* Bar Chart */}
+                <div className="space-y-3">
+                    <h3 className="text-lg font-semibold">Monthly Engagement Trends</h3>
+                    <ResponsiveContainer width="100%" height={400}>
+                        <BarChart
+                            data={data}
+                            margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                        >
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="month" />
                             <YAxis />
-                            <Tooltip />
+                            <Tooltip
+                                contentStyle={{
+                                    backgroundColor: 'hsl(var(--background))',
+                                    border: '1px solid hsl(var(--border))',
+                                    borderRadius: '8px'
+                                }}
+                            />
                             <Legend />
-                            <Bar dataKey="enrollments" name="Enrollments" fill="#3b82f6" />
-                            <Bar dataKey="completions" name="Completions" fill="#10b981" />
+                            <Bar dataKey="enrollments" fill="#3b82f6" name="Enrollments" />
+                            <Bar dataKey="completions" fill="#22c55e" name="Completions" />
+                            <Bar dataKey="aiRequests" fill="#a855f7" name="AI Interactions" />
+                            <Bar dataKey="timeSpent" fill="#f97316" name="Time Spent (min)" />
                         </BarChart>
                     </ResponsiveContainer>
                 </div>
 
-                <div>
-                    <h4 className="font-semibold mb-3">Engagement Metrics</h4>
-                    <ResponsiveContainer width="100%" height={250}>
-                        <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="month" />
-                            <YAxis />
-                            <Tooltip />
-                            <Legend />
-                            <Line
-                                type="monotone"
-                                dataKey="aiRequests"
-                                name="AI Interactions"
-                                stroke="#8b5cf6"
-                                strokeWidth={2}
-                            />
-                            <Line
-                                type="monotone"
-                                dataKey="timeSpent"
-                                name="Time Spent (min)"
-                                stroke="#f59e0b"
-                                strokeWidth={2}
-                            />
-                        </LineChart>
-                    </ResponsiveContainer>
+                {/* Educational Commentary */}
+                <div className="space-y-4">
+                    <div className="p-4 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                        <p className="text-sm">
+                            <strong>📊 What is ROE (Return on Engagement)?</strong> ROE measures the value generated from
+                            learner interactions with your gamified course. Unlike traditional ROI (Return on Investment),
+                            ROE focuses on behavioral metrics: completion rates, time invested, and active participation
+                            through AI interactions. High ROE indicates learners are deeply engaged and extracting maximum
+                            value from the experience.
+                        </p>
+                    </div>
+
+                    <div className="p-4 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
+                        <p className="text-sm">
+                            <strong>✅ Completion Rate:</strong> The percentage of enrolled learners who finish the course.
+                            In gamified learning, aim for 60%+ completion rates (vs. 5-15% for traditional MOOCs). High
+                            completion rates indicate effective motivation mechanics and well-balanced difficulty progression.
+                        </p>
+                    </div>
+
+                    <div className="p-4 bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800 rounded-lg">
+                        <p className="text-sm">
+                            <strong>💬 AI Interactions:</strong> Measures how often learners engage with AI-powered features
+                            like the Game Master feedback system. High AI interaction counts suggest learners are actively
+                            seeking personalized guidance and iterating on their designs—a key indicator of deep learning.
+                        </p>
+                    </div>
+
+                    <div className="p-4 bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-800 rounded-lg">
+                        <p className="text-sm">
+                            <strong>⏱️ Time Investment:</strong> Total minutes spent in the course. While more time doesn't
+                            always mean better learning, consistent time investment combined with high completion rates
+                            indicates learners find the content valuable enough to dedicate sustained attention. Track
+                            average time per learner to identify pacing issues.
+                        </p>
+                    </div>
                 </div>
-            </div>
 
-            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                <h4 className="font-semibold text-purple-900 mb-2">Key Insights</h4>
-                <ul className="space-y-2 text-sm text-gray-700">
-                    <li className="flex items-start gap-2">
-                        <span className="text-green-600 font-bold">✓</span>
-                        <span>Gamification increased completion rates by 15% compared to traditional training</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                        <span className="text-green-600 font-bold">✓</span>
-                        <span>Time on task increased 25%, indicating deeper engagement with content</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                        <span className="text-green-600 font-bold">✓</span>
-                        <span>AI interactions doubled, showing learners actively seeking help and feedback</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                        <span className="text-green-600 font-bold">✓</span>
-                        <span>Steady month-over-month growth demonstrates sustained engagement, not just novelty effect</span>
-                    </li>
-                </ul>
-            </div>
-
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                <p className="text-sm text-gray-600">
-                    <strong>Note:</strong> This dashboard shows simulated data for demonstration purposes.
-                    In a real implementation, these metrics would be pulled from your learning management system
-                    and analytics platform to show actual ROE impact.
-                </p>
-            </div>
+                {/* Key Insights */}
+                <div className="p-4 border-2 border-primary rounded-lg bg-primary/5">
+                    <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                        <TrendingUp className="h-5 w-5" />
+                        Key ROE Insights
+                    </h3>
+                    <ul className="space-y-2 text-sm">
+                        <li className="flex items-start gap-2">
+                            <span className="text-green-600 font-bold">•</span>
+                            <span>
+                                <strong>Growing Engagement:</strong> The upward trend in all metrics indicates successful
+                                gamification mechanics that drive sustained learner participation.
+                            </span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                            <span className="text-blue-600 font-bold">•</span>
+                            <span>
+                                <strong>AI-Powered Learning:</strong> High AI interaction rates show learners are actively
+                                using personalized feedback to improve their gamification designs.
+                            </span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                            <span className="text-purple-600 font-bold">•</span>
+                            <span>
+                                <strong>Completion Success:</strong> A {completionRate}% completion rate demonstrates that
+                                the course maintains engagement from start to finish through effective game mechanics.
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </CardContent>
         </Card>
     );
 };
