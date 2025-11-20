@@ -95,7 +95,7 @@
     - Add educational commentary on ROE metrics
     - _Requirements: 4.2, 4.3, 4.4, 4.5_
 
-- [ ] 7. Create certificate generation feature
+- [-] 7. Create certificate generation feature
   - [ ] 7.1 Implement CertificateGenerator component
     - Create component with props interface (userName, courseTitle)
     - Implement generatePdf async function using pdf-lib

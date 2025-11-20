@@ -26,7 +26,7 @@ export const FinalAssessmentComponent: React.FC<FinalAssessmentComponentProps> =
   const { user } = useAuth();
   const passingScore = data.passingScore || 8;
   const { questions } = learningScienceQuiz;
-  
+
   // Check localStorage for previous pass
   const [passStatus, setPassStatus] = useState<boolean | null>(() => {
     const storedPass = localStorage.getItem(ASSESSMENT_KEY);
@@ -159,11 +159,10 @@ export const FinalAssessmentComponent: React.FC<FinalAssessmentComponentProps> =
           <>
             {/* Results */}
             <div className="text-center space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className={`p-8 rounded-lg border-2 ${
-                passStatus 
-                  ? 'bg-green-50 dark:bg-green-950/20 border-green-500' 
+              <div className={`p-8 rounded-lg border-2 ${passStatus
+                  ? 'bg-green-50 dark:bg-green-950/20 border-green-500'
                   : 'bg-red-50 dark:bg-red-950/20 border-red-500'
-              }`}>
+                }`}>
                 <div className="flex justify-center mb-4">
                   {passStatus ? (
                     <CheckCircle className="h-16 w-16 text-green-600" />
@@ -175,8 +174,8 @@ export const FinalAssessmentComponent: React.FC<FinalAssessmentComponentProps> =
                   Your Score: {score} / {questions.length}
                 </h3>
                 <p className={`text-xl ${passStatus ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'}`}>
-                  {passStatus 
-                    ? '🎉 Congratulations, you passed!' 
+                  {passStatus
+                    ? '🎉 Congratulations, you passed!'
                     : `You need ${passingScore} correct answers to pass.`}
                 </p>
               </div>
@@ -190,12 +189,12 @@ export const FinalAssessmentComponent: React.FC<FinalAssessmentComponentProps> =
                       <h4 className="text-2xl font-bold">You've Earned Your Certificate!</h4>
                     </div>
                     <p className="text-muted-foreground mb-6">
-                      You are now officially a <strong>Learning Science Practitioner</strong>. 
+                      You are now officially a <strong>Learning Science Practitioner</strong>.
                       Download your certificate below and share your achievement!
                     </p>
                     <CertificateGeneratorComponent
                       userName={user?.name || 'Learner'}
-                      courseName="Learning Science Practitioner"
+                      courseTitle="Learning Science Practitioner"
                     />
                   </div>
 
@@ -245,15 +244,14 @@ export const FinalAssessmentComponent: React.FC<FinalAssessmentComponentProps> =
                 {questions.map((question, index) => {
                   const userAnswer = answers[question.id];
                   const isCorrect = userAnswer === question.answer;
-                  
+
                   return (
                     <div
                       key={question.id}
-                      className={`p-4 rounded-lg border-2 ${
-                        isCorrect 
-                          ? 'bg-green-50 dark:bg-green-950/20 border-green-500' 
+                      className={`p-4 rounded-lg border-2 ${isCorrect
+                          ? 'bg-green-50 dark:bg-green-950/20 border-green-500'
                           : 'bg-red-50 dark:bg-red-950/20 border-red-500'
-                      }`}
+                        }`}
                     >
                       <div className="flex items-start gap-2">
                         {isCorrect ? (
