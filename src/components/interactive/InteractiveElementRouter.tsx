@@ -12,6 +12,11 @@ import { DesignFixerComponent } from './DesignFixerComponent';
 import { ReflectionComponent } from './ReflectionComponent';
 import { WordCloudComponent } from './WordCloudComponent';
 import { ChoiceComparisonComponent } from './ChoiceComparisonComponent';
+import { PlayerTypeSimulator } from './PlayerTypeSimulator';
+import { RewardScheduleDesigner } from './RewardScheduleDesigner';
+import { FlowChannelEvaluator } from './FlowChannelEvaluator';
+import { GameMasterGenerator } from './GameMasterGenerator';
+import { ROEDashboard } from './ROEDashboard';
 import { ErrorBoundary } from '@/components/shared/ErrorBoundary';
 import { CardSkeleton } from '@/components/shared/Skeleton';
 
@@ -48,6 +53,11 @@ const ALL_COMPONENTS = {
   ReflectionComponent,
   WordCloudComponent,
   ChoiceComparisonComponent,
+  PlayerTypeSimulator,
+  RewardScheduleDesigner,
+  FlowChannelEvaluator,
+  GameMasterGenerator,
+  ROEDashboard,
   ConceptMap,
   CertificateGenerator,
   AIJourneyComponent,
@@ -60,30 +70,30 @@ if (false) {
 }
 
 export const InteractiveElementRouter = ({ element }: InteractiveElementProps) => {
-  
+
   const renderElement = () => {
     switch (element.type) {
       case 'poll':
         return <PollComponent pollData={element as any} />;
-      
+
       case 'designFixer':
         return <DesignFixerComponent fixerData={element as any} />;
-      
+
       case 'reflection':
         return <ReflectionComponent question={element.question || element.prompt || "Reflect on this lesson"} {...element} />;
-      
+
       case 'wordCloud':
         return <WordCloudComponent {...element} />;
-      
+
       case 'choiceComparison':
         return <ChoiceComparisonComponent data={element as any} />;
-      
+
       case 'visualTokens':
         return <VisualTokens />;
-      
+
       case 'sentenceBuilder':
         return <SentenceBuilder />;
-      
+
       case 'aiGenerator':
         if (element.generatorType === 'buildABot') {
           return <BuildABot />;
@@ -97,7 +107,7 @@ export const InteractiveElementRouter = ({ element }: InteractiveElementProps) =
             options={element.options}
           />
         );
-      
+
       case 'simulation':
         switch (element.simulationType) {
           case 'presentationCoach':
@@ -123,21 +133,64 @@ export const InteractiveElementRouter = ({ element }: InteractiveElementProps) =
           default:
             return <div>Unknown simulation type: {element.simulationType}</div>;
         }
-      
+
       case 'journeyTimeline':
         return (
           <Suspense fallback={<CardSkeleton />}>
             <AIJourneyComponent data={element} />
           </Suspense>
         );
-      
+
       case 'finalAssessment':
         return (
           <Suspense fallback={<CardSkeleton />}>
             <FinalAssessmentComponent data={element as any} />
           </Suspense>
         );
-      
+
+      // Gamification Course Components
+      case 'playerTypeSimulator':
+        return <PlayerTypeSimulator {...element} />;
+
+      case 'rewardScheduleDesigner':
+        return <RewardScheduleDesigner />;
+
+      case 'flowChannelEvaluator':
+        return <FlowChannelEvaluator />;
+
+      case 'pitchAnalysisGenerator':
+        return (
+          <GameMasterGenerator
+            generatorType="mechanic-analyst"
+            title={element.title || "Mechanic Mashup Pitch Analyzer"}
+            description={element.description || "Submit your gamification pitch for Game Master feedback."}
+            placeholder={element.placeholder || "Example: For our sales training, we'll use a leaderboard (competition), daily challenges (habit formation), and team badges (collaboration)..."}
+          />
+        );
+
+      case 'narrativeGenerator':
+        return (
+          <GameMasterGenerator
+            generatorType="narrative-generator"
+            title={element.title || "Narrative Wrapper Generator"}
+            description={element.description || "Enter a dry topic and desired theme for an AI narrative hook."}
+            placeholder={element.placeholder || "Topic: Annual compliance training\nTheme: Detective mystery"}
+          />
+        );
+
+      case 'darkPatternRedesigner':
+        return (
+          <GameMasterGenerator
+            generatorType="dark-pattern-redesigner"
+            title={element.title || "Ethical Redesign Consultant"}
+            description={element.description || "Input a manipulative mechanic for an ethical redesign."}
+            placeholder={element.placeholder || "Example: We require employees to complete training during lunch break to earn points..."}
+          />
+        );
+
+      case 'roeDashboard':
+        return <ROEDashboard />;
+
       default:
         return <div>Unknown interactive element type: {element.type}</div>;
     }

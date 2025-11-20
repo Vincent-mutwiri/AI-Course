@@ -10,7 +10,7 @@ interface ILesson {
   content?: any;
   interactive?: any;
   interactiveElements?: Array<{
-    type: 'reflection' | 'visualTokens' | 'sentenceBuilder' | 'aiGenerator' | 'simulation' | 'dragAndDropQuiz' | 'buildABot' | 'ethicalSimulator' | 'poll' | 'designFixer' | 'wordCloud' | 'choiceComparison' | 'journeyTimeline' | 'finalAssessment';
+    type: 'reflection' | 'visualTokens' | 'sentenceBuilder' | 'aiGenerator' | 'simulation' | 'dragAndDropQuiz' | 'buildABot' | 'ethicalSimulator' | 'poll' | 'designFixer' | 'wordCloud' | 'choiceComparison' | 'journeyTimeline' | 'finalAssessment' | 'playerTypeSimulator' | 'rewardScheduleDesigner' | 'flowChannelEvaluator' | 'pitchAnalysisGenerator' | 'narrativeGenerator' | 'darkPatternRedesigner' | 'roeDashboard';
     [key: string]: any;
   }>;
   quiz?: any;

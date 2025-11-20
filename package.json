@@ -12,6 +12,7 @@
     "server:dev": "nodemon --exec tsx server/src/index.ts",
     "seed": "tsx server/src/seed.ts",
     "seed:module1": "tsx server/src/scripts/seedModule1.ts",
+    "seed:gamification": "tsx server/src/scripts/seedGamificationCourse.ts",
     "delete:course": "tsx server/src/scripts/deleteCourse.ts"
   },
   "dependencies": {

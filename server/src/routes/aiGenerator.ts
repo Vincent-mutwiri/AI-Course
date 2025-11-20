@@ -20,11 +20,11 @@ router.post("/generate", authenticate, async (req: Request, res: Response) => {
     const prompt = getPrompt(generatorType, variables);
 
     const axios = (await import("axios")).default;
-    
+
     const context = [
       { text: prompt, type: "Human" }
     ];
-    
+
     const response = await axios.post(
       process.env.INFLECTION_API_URL!,
       {
@@ -41,7 +41,7 @@ router.post("/generate", authenticate, async (req: Request, res: Response) => {
 
     const aiResponse = response.data.text || "No response generated";
 
-    res.json({ success: true, response: aiResponse, generatorType });
+    res.json({ success: true, result: aiResponse, response: aiResponse, generatorType });
   } catch (error: any) {
     console.error("AI Generator Error:", error.response?.data || error.message);
     res.status(500).json({ error: "Failed to generate AI response" });

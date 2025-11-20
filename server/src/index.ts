@@ -1,7 +1,10 @@
-import { PORT } from "./config/env";
+import { PORT, validateEnvironment } from "./config/env";
 import express from "express";
 import cors from "cors";
 import { connectDB } from "./config/database";
+
+// Validate environment variables on startup
+validateEnvironment();
 import authRoutes from "./routes/auth";
 import userRoutes from "./routes/user";
 import courseRoutes from "./routes/course";
@@ -20,13 +23,13 @@ import profileRoutes from "./routes/profile";
 const app = express();
 
 app.use(cors({
-  origin: function(origin, callback) {
+  origin: function (origin, callback) {
     const allowedOrigins = [
       'http://localhost:5173',
       'https://ai-course-amber-six.vercel.app',
       'https://ai-course-l3na.onrender.com'
     ];
-    
+
     // Allow Vercel preview deployments
     if (!origin || allowedOrigins.includes(origin) || origin.includes('vercel.app')) {
       callback(null, true);
