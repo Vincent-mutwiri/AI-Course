@@ -143,13 +143,13 @@
     - _Requirements: 6.2, 10.3_
 
 - [ ] 11. Implement module structure and progress tracking
-  - [ ] 11.1 Create module data structure
+  - [x] 11.1 Create module data structure
     - Define 6 modules with titles and descriptions (Foundations, Psychology, Toolbox, The Loop, Story Mode, Boss Battle)
     - Assign at least 3 interactive elements per module
     - Structure lessons with content blocks and interactive elements
     - _Requirements: 10.1, 10.2_
   
-  - [ ] 11.2 Implement progress tracking
+  - [x] 11.2 Implement progress tracking
     - Create UserProgress model with completedModules, completedLessons, and interactionHistory
     - Add certificateGenerated and certificateDate fields
     - Implement API endpoints for updating progress

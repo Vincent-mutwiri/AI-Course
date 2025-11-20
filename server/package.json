@@ -6,7 +6,8 @@
     "build": "tsc --skipLibCheck",
     "start": "node dist/index.js",
     "seed": "tsx src/seed.ts",
-    "seed:profile": "tsx src/seed/seed-profile.ts"
+    "seed:profile": "tsx src/seed/seed-profile.ts",
+    "seed:gamification": "tsx src/scripts/seedGamificationModules.ts"
   },
   "dependencies": {
     "express": "^5.1.0",
