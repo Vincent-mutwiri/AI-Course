@@ -17,6 +17,7 @@ import { PlayerTypeAnalyzer } from './PlayerTypeAnalyzer';
 import { RewardScheduleDesigner } from './RewardScheduleDesigner';
 import { FlowChannelEvaluator } from './FlowChannelEvaluator';
 import { GameMasterGenerator } from './GameMasterGenerator';
+import { AIGameMasterGenerator } from './AIGameMasterGenerator';
 import { ROEDashboard } from './ROEDashboard';
 import { ErrorBoundary } from '@/components/shared/ErrorBoundary';
 import { CardSkeleton } from '@/components/shared/Skeleton';
@@ -59,6 +60,7 @@ const ALL_COMPONENTS = {
   RewardScheduleDesigner,
   FlowChannelEvaluator,
   GameMasterGenerator,
+  AIGameMasterGenerator,
   ROEDashboard,
   ConceptMap,
   CertificateGenerator,
@@ -165,31 +167,28 @@ export const InteractiveElementRouter = ({ element }: InteractiveElementProps) =
 
       case 'pitchAnalysisGenerator':
         return (
-          <GameMasterGenerator
+          <AIGameMasterGenerator
             generatorType="mechanic-analyst"
             title={element.title || "Mechanic Mashup Pitch Analyzer"}
             description={element.description || "Submit your gamification pitch for Game Master feedback."}
-            placeholder={element.placeholder || "Example: For our sales training, we'll use a leaderboard (competition), daily challenges (habit formation), and team badges (collaboration)..."}
           />
         );
 
       case 'narrativeGenerator':
         return (
-          <GameMasterGenerator
+          <AIGameMasterGenerator
             generatorType="narrative-generator"
             title={element.title || "Narrative Wrapper Generator"}
             description={element.description || "Enter a dry topic and desired theme for an AI narrative hook."}
-            placeholder={element.placeholder || "Topic: Annual compliance training\nTheme: Detective mystery"}
           />
         );
 
       case 'darkPatternRedesigner':
         return (
-          <GameMasterGenerator
+          <AIGameMasterGenerator
             generatorType="dark-pattern-redesigner"
             title={element.title || "Ethical Redesign Consultant"}
             description={element.description || "Input a manipulative mechanic for an ethical redesign."}
-            placeholder={element.placeholder || "Example: We require employees to complete training during lunch break to earn points..."}
           />
         );
 
