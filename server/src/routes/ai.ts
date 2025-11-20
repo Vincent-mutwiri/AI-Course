@@ -2,6 +2,8 @@ import { Router, Request, Response } from "express";
 import axios from "axios";
 import { authenticate, AuthRequest } from "../middleware/auth";
 import ChatHistory from "../models/ChatHistory";
+import { generateAIGameMasterResponse } from "../services/aiService";
+import { AIGeneratorType } from "../config/aiPrompts";
 
 const router = Router();
 
@@ -60,9 +62,9 @@ router.post("/chat", authenticate, async (req: AuthRequest, res: Response) => {
     res.json({ response: aiResponse, history: chatHistory.messages });
   } catch (error: any) {
     console.error("AI Error:", error.response ? error.response.data : error.message);
-    res.status(500).json({ 
-      message: "AI service error", 
-      error: error.response?.data || error.message 
+    res.status(500).json({
+      message: "AI service error",
+      error: error.response?.data || error.message
     });
   }
 });
@@ -82,6 +84,51 @@ router.delete("/history", authenticate, async (req: AuthRequest, res: Response) 
     res.json({ message: "History cleared" });
   } catch (error: any) {
     res.status(500).json({ message: "Failed to clear history", error: error.message });
+  }
+});
+
+// Game Master endpoint for gamification course
+router.post("/game-master", authenticate, async (req: AuthRequest, res: Response) => {
+  try {
+    const { generatorType, userInput, context } = req.body;
+
+    // Validate required parameters
+    if (!generatorType || !userInput) {
+      return res.status(400).json({
+        message: 'Missing required parameters: generatorType and userInput are required'
+      });
+    }
+
+    // Validate userInput is a string and not empty
+    if (typeof userInput !== 'string' || userInput.trim().length === 0) {
+      return res.status(400).json({
+        message: 'userInput must be a non-empty string'
+      });
+    }
+
+    // Call AI service and return response
+    const aiResponse = await generateAIGameMasterResponse(
+      generatorType as AIGeneratorType,
+      userInput,
+      context
+    );
+
+    res.json({ result: aiResponse });
+
+  } catch (error: any) {
+    console.error('AI Game Master Error:', error.message);
+
+    // Handle validation errors (400)
+    if (error.message.includes('Unknown generator type')) {
+      return res.status(400).json({
+        message: error.message
+      });
+    }
+
+    // Handle service errors (500)
+    res.status(500).json({
+      message: error.message || 'Failed to get AI response.'
+    });
   }
 });
 

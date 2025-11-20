@@ -15,13 +15,13 @@
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5_
 
 - [ ] 3. Implement AI Game Master backend service
-  - [ ] 3.1 Create AI prompt configuration file
+  - [x] 3.1 Create AI prompt configuration file
     - Define `GAME_MASTER_PERSONA` constant with expert consultant persona
     - Create `AIPrompts` object with 5 prompt templates (mechanic-analyst, narrative-generator, dark-pattern-redesigner, core-loop-critique, roe-measurement-advisor)
     - Export `AIGeneratorType` type for type safety
     - _Requirements: 1.4, 1.5, 1.6_
   
-  - [ ] 3.2 Implement AI service layer
+  - [x] 3.2 Implement AI service layer
     - Create `generateAIGameMasterResponse` function with generatorType, userInput, and context parameters
     - Build Inflection API payload with model 'Pi-3.1' and context array
     - Implement axios POST request to Inflection AI API with authorization header
@@ -29,7 +29,7 @@
     - Add error handling with logging and user-friendly error messages
     - _Requirements: 1.1, 1.2, 1.3, 1.7_
   
-  - [ ] 3.3 Create AI API route
+  - [x] 3.3 Create AI API route
     - Create `/api/ai/game-master` POST endpoint
     - Add authentication middleware to protect the route
     - Validate required parameters (generatorType, userInput)
