@@ -18,8 +18,16 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: undefined
+        manualChunks: {
+          'interactive': [
+            './src/components/interactive/PlayerTypeSimulator',
+            './src/components/interactive/RewardScheduleDesigner', 
+            './src/components/interactive/FlowChannelEvaluator',
+            './src/components/interactive/AIGameMasterGenerator'
+          ]
+        }
       }
-    }
+    },
+    chunkSizeWarningLimit: 1000
   }
 })

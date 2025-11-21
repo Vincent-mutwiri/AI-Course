@@ -42,38 +42,22 @@ interface InteractiveElementProps {
   userName?: string;
 }
 
-// Force all components to be included in bundle
-const ALL_COMPONENTS = {
-  VisualTokens,
-  SentenceBuilder,
-  BuildABot,
-  PresentationCoach,
-  EthicalDilemmaSolver,
-  DataDashboard,
-  AIJourney,
-  AIGeneratorComponent,
-  PollComponent,
-  DesignFixerComponent,
-  ReflectionComponent,
-  WordCloudComponent,
-  ChoiceComparisonComponent,
-  PlayerTypeSimulator,
-  PlayerTypeAnalyzer,
-  RewardScheduleDesigner,
-  FlowChannelEvaluator,
-  GameMasterGenerator,
-  AIGameMasterGenerator,
-  ROEDashboard,
-  GamificationConceptMap,
-  ConceptMap,
-  CertificateGenerator,
-  AIJourneyComponent,
-  FinalAssessmentComponent,
+// Ensure components are available in production
+const ensureComponents = () => {
+  // This ensures all components are included in the bundle
+  return {
+    PlayerTypeSimulator,
+    RewardScheduleDesigner,
+    FlowChannelEvaluator,
+    AIGameMasterGenerator,
+    ROEDashboard,
+    GamificationConceptMap
+  };
 };
 
-// Prevent tree-shaking by referencing all components
-if (false) {
-  console.log(ALL_COMPONENTS);
+// Call in development to prevent tree-shaking
+if (import.meta.env.DEV) {
+  ensureComponents();
 }
 
 export const InteractiveElementRouter = ({ element, userName }: InteractiveElementProps) => {
@@ -157,16 +141,36 @@ export const InteractiveElementRouter = ({ element, userName }: InteractiveEleme
 
       // Gamification Course Components
       case 'playerTypeSimulator':
-        return <PlayerTypeSimulator {...element} />;
+        try {
+          return <PlayerTypeSimulator {...element} />;
+        } catch (error) {
+          console.error('PlayerTypeSimulator error:', error);
+          return <div className="p-4 border border-red-500 bg-red-50 rounded-lg">Error loading Player Type Simulator</div>;
+        }
 
       case 'playerTypeAnalyzer':
-        return <PlayerTypeAnalyzer />;
+        try {
+          return <PlayerTypeAnalyzer />;
+        } catch (error) {
+          console.error('PlayerTypeAnalyzer error:', error);
+          return <div className="p-4 border border-red-500 bg-red-50 rounded-lg">Error loading Player Type Analyzer</div>;
+        }
 
       case 'rewardScheduleDesigner':
-        return <RewardScheduleDesigner />;
+        try {
+          return <RewardScheduleDesigner />;
+        } catch (error) {
+          console.error('RewardScheduleDesigner error:', error);
+          return <div className="p-4 border border-red-500 bg-red-50 rounded-lg">Error loading Reward Schedule Designer</div>;
+        }
 
       case 'flowChannelEvaluator':
-        return <FlowChannelEvaluator />;
+        try {
+          return <FlowChannelEvaluator />;
+        } catch (error) {
+          console.error('FlowChannelEvaluator error:', error);
+          return <div className="p-4 border border-red-500 bg-red-50 rounded-lg">Error loading Flow Channel Evaluator</div>;
+        }
 
       case 'pitchAnalysisGenerator':
         return (
@@ -209,13 +213,14 @@ export const InteractiveElementRouter = ({ element, userName }: InteractiveEleme
         );
 
       default:
+        console.error('Unknown interactive element type:', element.type, element);
         return (
           <div className="p-4 border border-red-500 bg-red-50 dark:bg-red-950/20 rounded-lg">
             <p className="text-red-600 dark:text-red-400 font-semibold">
               Unknown interactive element type: {element.type}
             </p>
             <p className="text-sm text-muted-foreground mt-2">
-              This element type is not recognized by the system. Please check the element configuration.
+              Element data: {JSON.stringify(element, null, 2)}
             </p>
           </div>
         );
