@@ -136,9 +136,13 @@ export const InteractiveElementRouter = ({ element, userName }: InteractiveEleme
           </Suspense>
         );
 
-      // Gamification Course Components
+      // Gamification Course Components  
       case 'playerTypeSimulator':
-        return <PlayerTypeSimulator {...element} />;
+        return <PlayerTypeSimulator 
+          title={element.config?.title || element.title}
+          description={element.config?.description || element.description}
+          {...element} 
+        />;
 
       case 'playerTypeAnalyzer':
         try {
