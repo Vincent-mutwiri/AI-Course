@@ -55,7 +55,7 @@ router.post("/chat", authenticate, async (req: AuthRequest, res: Response) => {
       }
     );
 
-    const aiResponse = response.data.choices?.[0]?.message?.content || response.data.text || response.data;
+    const aiResponse = response.data.text || 'No response generated';
     chatHistory.messages.push({ role: "assistant", content: aiResponse, timestamp: new Date() });
     await chatHistory.save();
 

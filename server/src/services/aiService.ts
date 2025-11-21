@@ -5,21 +5,22 @@ import { INFLECTION_API_URL, INFLECTION_API_KEY } from '../config/env';
 // Inflection API context structure
 interface InflectionContext {
     text: string;
-    type: 'System' | 'Human' | 'Assistant';
+    type: 'System' | 'Human' | 'AI';
+    event_type?: string;
 }
 
 // Inflection API request payload
 interface InflectionAPIPayload {
-    model: string;
+    config: string;
     context: InflectionContext[];
 }
 
 // Inflection API response structure
 interface InflectionAPIResponse {
-    completion?: {
-        text: string;
-    };
-    text?: string;
+    text: string;
+    created: number;
+    tool_calls: any[];
+    reasoning_content: any;
 }
 
 /**
@@ -44,13 +45,11 @@ export async function generateAIGameMasterResponse(
         // Replace {userInput} placeholder in prompt template
         const systemPrompt = promptTemplate.replace('{userInput}', userInput);
 
-        // Build Inflection API payload with model 'Pi-3.1' and context array
+        // Build Inflection API payload with config 'Pi-3.1' and context array
         const payload: InflectionAPIPayload = {
-            model: 'Pi-3.1',
+            config: 'Pi-3.1',
             context: [
-                { text: systemPrompt, type: 'System' },
-                ...context,
-                { text: userInput, type: 'Human' }
+                { text: systemPrompt + '\n\n' + userInput, type: 'Human' }
             ]
         };
 
@@ -67,8 +66,8 @@ export async function generateAIGameMasterResponse(
             }
         );
 
-        // Extract completion text from API response
-        const completionText = response.data.completion?.text || response.data.text;
+        // Extract text from API response
+        const completionText = response.data.text;
 
         if (!completionText) {
             throw new Error('No completion text in API response');
