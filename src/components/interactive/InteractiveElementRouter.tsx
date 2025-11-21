@@ -56,10 +56,15 @@ const componentRegistry = {
 Object.keys(componentRegistry);
 
 export const InteractiveElementRouter = ({ element, userName }: InteractiveElementProps) => {
-  console.log('InteractiveElementRouter received:', { type: element.type, element });
-
   const renderElement = () => {
-    switch (element.type) {
+    const elementType = element.type?.trim();
+    
+    // Handle playerTypeSimulator specifically
+    if (elementType === 'playerTypeSimulator') {
+      return <PlayerTypeSimulator title={element.config?.title} description={element.config?.description} />;
+    }
+    
+    switch (elementType) {
       case 'poll':
         return <PollComponent pollData={element as any} />;
 
@@ -139,11 +144,7 @@ export const InteractiveElementRouter = ({ element, userName }: InteractiveEleme
 
       // Gamification Course Components  
       case 'playerTypeSimulator':
-        return <PlayerTypeSimulator 
-          title={element.config?.title || element.title}
-          description={element.config?.description || element.description}
-          {...element} 
-        />;
+        return <PlayerTypeSimulator title={element.config?.title} description={element.config?.description} />;
 
       case 'playerTypeAnalyzer':
         try {
