@@ -2,20 +2,29 @@ import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { jsPDF } from 'jspdf';
-import { Download } from 'lucide-react';
+
+import { Download, Award } from 'lucide-react';
 import { FinalAssessment } from './FinalAssessment';
 import { getToken } from '@/utils/token';
 import { jwtDecode } from 'jwt-decode';
 
-export const CertificateGenerator = () => {
+interface CertificateGeneratorProps {
+  userName?: string;
+}
+
+export const CertificateGenerator = ({ userName: propUserName }: CertificateGeneratorProps = {}) => {
   const [generating, setGenerating] = useState(false);
   const [passed, setPassed] = useState(() => {
     return localStorage.getItem('certificatePassed') === 'true';
   });
-  const [userName, setUserName] = useState('Student');
+  const [userName, setUserName] = useState(propUserName || 'Student');
 
   useEffect(() => {
+    if (propUserName) {
+      setUserName(propUserName);
+      return;
+    }
+    
     const token = getToken();
     if (token) {
       try {
@@ -25,39 +34,25 @@ export const CertificateGenerator = () => {
         console.error('Failed to decode token:', error);
       }
     }
-  }, []);
+  }, [propUserName]);
 
   const generateCertificate = () => {
     setGenerating(true);
     
     setTimeout(() => {
-      const doc = new jsPDF({
-        orientation: 'landscape',
-        unit: 'mm',
-        format: 'a4'
-      });
-
       const completionDate = new Date().toLocaleDateString();
-
-      doc.setFontSize(40);
-      doc.text('Certificate of Completion', 148, 60, { align: 'center' });
+      const certificateText = `Certificate of Completion\n\nThis certifies that\n\n${userName}\n\nhas successfully completed\n\nGamification for Learning: From Passive to Active\n\nCompletion Date: ${completionDate}\n\nInstructor: Vincent Mutwiri`;
       
-      doc.setFontSize(20);
-      doc.text('This certifies that', 148, 90, { align: 'center' });
+      const blob = new Blob([certificateText], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'Gamification-Certificate.txt';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
       
-      doc.setFontSize(30);
-      doc.text(userName, 148, 110, { align: 'center' });
-      
-      doc.setFontSize(20);
-      doc.text('has successfully completed', 148, 130, { align: 'center' });
-      
-      doc.setFontSize(25);
-      doc.text('AI in Education Course', 148, 150, { align: 'center' });
-      
-      doc.setFontSize(15);
-      doc.text(`Completion Date: ${completionDate}`, 148, 180, { align: 'center' });
-
-      doc.save('AI-Course-Certificate.pdf');
       setGenerating(false);
       toast.success('Certificate downloaded successfully!');
     }, 1000);
@@ -79,11 +74,25 @@ export const CertificateGenerator = () => {
         </p>
       </CardHeader>
       <CardContent>
-        <div className="text-center space-y-4">
-          <p className="text-muted-foreground">
-            Congratulations {userName} on completing the AI in Education course!
-          </p>
-          <Button onClick={generateCertificate} disabled={generating} size="lg">
+        <div className="text-center space-y-6">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg border">
+            <Award className="mx-auto h-16 w-16 text-yellow-500 mb-4" />
+            <h3 className="text-2xl font-bold text-gray-800 mb-2">🎉 Congratulations!</h3>
+            <p className="text-lg text-gray-600 mb-4">
+              <strong>{userName}</strong> has successfully completed
+            </p>
+            <p className="text-xl font-semibold text-blue-600 mb-2">
+              Gamification for Learning: From Passive to Active
+            </p>
+            <p className="text-sm text-gray-500">
+              Completion Date: {new Date().toLocaleDateString()}
+            </p>
+            <p className="text-sm text-gray-500">
+              Instructor: Vincent Mutwiri
+            </p>
+          </div>
+          
+          <Button onClick={generateCertificate} disabled={generating} size="lg" className="w-full sm:w-auto">
             {generating ? (
               <span className="flex items-center gap-2">
                 <span className="animate-spin">⏳</span>
