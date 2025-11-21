@@ -95,8 +95,29 @@ async function addModule4Content() {
         },
         {
           type: "text",
+          title: "Why Retrieval Works: The Science",
+          content: "When you retrieve information from memory, you're not just checking if it's there—you're actually strengthening it. Each successful retrieval makes the memory more accessible in the future. This is called the 'testing effect' or 'retrieval practice effect.'\n\nThink of memory like a path through a forest. The first time you walk it, you're pushing through brush and branches. But each time you walk that path again, it becomes clearer and easier to follow. Retrieval practice is like walking that memory path repeatedly, making it a well-worn trail.\n\nResearch by cognitive psychologists Henry Roediger and Jeffrey Karpicke shows that retrieval practice is more effective than re-studying, even when students feel like re-studying is working better. This is because retrieval creates 'desirable difficulties'—challenges that feel harder in the moment but lead to stronger, longer-lasting learning."
+        },
+        {
+          type: "text",
+          title: "The Spacing Effect: When to Retrieve",
+          content: "Retrieval is most powerful when it's spaced out over time. This is called the 'spacing effect,' and it's one of the most robust findings in learning science.\n\n**The Optimal Spacing Schedule:**\n- **First retrieval**: 1 day after initial learning\n- **Second retrieval**: 3-7 days later\n- **Third retrieval**: 2-4 weeks later\n- **Fourth retrieval**: 1-3 months later\n\nEach time you retrieve information just as you're about to forget it, you dramatically strengthen the memory. This is why cramming doesn't work—it's all massed practice with no spacing.\n\n**Practical Application:**\nDon't just 'cover' a topic once and move on. Spiral back to old topics regularly. Start each class with a few questions from last week, last month, and last unit."
+        },
+        {
+          type: "text",
           title: "How to Use Retrieval in Your Classroom",
-          content: "**Low-Stakes Quizzes:**\nStart class with 3 quick questions about last week's lesson. No grades—just activation.\n\n**Brain Dumps:**\nGive students 2 minutes to write everything they remember about a topic before you teach it.\n\n**Exit Tickets:**\nEnd class by asking students to write down the 3 most important things they learned today.\n\n**Spaced Practice:**\nRevisit old topics regularly. Don't just 'cover' material once and move on.\n\nThe key is making retrieval *frequent* and *low-stakes*. The goal isn't to test—it's to strengthen memory."
+          content: "**Low-Stakes Quizzes:**\nStart class with 3 quick questions about last week's lesson. No grades—just activation. The key word is 'low-stakes.' If students are anxious about grades, they won't benefit from the retrieval practice.\n\n**Brain Dumps:**\nGive students 2 minutes to write everything they remember about a topic before you teach it. This activates prior knowledge and reveals gaps.\n\n**Exit Tickets:**\nEnd class by asking students to write down the 3 most important things they learned today. This forces retrieval while the information is still fresh.\n\n**Flashcards (Done Right):**\nHave students create flashcards and quiz themselves regularly. The key is to remove cards they've mastered and focus on the ones they struggle with.\n\n**Spaced Practice:**\nRevisit old topics regularly. Don't just 'cover' material once and move on. Build review into every lesson.\n\n**Peer Teaching:**\nHave students explain concepts to each other. Teaching requires retrieval and is one of the most powerful learning strategies.\n\n**Retrieval Before Re-Teaching:**\nBefore reviewing a topic, have students try to recall what they remember first. This makes the re-teaching far more effective."
+        },
+        {
+          type: "callout",
+          style: "warning",
+          title: "Important: Make It Low-Stakes",
+          content: "Retrieval practice only works when students feel safe to struggle and make mistakes. If every retrieval attempt is graded, students will experience anxiety that interferes with learning. Use retrieval for learning, not for grades."
+        },
+        {
+          type: "text",
+          title: "The Forgetting Curve Revisited",
+          content: "Remember the Forgetting Curve from Module 1? Without reinforcement, we forget 70% of new information within 24 hours. But here's the good news: each time we successfully retrieve information, we flatten that curve.\n\nAfter the first retrieval, we might retain information for a few days. After the second, a few weeks. After the third, months. After multiple spaced retrievals, the information becomes part of long-term memory and can last a lifetime.\n\nThis is why students who cram for tests forget everything shortly after. They never engaged in spaced retrieval practice."
         },
         {
           type: "callout",

@@ -40,8 +40,24 @@ async function addModule5Content() {
         },
         {
           type: "text",
-          title: "Make It Specific",
-          content: "Don't just say 'I'll use active learning.' Instead, be specific:\n\n✓ 'Next Tuesday, I'll have students build a model of the water cycle instead of watching a video.'\n\n✓ 'This Friday, I'll give GPS feedback on essays using the 'specific + next step' formula.'\n\n✓ 'Every Monday, I'll start class with 3 retrieval questions from last week's lesson.'\n\nThe more specific you are, the more likely you are to actually do it."
+          title: "Start Small: The Power of Tiny Changes",
+          content: "You might be tempted to overhaul your entire teaching practice at once. Resist that urge. Research on behavior change shows that small, consistent changes are far more sustainable than dramatic overhauls.\n\nJames Clear, author of 'Atomic Habits,' calls this the '1% improvement rule.' If you improve by just 1% each day, you'll be 37 times better by the end of the year. The same principle applies to teaching.\n\n**Instead of:** 'I'll redesign all my lessons to be active learning.'\n**Try:** 'I'll add one 5-minute active learning activity to my lesson next Tuesday.'\n\n**Instead of:** 'I'll completely change how I give feedback.'\n**Try:** 'I'll use the GPS feedback formula on one assignment this week.'\n\n**Instead of:** 'I'll implement retrieval practice in every lesson.'\n**Try:** 'I'll start each Monday class with 3 retrieval questions from last week.'\n\nSmall changes compound over time."
+        },
+        {
+          type: "text",
+          title: "Make It Specific: The Implementation Intention",
+          content: "Psychologist Peter Gollwitzer's research on 'implementation intentions' shows that people are 2-3x more likely to follow through when they specify exactly when, where, and how they'll act.\n\nThe formula is simple: **'When [situation], I will [action].'**\n\n**Examples:**\n✓ 'When I plan my Tuesday lesson, I will replace the video with a hands-on activity.'\n\n✓ 'When I grade essays on Friday, I will use the GPS feedback formula: positive + specific + next step.'\n\n✓ 'When I start class on Monday, I will ask 3 retrieval questions from last week's lesson.'\n\n✓ 'When I design my next slide deck, I will remove decorative images and simplify the language.'\n\nThe more specific you are, the more likely you are to actually do it."
+        },
+        {
+          type: "text",
+          title: "Choose Your Strategy",
+          content: "You've learned five powerful strategies in this course. You don't need to implement all of them at once. Choose ONE that resonates most with you and your current teaching challenges:\n\n**1. Cognitive Load Management** - Best if your students seem overwhelmed or confused by your materials\n\n**2. Intrinsic Motivation (AMP)** - Best if your students seem disengaged or unmotivated\n\n**3. Active Learning** - Best if your students forget quickly or struggle to apply knowledge\n\n**4. Effective Feedback** - Best if your students don't improve despite your feedback\n\n**5. Retrieval Practice** - Best if your students struggle to remember past content\n\nWhich one speaks to you? That's your starting point."
+        },
+        {
+          type: "callout",
+          style: "success",
+          title: "Your Turn",
+          content: "In the reflection below, commit to ONE specific change you'll make next week. Be as specific as possible: What will you do? When will you do it? Why does it matter to you?"
         }
       ];
 
@@ -69,6 +85,16 @@ async function addModule5Content() {
           style: "success",
           title: "Your Learning Science Toolkit",
           content: "You now know how to: Reduce cognitive load • Tap into intrinsic motivation • Design active learning experiences • Give feedback that feeds forward • Use retrieval to strengthen memory"
+        },
+        {
+          type: "text",
+          title: "What You've Learned",
+          content: "**Module 1: The Foundation**\nYou discovered that traditional teaching often works against how the brain learns. You learned about the Forgetting Curve and how cognitive load affects learning. You now understand the difference between extraneous load (bad) and germane load (good), and you have practical strategies to reduce cognitive overload in your lessons.\n\n**Module 2: The Fuel**\nYou explored what truly motivates learners. You learned that extrinsic rewards (grades, stickers) often undermine long-term motivation, while intrinsic motivation (Autonomy, Mastery, Purpose) creates self-directed learners who persist through challenges. You now have concrete strategies to build AMP into your classroom.\n\n**Module 3: The Method**\nYou discovered why active learning is so much more powerful than passive learning. You learned that students retain 90% of what they do and teach to others, compared to just 10-20% of what they read or hear. You explored the levels of active learning and generated your own active learning activities using AI.\n\n**Module 4: The Accelerators**\nYou learned two powerful strategies to accelerate learning: GPS feedback (specific, actionable, forward-focused) and retrieval practice (the testing effect). You discovered that the struggle to remember is what builds long-term memory, and that spaced retrieval can flatten the Forgetting Curve.\n\n**Module 5: The Action Plan**\nYou committed to making one specific change in your teaching practice. You learned that small, consistent changes compound over time, and that implementation intentions dramatically increase follow-through."
+        },
+        {
+          type: "text",
+          title: "The Research Behind What You've Learned",
+          content: "Every strategy in this course is backed by decades of research from cognitive psychology, neuroscience, and education science. Here are some of the key researchers whose work informed this course:\n\n• **Hermann Ebbinghaus** - The Forgetting Curve\n• **George Miller** - Working memory capacity\n• **John Sweller** - Cognitive Load Theory\n• **Edward Deci & Richard Ryan** - Self-Determination Theory (AMP)\n• **Edgar Dale** - The Cone of Experience (active vs. passive learning)\n• **Henry Roediger & Jeffrey Karpicke** - The Testing Effect (retrieval practice)\n• **John Hattie** - Visible Learning (effect sizes of teaching strategies)\n• **Carol Dweck** - Growth Mindset\n• **Peter Gollwitzer** - Implementation Intentions\n\nYou're now part of a global movement of educators who are applying learning science to create more effective, engaging, and equitable learning experiences."
         },
         {
           type: "text",

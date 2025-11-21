@@ -48,6 +48,22 @@ async function addModule1Content() {
           type: "text",
           title: "Why It Matters for Educators",
           content: "As educators, we often see students struggle to remember what we taught them last week, last month, or even yesterday. This isn't because our students aren't trying hard enough—it's because traditional teaching methods don't always align with how the brain actually learns. Learning Science provides a roadmap for designing instruction that works with the brain, not against it."
+        },
+        {
+          type: "text",
+          title: "The Forgetting Curve: A Wake-Up Call",
+          content: "In 1885, German psychologist Hermann Ebbinghaus discovered something shocking: without reinforcement, we forget approximately 50% of new information within an hour, and up to 70% within 24 hours. This phenomenon, known as the 'Forgetting Curve,' explains why students can ace a test on Friday and forget everything by Monday.\n\nBut here's the good news: Learning Science has identified specific strategies that can flatten this curve and help information stick for the long term."
+        },
+        {
+          type: "callout",
+          style: "warning",
+          title: "The Traditional Teaching Trap",
+          content: "Traditional 'coverage-based' teaching—where we rush through content to 'cover' everything—actually works against how the brain learns. When we prioritize breadth over depth, we create shallow learning that evaporates quickly. Learning Science shows us a better way."
+        },
+        {
+          type: "text",
+          title: "From Theory to Practice",
+          content: "Throughout this course, you'll learn five evidence-based strategies that transform teaching:\n\n**1. Cognitive Load Management** - Design lessons that work with, not against, working memory\n\n**2. Intrinsic Motivation** - Tap into the psychological drives that fuel deep engagement\n\n**3. Active Learning** - Move students from passive consumers to active constructors of knowledge\n\n**4. Effective Feedback** - Give feedback that actually causes learning, not just justifies grades\n\n**5. Retrieval Practice** - Use the testing effect to strengthen long-term memory\n\nEach strategy is backed by decades of research and proven to work across subjects, grade levels, and learning contexts."
         }
       ];
 
@@ -88,10 +104,25 @@ async function addModule1Content() {
           content: "1. **Intrinsic Load**: The inherent difficulty of the content itself. (We can't change this much)\n\n2. **Extraneous Load**: Mental effort wasted on poor design, confusing presentation, or irrelevant information. (We CAN reduce this!)\n\n3. **Germane Load**: Productive mental effort that builds understanding and creates learning. (We WANT to maximize this!)"
         },
         {
+          type: "text",
+          title: "The Science Behind Working Memory",
+          content: "Cognitive psychologist George Miller's famous research revealed that working memory can hold approximately 7±2 'chunks' of information at once—but more recent studies suggest the number is closer to 4 for complex information. This is why phone numbers are broken into chunks (555-1234) and why trying to learn too many new concepts at once leads to overwhelm.\n\nThink of working memory as the 'loading dock' where new information arrives before being processed and stored in long-term memory. If the loading dock is cluttered with irrelevant information (extraneous load), there's no room for the important stuff."
+        },
+        {
           type: "callout",
           style: "success",
           title: "The Solution",
           content: "By reducing extraneous load (bad design, clutter, jargon), we free up mental space for germane load (actual learning). This is the core principle behind effective instructional design."
+        },
+        {
+          type: "text",
+          title: "Practical Strategies to Reduce Cognitive Load",
+          content: "**1. Simplify Language** - Replace jargon with plain language. Instead of 'photosynthesis is the process of converting light energy into chemical energy,' try 'plants use sunlight to make food.'\n\n**2. Use Visual Hierarchy** - Make important information stand out. Use headings, bullet points, and white space to guide attention.\n\n**3. Remove Decorative Elements** - That cute clipart might look nice, but if it doesn't support learning, it's creating extraneous load.\n\n**4. Chunk Information** - Break complex topics into smaller, digestible pieces. Teach one concept at a time.\n\n**5. Provide Worked Examples** - Show students the solution process step-by-step before asking them to solve problems independently.\n\n**6. Use Dual Coding** - Combine words with relevant visuals (diagrams, charts) to support understanding—but avoid redundant text and narration."
+        },
+        {
+          type: "text",
+          title: "Real-World Example: The Slide Makeover",
+          content: "Imagine a slide about the water cycle. A high-cognitive-load version might have:\n- Small, hard-to-read font\n- Technical jargon ('evapotranspiration,' 'condensation nuclei')\n- Decorative images of clouds and rainbows\n- Cluttered layout with text everywhere\n\nA low-cognitive-load version would have:\n- Large, clear font\n- Simple language ('water evaporates,' 'forms clouds,' 'falls as rain')\n- A single, clear diagram showing the cycle\n- Plenty of white space\n\nSame content. Dramatically different cognitive load."
         },
         {
           type: "text",

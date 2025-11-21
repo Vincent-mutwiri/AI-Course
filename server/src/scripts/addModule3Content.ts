@@ -39,6 +39,11 @@ async function addModule3Content() {
           content: "Research shows that students retain only 10% of what they read, 20% of what they hear, but up to 90% of what they do and teach to others. Active learning isn't just better—it's transformative."
         },
         {
+          type: "text",
+          title: "The Science: Why Passive Learning Fails",
+          content: "When students passively receive information—listening to lectures, watching videos, reading textbooks—they're using shallow processing. The information enters working memory but doesn't get encoded into long-term memory effectively.\n\nThink of it like this: watching someone ride a bike doesn't teach you to ride a bike. You need to actually get on the bike, wobble, fall, adjust, and try again. The same is true for learning anything.\n\nNeuroscience research shows that active learning creates stronger, more numerous neural connections. When students actively manipulate information—solving problems, creating projects, teaching others—they're building robust memory networks that last."
+        },
+        {
           type: "comparison",
           title: "Active vs. Passive Learning",
           subtitle: "See the difference in how students engage with content",
@@ -64,8 +69,19 @@ async function addModule3Content() {
         },
         {
           type: "text",
-          title: "Examples of Active Learning",
-          content: "**Instead of lecturing about ecosystems:** Have students build a terrarium and observe changes over time.\n\n**Instead of explaining fractions:** Have students divide a pizza (real or virtual) among friends with different appetites.\n\n**Instead of teaching about coding loops:** Have students program a robot to dance or navigate a maze.\n\n**Instead of describing historical events:** Have students role-play a debate from that time period.\n\nNotice the pattern? Every active approach puts the student in the driver's seat."
+          title: "The Levels of Active Learning",
+          content: "Not all 'active' learning is equally effective. Here's a hierarchy from least to most active:\n\n**Level 1: Passive Reception**\nListening to lectures, watching videos, reading textbooks\n*Retention: ~10-20%*\n\n**Level 2: Active Reception**\nTaking notes, highlighting, discussing with peers\n*Retention: ~30-50%*\n\n**Level 3: Active Processing**\nSolving problems, analyzing case studies, comparing/contrasting\n*Retention: ~50-70%*\n\n**Level 4: Active Creation**\nBuilding projects, designing solutions, creating explanations\n*Retention: ~70-90%*\n\n**Level 5: Teaching Others**\nExplaining concepts to peers, creating tutorials, peer teaching\n*Retention: ~90%+*\n\nThe goal isn't to eliminate all passive learning—sometimes direct instruction is necessary—but to maximize time spent at Levels 3-5."
+        },
+        {
+          type: "text",
+          title: "Examples of Active Learning Across Subjects",
+          content: "**Science:**\n- Instead of lecturing about ecosystems → Build a terrarium and observe changes\n- Instead of explaining chemical reactions → Conduct experiments and predict outcomes\n- Instead of teaching about forces → Design and test paper airplanes\n\n**Math:**\n- Instead of explaining fractions → Divide pizzas among friends with different appetites\n- Instead of teaching geometry → Design a dream bedroom to scale\n- Instead of lecturing on statistics → Collect and analyze real data from the class\n\n**Language Arts:**\n- Instead of teaching grammar rules → Edit real writing and explain corrections\n- Instead of analyzing literature → Rewrite scenes from different perspectives\n- Instead of teaching persuasive writing → Create campaigns for real issues\n\n**Social Studies:**\n- Instead of describing historical events → Role-play debates from that time period\n- Instead of teaching about government → Simulate elections and policy-making\n- Instead of explaining geography → Plan a trip with budget and logistics\n\n**Technology:**\n- Instead of teaching about coding loops → Program a robot to dance or navigate a maze\n- Instead of explaining algorithms → Debug broken code and explain fixes\n- Instead of teaching design principles → Create apps that solve real problems\n\nNotice the pattern? Every active approach puts the student in the driver's seat."
+        },
+        {
+          type: "callout",
+          style: "warning",
+          title: "Common Misconception",
+          content: "Active learning doesn't mean students are always physically moving or that the classroom is chaotic. A student silently solving a complex problem is engaged in active learning. A student watching a video while taking notes is more active than one just watching. The key is mental engagement, not just physical activity."
         },
         {
           type: "callout",

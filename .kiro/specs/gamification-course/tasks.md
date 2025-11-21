@@ -156,8 +156,8 @@
     - Add logic to enable certificate generation only when all modules are completed
     - _Requirements: 10.4, 10.5_
 
-- [ ] 12. Add authentication and authorization
-  - [ ] 12.1 Implement authentication middleware
+- [x] 12. Add authentication and authorization
+  - [x] 12.1 Implement authentication middleware
     - Create authMiddleware for JWT token validation
     - Add token expiration checking
     - Implement error responses for invalid/missing tokens
