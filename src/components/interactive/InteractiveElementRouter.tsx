@@ -56,6 +56,7 @@ const componentRegistry = {
 Object.keys(componentRegistry);
 
 export const InteractiveElementRouter = ({ element, userName }: InteractiveElementProps) => {
+  console.log('InteractiveElementRouter received:', { type: element.type, element });
 
   const renderElement = () => {
     switch (element.type) {
