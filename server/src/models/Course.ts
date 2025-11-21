@@ -10,13 +10,39 @@ export type InteractiveElementType =
   | 'narrativeGenerator'
   | 'darkPatternRedesigner'
   | 'roeDashboard'
-  | 'certificateGenerator';
+  | 'certificateGenerator'
+  | 'poll'
+  | 'designFixer'
+  | 'wordCloud'
+  | 'aiGenerator'
+  | 'choiceComparison'
+  | 'journeyTimeline'
+  | 'finalAssessment';
 
 // Interactive Element Interface
 export interface IInteractiveElement {
   type: InteractiveElementType;
   promptTemplate?: string;
   config?: any;
+  question?: string;
+  options?: any;
+  badSlideUrl?: string;
+  prompt?: string;
+  title?: string;
+  generatorType?: string;
+  simulatedResult?: any;
+  goodSlideUrl?: string;
+  placeholder?: string;
+  description?: string;
+  explanation?: string;
+  passingScore?: number;
+  hotspots?: any;
+  minLength?: number;
+  dataKey?: string;
+  buttonText?: string;
+  totalQuestions?: number;
+  inputLabel?: string;
+  quizDataKey?: string;
 }
 
 interface ILesson {
@@ -74,12 +100,38 @@ const lessonSchema = new Schema<ILesson>({
         'narrativeGenerator',
         'darkPatternRedesigner',
         'roeDashboard',
-        'certificateGenerator'
+        'certificateGenerator',
+        'poll',
+        'designFixer',
+        'wordCloud',
+        'aiGenerator',
+        'choiceComparison',
+        'journeyTimeline',
+        'finalAssessment'
       ],
       required: true
     },
     promptTemplate: { type: String },
-    config: { type: Schema.Types.Mixed }
+    config: { type: Schema.Types.Mixed },
+    question: { type: String },
+    options: { type: Schema.Types.Mixed },
+    badSlideUrl: { type: String },
+    prompt: { type: String },
+    title: { type: String },
+    generatorType: { type: String },
+    simulatedResult: { type: Schema.Types.Mixed },
+    goodSlideUrl: { type: String },
+    placeholder: { type: String },
+    description: { type: String },
+    explanation: { type: String },
+    passingScore: { type: Number },
+    hotspots: { type: Schema.Types.Mixed },
+    minLength: { type: Number },
+    dataKey: { type: String },
+    buttonText: { type: String },
+    totalQuestions: { type: Number },
+    inputLabel: { type: String },
+    quizDataKey: { type: String }
   }],
   quiz: { type: Schema.Types.Mixed },
   codeSnippet: { type: Schema.Types.Mixed },

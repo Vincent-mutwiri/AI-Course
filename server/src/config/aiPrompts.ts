@@ -113,7 +113,7 @@ Context and Goals: {userInput}`,
 };
 
 export function getPrompt(generatorType: string, variables: Record<string, string>): string {
-  const template = AI_PROMPTS[generatorType];
+  const template = AIPrompts[generatorType as AIGeneratorType];
   if (!template) {
     throw new Error(`Unknown generator type: ${generatorType}`);
   }
