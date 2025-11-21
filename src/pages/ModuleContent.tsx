@@ -210,6 +210,13 @@ const ModuleContent = () => {
     }
   };
 
+  const handleLessonClick = async (lessonIndex: number) => {
+    if (lessonIndex !== currentLesson) {
+      setCurrentLesson(lessonIndex);
+      await progressAPI.updateAccess(courseId!, moduleId!, lessonIndex);
+    }
+  };
+
   const handleQuizComplete = async (score: number) => {
     try {
       const updated = await progressAPI.updateLesson(courseId!, moduleId!, currentLesson, true, score);
@@ -257,6 +264,7 @@ const ModuleContent = () => {
                 current={currentLesson}
                 total={module.lessons.length}
                 completedLessons={completedLessons}
+                onLessonClick={handleLessonClick}
               />
 
               {/* Lesson Header */}
@@ -328,22 +336,24 @@ const ModuleContent = () => {
               )}
 
               {/* Navigation */}
-              <div className="flex justify-between pt-6 border-t">
+              <div className="flex flex-col sm:flex-row justify-between gap-4 pt-6 border-t">
                 <Button
                   variant="outline"
                   onClick={handlePrevLesson}
                   disabled={currentLesson === 0}
                   title="Ctrl/Cmd + Left Arrow"
+                  className="w-full sm:w-auto"
                 >
                   ← Previous Lesson
                 </Button>
-                <div className="text-sm text-muted-foreground text-center">
+                <div className="text-sm text-muted-foreground text-center hidden sm:block">
                   <div>Lesson {currentLesson + 1} of {module.lessons.length}</div>
                   <div className="text-xs mt-1">Use Ctrl/Cmd + Arrow keys to navigate</div>
                 </div>
                 <Button
                   onClick={handleNextLesson}
                   title="Ctrl/Cmd + Right Arrow"
+                  className="w-full sm:w-auto"
                 >
                   {currentLesson === module.lessons.length - 1 ? 'Back to Course' : 'Next Lesson →'}
                 </Button>
