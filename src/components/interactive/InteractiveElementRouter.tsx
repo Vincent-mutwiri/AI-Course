@@ -12,8 +12,7 @@ import { DesignFixerComponent } from './DesignFixerComponent';
 import { ReflectionComponent } from './ReflectionComponent';
 import { WordCloudComponent } from './WordCloudComponent';
 import { ChoiceComparisonComponent } from './ChoiceComparisonComponent';
-// Dynamic import to ensure component loads in production
-const PlayerTypeSimulator = lazy(() => import('./PlayerTypeSimulator').then(m => ({ default: m.PlayerTypeSimulator })));
+import { PlayerTypeSimulator } from './PlayerTypeSimulator';
 import { PlayerTypeAnalyzer } from './PlayerTypeAnalyzer';
 import { RewardScheduleDesigner } from './RewardScheduleDesigner';
 import { FlowChannelEvaluator } from './FlowChannelEvaluator';
@@ -45,6 +44,7 @@ interface InteractiveElementProps {
 
 // Force registration of components to prevent tree-shaking
 const componentRegistry = {
+  PlayerTypeSimulator,
   RewardScheduleDesigner,
   FlowChannelEvaluator,
   AIGameMasterGenerator,
@@ -117,11 +117,7 @@ export const InteractiveElementRouter = ({ element, userName }: InteractiveEleme
               </Suspense>
             );
           case 'playerTypeSimulator':
-            return (
-              <Suspense fallback={<CardSkeleton />}>
-                <PlayerTypeSimulator {...element} />
-              </Suspense>
-            );
+            return <PlayerTypeSimulator {...element} />;
           default:
             return <div>Unknown simulation type: {element.simulationType}</div>;
         }
@@ -142,11 +138,7 @@ export const InteractiveElementRouter = ({ element, userName }: InteractiveEleme
 
       // Gamification Course Components
       case 'playerTypeSimulator':
-        return (
-          <Suspense fallback={<CardSkeleton />}>
-            <PlayerTypeSimulator {...element} />
-          </Suspense>
-        );
+        return <PlayerTypeSimulator {...element} />;
 
       case 'playerTypeAnalyzer':
         try {
