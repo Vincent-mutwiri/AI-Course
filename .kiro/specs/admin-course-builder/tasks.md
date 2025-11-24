@@ -167,15 +167,15 @@
     - Render horizontal divider with styling
     - _Requirements: 2.2_
 
-- [ ] 10. Create configuration modals for basic blocks
-  - [ ] 10.1 Create TextBlockModal
+- [x] 10. Create configuration modals for basic blocks
+  - [x] 10.1 Create TextBlockModal
     - Create src/components/admin/course-builder/modals/TextBlockModal.tsx
     - Integrate TipTap or Lexical rich text editor
     - Add React Hook Form with textBlockSchema validation
     - Implement save handler
     - _Requirements: 2.2, 4.1, 4.2, 4.3_
 
-  - [ ] 10.2 Create VideoBlockModal
+  - [x] 10.2 Create VideoBlockModal
     - Create src/components/admin/course-builder/modals/VideoBlockModal.tsx
     - Add radio buttons for upload vs embed
     - Add URL input for embed option
@@ -184,7 +184,7 @@
     - Implement upload to S3 on save
     - _Requirements: 2.2, 4.1, 4.2, 4.3, 4.4, 9.1, 9.2, 9.3, 9.4_
 
-  - [ ] 10.3 Create ImageBlockModal
+  - [x] 10.3 Create ImageBlockModal
     - Create src/components/admin/course-builder/modals/ImageBlockModal.tsx
     - Add file input for image upload
     - Add caption and alt text fields
@@ -192,21 +192,21 @@
     - Implement upload to S3 on save
     - _Requirements: 2.2, 4.1, 4.2, 4.3, 4.4, 9.1, 9.2, 9.3, 9.4_
 
-  - [ ] 10.4 Create CodeBlockModal
+  - [x] 10.4 Create CodeBlockModal
     - Create src/components/admin/course-builder/modals/CodeBlockModal.tsx
     - Add textarea for code input
     - Add select dropdown for language
     - Add React Hook Form with codeBlockSchema validation
     - _Requirements: 2.2, 4.1, 4.2, 4.3_
 
-  - [ ] 10.5 Create ListBlockModal
+  - [x] 10.5 Create ListBlockModal
     - Create src/components/admin/course-builder/modals/ListBlockModal.tsx
     - Add radio buttons for list type
     - Add dynamic item inputs with add/remove buttons
     - Add React Hook Form with listBlockSchema validation
     - _Requirements: 2.2, 4.1, 4.2, 4.3_
 
-  - [ ] 10.6 Create DividerBlockModal
+  - [x] 10.6 Create DividerBlockModal
     - Create src/components/admin/course-builder/modals/DividerBlockModal.tsx
     - Add minimal configuration (style options)
     - Add React Hook Form with basic validation
