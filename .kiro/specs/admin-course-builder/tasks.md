@@ -82,7 +82,7 @@
     - Show confirmation dialog on navigation
     - _Requirements: 8.2_
 
-- [ ] 5. Build CourseStructure component
+- [x] 5. Build CourseStructure component
   - Create src/components/admin/course-builder/CourseStructure.tsx
   - Implement Accordion with modules and lessons
   - Add active lesson highlighting

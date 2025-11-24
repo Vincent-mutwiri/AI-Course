@@ -3,6 +3,7 @@ import { useParams, useNavigate, useBeforeUnload } from "react-router-dom";
 import { toast } from "sonner";
 import api from "@/services/api";
 import { debounce } from "@/utils/debounce";
+import CourseStructure from "@/components/admin/course-builder/CourseStructure";
 
 interface Block {
     id: string;
@@ -16,13 +17,16 @@ interface Block {
 interface Lesson {
     _id: string;
     title: string;
+    duration?: number;
     blocks?: Block[];
 }
 
 interface Module {
     _id: string;
     title: string;
+    description?: string;
     lessons: Lesson[];
+    order: number;
 }
 
 interface Course {
@@ -192,6 +196,35 @@ export default function CourseBuilderPage() {
         }
     };
 
+    // Handle lesson selection
+    const handleLessonSelect = (moduleId: string, lessonId: string) => {
+        // Check for unsaved changes before switching lessons
+        if (hasUnsavedChanges) {
+            const confirmed = window.confirm(
+                "You have unsaved changes. Are you sure you want to switch lessons? Your changes will be lost."
+            );
+            if (!confirmed) {
+                return;
+            }
+        }
+
+        // Find the selected lesson and load its blocks
+        const module = course?.modules.find((m) => m._id === moduleId);
+        const lesson = module?.lessons.find((l) => l._id === lessonId);
+
+        if (lesson) {
+            setCurrentModuleId(moduleId);
+            setCurrentLessonId(lessonId);
+            setBlocks(lesson.blocks || []);
+            setHasUnsavedChanges(false);
+        }
+    };
+
+    // Handle add module
+    const handleAddModule = () => {
+        toast.info("Add module functionality will be implemented in a future task");
+    };
+
     if (isLoading) {
         return (
             <div className="flex items-center justify-center h-screen">
@@ -267,12 +300,13 @@ export default function CourseBuilderPage() {
             <div className="flex-1 flex overflow-hidden">
                 {/* Left Panel - Course Structure */}
                 <div className="w-64 border-r bg-muted/30 overflow-y-auto">
-                    <div className="p-4">
-                        <h2 className="font-semibold mb-4">Course Structure</h2>
-                        <p className="text-sm text-muted-foreground">
-                            Structure panel coming soon
-                        </p>
-                    </div>
+                    <CourseStructure
+                        course={course}
+                        currentModuleId={currentModuleId}
+                        currentLessonId={currentLessonId}
+                        onLessonSelect={handleLessonSelect}
+                        onAddModule={handleAddModule}
+                    />
                 </div>
 
                 {/* Center Panel - Canvas */}
