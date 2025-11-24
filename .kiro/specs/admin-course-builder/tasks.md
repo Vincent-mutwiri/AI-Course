@@ -1,28 +1,28 @@
 # Implementation Plan
 
-- [ ] 1. Set up database schema and types
+- [x] 1. Set up database schema and types
   - Add Block interface and BlockType enum to Course model types
   - Create Mongoose blockSchema with all required fields
   - Update lessonSchema to include blocks array field
   - Export IBlock interface for frontend use
   - _Requirements: 1.1, 1.2, 12.1, 12.2, 12.3_
 
-- [ ] 2. Create admin API routes for course builder
-  - [ ] 2.1 Implement GET /admin/courses/:id/edit endpoint
+- [-] 2. Create admin API routes for course builder
+  - [x] 2.1 Implement GET /admin/courses/:id/edit endpoint
     - Add route handler to fetch course with modules and lessons
     - Apply authenticate and requireAdmin middleware
     - Select only necessary fields for builder (title, modules, lessons, blocks)
     - Return formatted course data
     - _Requirements: 1.2, 8.1_
 
-  - [ ] 2.2 Implement PUT /admin/courses/:courseId/modules/:moduleId/lessons/:lessonId/blocks endpoint
+  - [x] 2.2 Implement PUT /admin/courses/:courseId/modules/:moduleId/lessons/:lessonId/blocks endpoint
     - Create route handler to save blocks array
     - Add block validation middleware
     - Update lesson blocks in database
     - Return updated lesson data
     - _Requirements: 7.1, 7.3, 7.4_
 
-  - [ ] 2.3 Implement POST /admin/upload endpoint
+  - [x] 2.3 Implement POST /admin/upload endpoint
     - Create route handler for file uploads
     - Add Multer middleware for file handling
     - Validate file type and size
@@ -30,14 +30,14 @@
     - Return S3 URL and metadata
     - _Requirements: 9.1, 9.2, 9.3, 9.5_
 
-  - [ ] 2.4 Implement PATCH /admin/courses/:courseId/lessons/:lessonId/blocks/reorder endpoint
+  - [x] 2.4 Implement PATCH /admin/courses/:courseId/lessons/:lessonId/blocks/reorder endpoint
     - Create route handler to reorder blocks
     - Validate blockIds array
     - Update block order in database
     - Return updated blocks array
     - _Requirements: 5.2, 5.3_
 
-  - [ ] 2.5 Implement POST /admin/courses/:courseId/lessons/:lessonId/blocks/:blockId/duplicate endpoint
+  - [x] 2.5 Implement POST /admin/courses/:courseId/lessons/:lessonId/blocks/:blockId/duplicate endpoint
     - Create route handler to duplicate block
     - Generate new UUID for duplicated block
     - Insert duplicated block after original

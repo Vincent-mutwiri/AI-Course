@@ -1,5 +1,44 @@
 import mongoose, { Document, Schema } from "mongoose";
 
+// Block Type Enum
+export type BlockType =
+  | 'text' | 'video' | 'image' | 'code' | 'list' | 'divider'
+  | 'reflection' | 'poll' | 'wordCloud' | 'aiGenerator'
+  | 'choiceComparison' | 'designFixer' | 'playerTypeSimulator'
+  | 'rewardScheduleDesigner' | 'flowChannelEvaluator'
+  | 'pitchAnalysisGenerator' | 'narrativeGenerator'
+  | 'darkPatternRedesigner' | 'roeDashboard' | 'journeyTimeline'
+  | 'certificateGenerator' | 'finalAssessment';
+
+// Block Interface
+export interface IBlock {
+  id: string;
+  type: BlockType;
+  order: number;
+  content: {
+    text?: string;
+    videoUrl?: string;
+    videoSource?: 'upload' | 'embed';
+    videoProvider?: 'youtube' | 'vimeo' | 's3';
+    imageUrl?: string;
+    caption?: string;
+    altText?: string;
+    code?: string;
+    language?: string;
+    items?: Array<{ text: string; checked?: boolean; }>;
+    listType?: 'bullet' | 'numbered' | 'checkbox';
+    config?: any;
+    question?: string;
+    options?: any;
+    prompt?: string;
+    title?: string;
+    description?: string;
+    meta?: Record<string, any>;
+  };
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 // Interactive Element Type Enum
 export type InteractiveElementType =
   | 'reflection'
@@ -55,6 +94,7 @@ interface ILesson {
   content?: any;
   interactive?: any;
   interactiveElements?: IInteractiveElement[];
+  blocks?: IBlock[];
   quiz?: any;
   codeSnippet?: any;
 }
@@ -78,6 +118,47 @@ export interface ICourse extends Document {
   enrolledCount: number;
   isPublished: boolean;
 }
+
+const blockSchema = new Schema<IBlock>({
+  id: { type: String, required: true },
+  type: {
+    type: String,
+    enum: [
+      'text', 'video', 'image', 'code', 'list', 'divider',
+      'reflection', 'poll', 'wordCloud', 'aiGenerator',
+      'choiceComparison', 'designFixer', 'playerTypeSimulator',
+      'rewardScheduleDesigner', 'flowChannelEvaluator',
+      'pitchAnalysisGenerator', 'narrativeGenerator',
+      'darkPatternRedesigner', 'roeDashboard', 'journeyTimeline',
+      'certificateGenerator', 'finalAssessment'
+    ],
+    required: true
+  },
+  order: { type: Number, required: true },
+  content: {
+    text: { type: String },
+    videoUrl: { type: String },
+    videoSource: { type: String, enum: ['upload', 'embed'] },
+    videoProvider: { type: String, enum: ['youtube', 'vimeo', 's3'] },
+    imageUrl: { type: String },
+    caption: { type: String },
+    altText: { type: String },
+    code: { type: String },
+    language: { type: String },
+    items: [{
+      text: { type: String },
+      checked: { type: Boolean }
+    }],
+    listType: { type: String, enum: ['bullet', 'numbered', 'checkbox'] },
+    config: { type: Schema.Types.Mixed },
+    question: { type: String },
+    options: { type: Schema.Types.Mixed },
+    prompt: { type: String },
+    title: { type: String },
+    description: { type: String },
+    meta: { type: Schema.Types.Mixed }
+  }
+}, { timestamps: true });
 
 const lessonSchema = new Schema<ILesson>({
   title: { type: String, required: true },
@@ -133,6 +214,7 @@ const lessonSchema = new Schema<ILesson>({
     inputLabel: { type: String },
     quizDataKey: { type: String }
   }],
+  blocks: [blockSchema],
   quiz: { type: Schema.Types.Mixed },
   codeSnippet: { type: Schema.Types.Mixed },
 });
