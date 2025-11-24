@@ -131,38 +131,38 @@
   - Style with proper spacing and borders
   - _Requirements: 6.1, 6.2, 6.3, 6.4_
 
-- [ ] 9. Create basic block components
-  - [ ] 9.1 Create TextBlock component
+- [x] 9. Create basic block components
+  - [x] 9.1 Create TextBlock component
     - Create src/components/admin/course-builder/blocks/TextBlock.tsx
     - Render HTML content safely
     - Display truncated preview in canvas
     - _Requirements: 2.2_
 
-  - [ ] 9.2 Create VideoBlock component
+  - [x] 9.2 Create VideoBlock component
     - Create src/components/admin/course-builder/blocks/VideoBlock.tsx
     - Support YouTube, Vimeo, and S3 video sources
     - Display video player or thumbnail
     - _Requirements: 2.2_
 
-  - [ ] 9.3 Create ImageBlock component
+  - [x] 9.3 Create ImageBlock component
     - Create src/components/admin/course-builder/blocks/ImageBlock.tsx
     - Display image with caption
     - Show alt text in preview
     - _Requirements: 2.2_
 
-  - [ ] 9.4 Create CodeBlock component
+  - [x] 9.4 Create CodeBlock component
     - Create src/components/admin/course-builder/blocks/CodeBlock.tsx
     - Use Prism.js or Highlight.js for syntax highlighting
     - Display language badge
     - _Requirements: 2.2_
 
-  - [ ] 9.5 Create ListBlock component
+  - [x] 9.5 Create ListBlock component
     - Create src/components/admin/course-builder/blocks/ListBlock.tsx
     - Support bullet, numbered, and checkbox lists
     - Render items with proper styling
     - _Requirements: 2.2_
 
-  - [ ] 9.6 Create DividerBlock component
+  - [x] 9.6 Create DividerBlock component
     - Create src/components/admin/course-builder/blocks/DividerBlock.tsx
     - Render horizontal divider with styling
     - _Requirements: 2.2_
