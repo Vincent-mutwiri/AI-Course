@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import api from "@/services/api";
 import { debounce } from "@/utils/debounce";
 import CourseStructure from "@/components/admin/course-builder/CourseStructure";
+import Canvas from "@/components/admin/course-builder/Canvas";
 
 interface Block {
     id: string;
@@ -225,6 +226,89 @@ export default function CourseBuilderPage() {
         toast.info("Add module functionality will be implemented in a future task");
     };
 
+    // Handle blocks reorder
+    const handleBlocksReorder = async (reorderedBlocks: Block[]) => {
+        // Update local state immediately for optimistic UI
+        setBlocks(reorderedBlocks);
+        setHasUnsavedChanges(true);
+
+        // Persist to backend
+        if (!currentLessonId) return;
+
+        try {
+            const blockIds = reorderedBlocks.map((block) => block.id);
+            await api.patch(
+                `/admin/courses/${id}/lessons/${currentLessonId}/blocks/reorder`,
+                { blockIds }
+            );
+            toast.success("Blocks reordered");
+        } catch (error: any) {
+            console.error("Failed to reorder blocks:", error);
+            toast.error(error.response?.data?.message || "Failed to reorder blocks");
+        }
+    };
+
+    // Handle block edit
+    const handleBlockEdit = (blockId: string) => {
+        toast.info(`Edit block ${blockId} - Modal will be implemented in a future task`);
+    };
+
+    // Handle block duplicate
+    const handleBlockDuplicate = async (blockId: string) => {
+        if (!currentLessonId) return;
+
+        try {
+            const response = await api.post(
+                `/admin/courses/${id}/lessons/${currentLessonId}/blocks/${blockId}/duplicate`
+            );
+            const newBlock = response.data.block;
+
+            // Add the duplicated block to the local state
+            const blockIndex = blocks.findIndex((b) => b.id === blockId);
+            const updatedBlocks = [...blocks];
+            updatedBlocks.splice(blockIndex + 1, 0, newBlock);
+
+            // Update order for all blocks
+            const reorderedBlocks = updatedBlocks.map((block, index) => ({
+                ...block,
+                order: index,
+            }));
+
+            setBlocks(reorderedBlocks);
+            setHasUnsavedChanges(true);
+            toast.success("Block duplicated");
+        } catch (error: any) {
+            console.error("Failed to duplicate block:", error);
+            toast.error(error.response?.data?.message || "Failed to duplicate block");
+        }
+    };
+
+    // Handle block delete
+    const handleBlockDelete = (blockId: string) => {
+        const confirmed = window.confirm(
+            "Are you sure you want to delete this block? This action cannot be undone."
+        );
+
+        if (!confirmed) return;
+
+        // Remove block from local state
+        const updatedBlocks = blocks
+            .filter((block) => block.id !== blockId)
+            .map((block, index) => ({
+                ...block,
+                order: index,
+            }));
+
+        setBlocks(updatedBlocks);
+        setHasUnsavedChanges(true);
+        toast.success("Block deleted");
+    };
+
+    // Handle block preview
+    const handleBlockPreview = (blockId: string) => {
+        toast.info(`Preview block ${blockId} - Preview mode will be implemented in a future task`);
+    };
+
     if (isLoading) {
         return (
             <div className="flex items-center justify-center h-screen">
@@ -311,17 +395,25 @@ export default function CourseBuilderPage() {
 
                 {/* Center Panel - Canvas */}
                 <div className="flex-1 overflow-y-auto bg-background">
-                    <div className="p-6">
-                        <h2 className="font-semibold mb-4">Canvas</h2>
-                        <p className="text-sm text-muted-foreground">
-                            Canvas panel coming soon
-                        </p>
-                        {blocks.length > 0 && (
-                            <div className="mt-4">
-                                <p className="text-sm">Loaded {blocks.length} blocks</p>
+                    {currentLessonId ? (
+                        <Canvas
+                            blocks={blocks}
+                            onBlocksReorder={handleBlocksReorder}
+                            onBlockEdit={handleBlockEdit}
+                            onBlockDuplicate={handleBlockDuplicate}
+                            onBlockDelete={handleBlockDelete}
+                            onBlockPreview={handleBlockPreview}
+                            isLoading={isLoading}
+                        />
+                    ) : (
+                        <div className="flex items-center justify-center h-full">
+                            <div className="text-center">
+                                <p className="text-muted-foreground">
+                                    Select a lesson to start editing
+                                </p>
                             </div>
-                        )}
-                    </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Right Panel - Block Library */}

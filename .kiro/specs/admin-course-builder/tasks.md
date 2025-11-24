@@ -91,15 +91,15 @@
   - Style with proper spacing and colors
   - _Requirements: 1.3, 1.4, 8.1, 8.3, 8.4_
 
-- [ ] 6. Build Canvas component with drag-and-drop
-  - [ ] 6.1 Create Canvas component structure
+- [x] 6. Build Canvas component with drag-and-drop
+  - [x] 6.1 Create Canvas component structure
     - Create src/components/admin/course-builder/Canvas.tsx
     - Set up DragDropContext from @hello-pangea/dnd
     - Implement Droppable area for blocks
     - Add empty state when no blocks exist
     - _Requirements: 1.1, 5.1_
 
-  - [ ] 6.2 Implement drag-and-drop functionality
+  - [x] 6.2 Implement drag-and-drop functionality
     - Create Draggable wrapper for each block
     - Implement onDragEnd handler
     - Update blocks order on drop
@@ -107,7 +107,7 @@
     - Call API to persist new order
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5_
 
-  - [ ] 6.3 Add block action handlers
+  - [x] 6.3 Add block action handlers
     - Implement onBlockEdit handler to open modal
     - Implement onBlockDuplicate handler
     - Implement onBlockDelete handler with confirmation
