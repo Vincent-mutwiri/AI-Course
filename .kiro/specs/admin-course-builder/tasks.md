@@ -123,7 +123,7 @@
   - Implement onBlockAdd handler to add block to canvas
   - _Requirements: 2.1, 2.2, 10.1, 10.2, 10.3, 10.4, 10.5_
 
-- [ ] 8. Build BlockRenderer component
+- [x] 8. Build BlockRenderer component
   - Create src/components/admin/course-builder/BlockRenderer.tsx
   - Implement action toolbar with edit, duplicate, preview, delete buttons
   - Add hover effect to show/hide toolbar
