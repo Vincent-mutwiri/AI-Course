@@ -52,8 +52,8 @@
   - Export all schemas for use in modals
   - _Requirements: 4.3, 4.4, 4.5, 4.6_
 
-- [ ] 4. Build CourseBuilderPage foundation
-  - [ ] 4.1 Create CourseBuilderPage component structure
+- [x] 4. Build CourseBuilderPage foundation
+  - [x] 4.1 Create CourseBuilderPage component structure
     - Create src/pages/admin/CourseBuilderPage.tsx
     - Set up component state (course, currentModuleId, currentLessonId, blocks, isLoading, isSaving)
     - Implement useEffect to fetch course data on mount
@@ -61,7 +61,7 @@
     - Create three-panel layout with flex containers
     - _Requirements: 1.1, 1.2, 1.5_
 
-  - [ ] 4.2 Implement auto-save functionality
+  - [x] 4.2 Implement auto-save functionality
     - Create debounced save function with 2-second delay
     - Add useEffect to trigger save on blocks change
     - Display saving indicator in UI
@@ -69,14 +69,14 @@
     - Handle save failures with retry logic
     - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5_
 
-  - [ ] 4.3 Add keyboard shortcuts
+  - [x] 4.3 Add keyboard shortcuts
     - Implement Cmd/Ctrl+Z for undo
     - Implement Cmd/Ctrl+D for duplicate
     - Add event listeners in useEffect
     - Clean up listeners on unmount
     - _Requirements: 6.5_
 
-  - [ ] 4.4 Add unsaved changes warning
+  - [x] 4.4 Add unsaved changes warning
     - Track hasUnsavedChanges state
     - Add beforeunload event listener
     - Show confirmation dialog on navigation
