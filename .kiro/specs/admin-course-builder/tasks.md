@@ -44,7 +44,7 @@
     - Return new block data
     - _Requirements: 6.1_
 
-- [ ] 3. Create block validation schemas
+- [x] 3. Create block validation schemas
   - Create src/lib/validation/blockSchemas.ts file
   - Implement Zod schemas for all 6 basic block types (text, video, image, code, list, divider)
   - Implement Zod schemas for key interactive block types (reflection, poll, wordCloud)
