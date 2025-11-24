@@ -7,7 +7,7 @@
   - Export IBlock interface for frontend use
   - _Requirements: 1.1, 1.2, 12.1, 12.2, 12.3_
 
-- [-] 2. Create admin API routes for course builder
+- [x] 2. Create admin API routes for course builder
   - [x] 2.1 Implement GET /admin/courses/:id/edit endpoint
     - Add route handler to fetch course with modules and lessons
     - Apply authenticate and requireAdmin middleware

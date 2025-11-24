@@ -162,7 +162,7 @@ router.put("/courses/:courseId/modules/:moduleId/lessons/:lessonId/blocks", asyn
 
     res.json({
       lesson: {
-        _id: lesson._id,
+        _id: (lesson as any)._id,
         title: lesson.title,
         blocks: lesson.blocks
       }
