@@ -114,7 +114,7 @@
     - Implement onBlockPreview handler
     - _Requirements: 6.1, 6.2, 6.3, 6.4_
 
-- [ ] 7. Build BlockLibrary component
+- [x] 7. Build BlockLibrary component
   - Create src/components/admin/course-builder/BlockLibrary.tsx
   - Define block type metadata (icon, title, description) for all 21 types
   - Implement Tabs for Basic and Interactive categories
