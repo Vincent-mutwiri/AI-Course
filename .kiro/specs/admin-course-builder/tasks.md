@@ -314,14 +314,14 @@
   - Add CLI command to run migration
   - _Requirements: 12.3_
 
-- [ ] 19. Add comprehensive testing
-  - [ ] 19.1 Write unit tests for block components
+- [x] 19. Add comprehensive testing
+  - [x] 19.1 Write unit tests for block components
     - Test TextBlock, VideoBlock, ImageBlock rendering
     - Test CodeBlock, ListBlock, DividerBlock rendering
     - Test block validation schemas
     - _Requirements: All block-related requirements_
 
-  - [ ] 19.2 Write integration tests for workflows
+  - [x] 19.2 Write integration tests for workflows
     - Test block addition workflow
     - Test block editing workflow
     - Test drag-and-drop reordering
@@ -329,7 +329,7 @@
     - Test file upload flow
     - _Requirements: 2.1, 4.1, 5.1, 7.1, 9.1_
 
-  - [ ] 19.3 Write E2E tests for critical flows
+  - [x] 19.3 Write E2E tests for critical flows
     - Test creating new lesson with multiple blocks
     - Test editing existing block configuration
     - Test reordering blocks via drag-and-drop

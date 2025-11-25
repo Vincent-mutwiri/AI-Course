@@ -17,5 +17,11 @@ export default defineConfig({
   assetsInclude: ['**/*.json'],
   build: {
     chunkSizeWarningLimit: 1000
+  },
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './src/test/setup.ts',
+    css: true,
   }
 })
