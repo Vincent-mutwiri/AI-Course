@@ -275,7 +275,7 @@
   - Maintain lesson context when entering/exiting preview
   - _Requirements: 11.1, 11.2, 11.3, 11.4, 11.5_
 
-- [ ] 14. Implement modal management system
+- [x] 14. Implement modal management system
   - Create useBlockModal hook to manage modal state
   - Track currently editing block
   - Handle modal open/close

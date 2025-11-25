@@ -4,10 +4,14 @@ import { toast } from "sonner";
 import { Eye } from "lucide-react";
 import api from "@/services/api";
 import { debounce } from "@/utils/debounce";
+import { useBlockModal } from "@/hooks/useBlockModal";
 import CourseStructure from "@/components/admin/course-builder/CourseStructure";
 import Canvas from "@/components/admin/course-builder/Canvas";
+import BlockLibrary from "@/components/admin/course-builder/BlockLibrary";
 import PreviewModal from "@/components/admin/course-builder/PreviewModal";
+import { BlockModalRouter } from "@/components/admin/course-builder/BlockModalRouter";
 import { Button } from "@/components/ui/button";
+import type { BlockType } from "@/hooks/useBlockModal";
 
 interface Block {
     id: string;
@@ -54,6 +58,15 @@ export default function CourseBuilderPage() {
     const [saveRetryCount, setSaveRetryCount] = useState(0);
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
     const [currentLessonIndex, setCurrentLessonIndex] = useState(0);
+
+    // Initialize block modal management
+    const { modalState, openModal, closeModal, handleSave } = useBlockModal({
+        blocks,
+        onBlocksChange: (updatedBlocks) => {
+            setBlocks(updatedBlocks);
+            setHasUnsavedChanges(true);
+        },
+    });
 
     // Fetch course data on mount
     useEffect(() => {
@@ -259,7 +272,10 @@ export default function CourseBuilderPage() {
 
     // Handle block edit
     const handleBlockEdit = (blockId: string) => {
-        toast.info(`Edit block ${blockId} - Modal will be implemented in a future task`);
+        const block = blocks.find((b) => b.id === blockId);
+        if (block) {
+            openModal(block.type, block);
+        }
     };
 
     // Handle block duplicate
@@ -316,6 +332,12 @@ export default function CourseBuilderPage() {
     // Handle block preview - opens preview modal for entire lesson
     const handleBlockPreview = (blockId: string) => {
         setIsPreviewOpen(true);
+    };
+
+    // Handle block add from library
+    const handleBlockAdd = (blockType: string) => {
+        // Open modal for the selected block type to configure it
+        openModal(blockType as BlockType);
     };
 
     // Handle preview toggle
@@ -459,12 +481,7 @@ export default function CourseBuilderPage() {
 
                 {/* Right Panel - Block Library */}
                 <div className="w-80 border-l bg-muted/30 overflow-y-auto">
-                    <div className="p-4">
-                        <h2 className="font-semibold mb-4">Block Library</h2>
-                        <p className="text-sm text-muted-foreground">
-                            Block library coming soon
-                        </p>
-                    </div>
+                    <BlockLibrary onBlockAdd={handleBlockAdd} />
                 </div>
             </div>
 
@@ -476,6 +493,13 @@ export default function CourseBuilderPage() {
                 courseId={id}
                 moduleId={currentModuleId || undefined}
                 lessonIndex={currentLessonIndex}
+            />
+
+            {/* Block Configuration Modals */}
+            <BlockModalRouter
+                modalState={modalState}
+                onClose={closeModal}
+                onSave={handleSave}
             />
         </div>
     );
