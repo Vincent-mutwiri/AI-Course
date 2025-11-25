@@ -305,7 +305,7 @@
   - Test on various screen sizes
   - _Requirements: 1.5_
 
-- [ ] 18. Create migration script
+- [x] 18. Create migration script
   - Create server/src/scripts/migrateToBlocks.ts
   - Implement function to convert interactiveElements to blocks
   - Add order field based on original array index

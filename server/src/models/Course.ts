@@ -8,7 +8,8 @@ export type BlockType =
   | 'rewardScheduleDesigner' | 'flowChannelEvaluator'
   | 'pitchAnalysisGenerator' | 'narrativeGenerator'
   | 'darkPatternRedesigner' | 'roeDashboard' | 'journeyTimeline'
-  | 'certificateGenerator' | 'finalAssessment';
+  | 'certificateGenerator' | 'finalAssessment'
+  | 'visualTokens' | 'sentenceBuilder' | 'simulation';
 
 // Block Interface
 export interface IBlock {
@@ -56,7 +57,10 @@ export type InteractiveElementType =
   | 'aiGenerator'
   | 'choiceComparison'
   | 'journeyTimeline'
-  | 'finalAssessment';
+  | 'finalAssessment'
+  | 'visualTokens'
+  | 'sentenceBuilder'
+  | 'simulation';
 
 // Interactive Element Interface
 export interface IInteractiveElement {
@@ -130,7 +134,8 @@ const blockSchema = new Schema<IBlock>({
       'rewardScheduleDesigner', 'flowChannelEvaluator',
       'pitchAnalysisGenerator', 'narrativeGenerator',
       'darkPatternRedesigner', 'roeDashboard', 'journeyTimeline',
-      'certificateGenerator', 'finalAssessment'
+      'certificateGenerator', 'finalAssessment',
+      'visualTokens', 'sentenceBuilder', 'simulation'
     ],
     required: true
   },
@@ -188,7 +193,10 @@ const lessonSchema = new Schema<ILesson>({
         'aiGenerator',
         'choiceComparison',
         'journeyTimeline',
-        'finalAssessment'
+        'finalAssessment',
+        'visualTokens',
+        'sentenceBuilder',
+        'simulation'
       ],
       required: true
     },
