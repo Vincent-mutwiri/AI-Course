@@ -354,7 +354,7 @@
   - Test with screen readers
   - _Requirements: Accessibility requirements from design_
 
-- [ ] 22. Documentation
+- [x] 22. Documentation
   - Create user guide for course builder
   - Document block types and their configurations
   - Add inline help text and tooltips
