@@ -283,7 +283,7 @@
   - Handle save callback to update blocks array
   - _Requirements: 4.1, 4.2_
 
-- [ ] 15. Add loading and error states
+- [x] 15. Add loading and error states
   - Add loading spinner while fetching course data
   - Add error boundary for component errors
   - Display error messages for failed operations

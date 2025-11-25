@@ -1,7 +1,8 @@
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
-import { GripVertical } from "lucide-react";
+import { GripVertical, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import BlockRenderer from "./BlockRenderer";
+import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 
 interface Block {
     id: string;
@@ -136,14 +137,16 @@ export default function Canvas({
 
                                                         {/* Block Content using BlockRenderer */}
                                                         <div className="pl-10">
-                                                            <BlockRenderer
-                                                                block={block}
-                                                                onEdit={() => onBlockEdit(block.id)}
-                                                                onDuplicate={() => onBlockDuplicate(block.id)}
-                                                                onPreview={() => onBlockPreview(block.id)}
-                                                                onDelete={() => onBlockDelete(block.id)}
-                                                                isDragging={snapshot.isDragging}
-                                                            />
+                                                            <ErrorBoundary>
+                                                                <BlockRenderer
+                                                                    block={block}
+                                                                    onEdit={() => onBlockEdit(block.id)}
+                                                                    onDuplicate={() => onBlockDuplicate(block.id)}
+                                                                    onPreview={() => onBlockPreview(block.id)}
+                                                                    onDelete={() => onBlockDelete(block.id)}
+                                                                    isDragging={snapshot.isDragging}
+                                                                />
+                                                            </ErrorBoundary>
                                                         </div>
                                                     </div>
                                                 )}

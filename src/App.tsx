@@ -18,6 +18,7 @@ import ProtectedRoute from "./components/shared/ProtectedRoute";
 import AdminRoute from "./components/shared/AdminRoute";
 import ModuleContent from "./pages/ModuleContent";
 import HelpPage from "./pages/HelpPage";
+import { ErrorBoundary } from "./components/shared/ErrorBoundary";
 
 function App() {
   return (
@@ -94,7 +95,9 @@ function App() {
             path="/admin/courses/:id/builder"
             element={
               <AdminRoute>
-                <CourseBuilderPage />
+                <ErrorBoundary>
+                  <CourseBuilderPage />
+                </ErrorBoundary>
               </AdminRoute>
             }
           />

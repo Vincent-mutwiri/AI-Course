@@ -53,6 +53,7 @@ export default function CourseBuilderPage() {
     const [currentLessonId, setCurrentLessonId] = useState<string | null>(null);
     const [blocks, setBlocks] = useState<Block[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [loadError, setLoadError] = useState<string | null>(null);
     const [isSaving, setIsSaving] = useState(false);
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
     const [saveRetryCount, setSaveRetryCount] = useState(0);
@@ -72,13 +73,14 @@ export default function CourseBuilderPage() {
     useEffect(() => {
         const fetchCourse = async () => {
             if (!id) {
-                toast.error("Course ID is required");
-                navigate("/admin");
+                setLoadError("Course ID is required");
+                setIsLoading(false);
                 return;
             }
 
             try {
                 setIsLoading(true);
+                setLoadError(null);
                 const response = await api.get(`/admin/courses/${id}/edit`);
                 const courseData = response.data.course;
 
@@ -97,8 +99,8 @@ export default function CourseBuilderPage() {
                 }
             } catch (error: any) {
                 console.error("Failed to fetch course:", error);
-                toast.error(error.response?.data?.message || "Failed to load course");
-                navigate("/admin");
+                const errorMessage = error.response?.data?.message || "Failed to load course. Please try again.";
+                setLoadError(errorMessage);
             } finally {
                 setIsLoading(false);
             }
@@ -106,6 +108,13 @@ export default function CourseBuilderPage() {
 
         fetchCourse();
     }, [id, navigate]);
+
+    // Retry loading course
+    const handleRetryLoad = () => {
+        setIsLoading(true);
+        setLoadError(null);
+        window.location.reload();
+    };
 
     // Auto-save functionality with debounce
     const saveBlocks = async (blocksToSave: Block[], retryCount = 0) => {
@@ -251,6 +260,7 @@ export default function CourseBuilderPage() {
     // Handle blocks reorder
     const handleBlocksReorder = async (reorderedBlocks: Block[]) => {
         // Update local state immediately for optimistic UI
+        const previousBlocks = [...blocks];
         setBlocks(reorderedBlocks);
         setHasUnsavedChanges(true);
 
@@ -266,7 +276,10 @@ export default function CourseBuilderPage() {
             toast.success("Blocks reordered");
         } catch (error: any) {
             console.error("Failed to reorder blocks:", error);
-            toast.error(error.response?.data?.message || "Failed to reorder blocks");
+            // Rollback on error
+            setBlocks(previousBlocks);
+            const errorMessage = error.response?.data?.message || "Failed to reorder blocks. Changes have been reverted.";
+            toast.error(errorMessage);
         }
     };
 
@@ -280,7 +293,10 @@ export default function CourseBuilderPage() {
 
     // Handle block duplicate
     const handleBlockDuplicate = async (blockId: string) => {
-        if (!currentLessonId) return;
+        if (!currentLessonId) {
+            toast.error("No lesson selected");
+            return;
+        }
 
         try {
             const response = await api.post(
@@ -301,10 +317,11 @@ export default function CourseBuilderPage() {
 
             setBlocks(reorderedBlocks);
             setHasUnsavedChanges(true);
-            toast.success("Block duplicated");
+            toast.success("Block duplicated successfully");
         } catch (error: any) {
             console.error("Failed to duplicate block:", error);
-            toast.error(error.response?.data?.message || "Failed to duplicate block");
+            const errorMessage = error.response?.data?.message || "Failed to duplicate block. Please try again.";
+            toast.error(errorMessage);
         }
     };
 
@@ -372,17 +389,48 @@ export default function CourseBuilderPage() {
         );
     }
 
+    if (loadError) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <div className="text-center max-w-md">
+                    <div className="mb-4 text-destructive">
+                        <svg
+                            className="h-16 w-16 mx-auto"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                            />
+                        </svg>
+                    </div>
+                    <h2 className="text-xl font-semibold mb-2">Failed to Load Course</h2>
+                    <p className="text-muted-foreground mb-6">{loadError}</p>
+                    <div className="flex gap-3 justify-center">
+                        <Button onClick={handleRetryLoad} variant="default">
+                            Retry
+                        </Button>
+                        <Button onClick={() => navigate("/admin")} variant="outline">
+                            Return to Admin
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     if (!course) {
         return (
             <div className="flex items-center justify-center h-screen">
                 <div className="text-center">
                     <p className="text-lg font-semibold mb-2">Course not found</p>
-                    <button
-                        onClick={() => navigate("/admin")}
-                        className="text-primary hover:underline"
-                    >
-                        Return to admin dashboard
-                    </button>
+                    <Button onClick={() => navigate("/admin")} variant="outline">
+                        Return to Admin Dashboard
+                    </Button>
                 </div>
             </div>
         );

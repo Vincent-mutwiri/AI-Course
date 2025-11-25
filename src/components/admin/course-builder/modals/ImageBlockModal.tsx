@@ -22,7 +22,7 @@ import {
     validateFileSize,
     validateFileType,
 } from '@/lib/validation/blockSchemas';
-import { ImageIcon } from 'lucide-react';
+import { ImageIcon, RefreshCw } from 'lucide-react';
 
 interface ImageBlockModalProps {
     open: boolean;
@@ -38,6 +38,7 @@ export function ImageBlockModal({ open, onClose, onSave, initialData }: ImageBlo
     const [previewUrl, setPreviewUrl] = useState<string | null>(
         initialData?.content?.imageUrl || null
     );
+    const [lastFile, setLastFile] = useState<File | null>(null);
 
     const {
         register,
@@ -56,23 +57,10 @@ export function ImageBlockModal({ open, onClose, onSave, initialData }: ImageBlo
         },
     });
 
-    const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (!file) return;
-
+    const uploadFile = async (file: File) => {
         setUploadError(null);
-
-        // Validate file type
-        if (!validateFileType(file, ALLOWED_FILE_TYPES.IMAGE)) {
-            setUploadError('Invalid file type. Please upload an image file (JPEG, PNG, GIF, or WebP).');
-            return;
-        }
-
-        // Validate file size
-        if (!validateFileSize(file, FILE_SIZE_LIMITS.IMAGE_MAX_SIZE)) {
-            setUploadError('File size exceeds 5MB limit.');
-            return;
-        }
+        setIsUploading(true);
+        setUploadProgress(0);
 
         // Create preview
         const reader = new FileReader();
@@ -80,9 +68,6 @@ export function ImageBlockModal({ open, onClose, onSave, initialData }: ImageBlo
             setPreviewUrl(reader.result as string);
         };
         reader.readAsDataURL(file);
-
-        setIsUploading(true);
-        setUploadProgress(0);
 
         try {
             const formData = new FormData();
@@ -102,12 +87,42 @@ export function ImageBlockModal({ open, onClose, onSave, initialData }: ImageBlo
 
             setValue('content.imageUrl', response.data.url, { shouldValidate: true });
             setPreviewUrl(response.data.url);
-        } catch (error) {
+            setLastFile(null);
+        } catch (error: any) {
             console.error('Upload error:', error);
-            setUploadError('Failed to upload image. Please try again.');
+            const errorMessage = error.response?.data?.message || 'Failed to upload image. Please try again.';
+            setUploadError(errorMessage);
             setPreviewUrl(null);
         } finally {
             setIsUploading(false);
+        }
+    };
+
+    const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        setUploadError(null);
+
+        // Validate file type
+        if (!validateFileType(file, ALLOWED_FILE_TYPES.IMAGE)) {
+            setUploadError('Invalid file type. Please upload an image file (JPEG, PNG, GIF, or WebP).');
+            return;
+        }
+
+        // Validate file size
+        if (!validateFileSize(file, FILE_SIZE_LIMITS.IMAGE_MAX_SIZE)) {
+            setUploadError('File size exceeds 5MB limit.');
+            return;
+        }
+
+        setLastFile(file);
+        await uploadFile(file);
+    };
+
+    const handleRetryUpload = () => {
+        if (lastFile) {
+            uploadFile(lastFile);
         }
     };
 
@@ -145,7 +160,21 @@ export function ImageBlockModal({ open, onClose, onSave, initialData }: ImageBlo
                             </div>
                         )}
                         {uploadError && (
-                            <p className="text-sm text-destructive">{uploadError}</p>
+                            <div className="space-y-2">
+                                <p className="text-sm text-destructive">{uploadError}</p>
+                                {lastFile && (
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={handleRetryUpload}
+                                        className="gap-2"
+                                    >
+                                        <RefreshCw className="h-4 w-4" />
+                                        Retry Upload
+                                    </Button>
+                                )}
+                            </div>
                         )}
                         {errors.content?.imageUrl && (
                             <p className="text-sm text-destructive">

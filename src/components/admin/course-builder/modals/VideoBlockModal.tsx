@@ -23,7 +23,7 @@ import {
     validateFileSize,
     validateFileType,
 } from '@/lib/validation/blockSchemas';
-import { Upload, Link as LinkIcon } from 'lucide-react';
+import { Upload, Link as LinkIcon, RefreshCw } from 'lucide-react';
 
 interface VideoBlockModalProps {
     open: boolean;
@@ -36,6 +36,7 @@ export function VideoBlockModal({ open, onClose, onSave, initialData }: VideoBlo
     const [uploadProgress, setUploadProgress] = useState(0);
     const [isUploading, setIsUploading] = useState(false);
     const [uploadError, setUploadError] = useState<string | null>(null);
+    const [lastFile, setLastFile] = useState<File | null>(null);
 
     const {
         register,
@@ -59,24 +60,8 @@ export function VideoBlockModal({ open, onClose, onSave, initialData }: VideoBlo
 
     const videoSource = watch('content.videoSource');
 
-    const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (!file) return;
-
+    const uploadFile = async (file: File) => {
         setUploadError(null);
-
-        // Validate file type
-        if (!validateFileType(file, ALLOWED_FILE_TYPES.VIDEO)) {
-            setUploadError('Invalid file type. Please upload a video file (MP4, WebM, OGG, or MOV).');
-            return;
-        }
-
-        // Validate file size
-        if (!validateFileSize(file, FILE_SIZE_LIMITS.VIDEO_MAX_SIZE)) {
-            setUploadError('File size exceeds 100MB limit.');
-            return;
-        }
-
         setIsUploading(true);
         setUploadProgress(0);
 
@@ -98,11 +83,41 @@ export function VideoBlockModal({ open, onClose, onSave, initialData }: VideoBlo
 
             setValue('content.videoUrl', response.data.url, { shouldValidate: true });
             setValue('content.videoProvider', 's3');
-        } catch (error) {
+            setLastFile(null);
+        } catch (error: any) {
             console.error('Upload error:', error);
-            setUploadError('Failed to upload video. Please try again.');
+            const errorMessage = error.response?.data?.message || 'Failed to upload video. Please try again.';
+            setUploadError(errorMessage);
         } finally {
             setIsUploading(false);
+        }
+    };
+
+    const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        setUploadError(null);
+
+        // Validate file type
+        if (!validateFileType(file, ALLOWED_FILE_TYPES.VIDEO)) {
+            setUploadError('Invalid file type. Please upload a video file (MP4, WebM, OGG, or MOV).');
+            return;
+        }
+
+        // Validate file size
+        if (!validateFileSize(file, FILE_SIZE_LIMITS.VIDEO_MAX_SIZE)) {
+            setUploadError('File size exceeds 100MB limit.');
+            return;
+        }
+
+        setLastFile(file);
+        await uploadFile(file);
+    };
+
+    const handleRetryUpload = () => {
+        if (lastFile) {
+            uploadFile(lastFile);
         }
     };
 
@@ -188,7 +203,21 @@ export function VideoBlockModal({ open, onClose, onSave, initialData }: VideoBlo
                                 </div>
                             )}
                             {uploadError && (
-                                <p className="text-sm text-destructive">{uploadError}</p>
+                                <div className="space-y-2">
+                                    <p className="text-sm text-destructive">{uploadError}</p>
+                                    {lastFile && (
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={handleRetryUpload}
+                                            className="gap-2"
+                                        >
+                                            <RefreshCw className="h-4 w-4" />
+                                            Retry Upload
+                                        </Button>
+                                    )}
+                                </div>
                             )}
                             {errors.content?.videoUrl && (
                                 <p className="text-sm text-destructive">
