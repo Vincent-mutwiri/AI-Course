@@ -22,7 +22,7 @@ import {
     validateFileSize,
     validateFileType,
 } from '@/lib/validation/blockSchemas';
-import { ImageIcon, RefreshCw } from 'lucide-react';
+import { ImageIcon, RefreshCw, X } from 'lucide-react';
 
 interface ImageBlockModalProps {
     open: boolean;
@@ -39,6 +39,7 @@ export function ImageBlockModal({ open, onClose, onSave, initialData }: ImageBlo
         initialData?.content?.imageUrl || null
     );
     const [lastFile, setLastFile] = useState<File | null>(null);
+    const [uploadController, setUploadController] = useState<AbortController | null>(null);
 
     const {
         register,
@@ -69,6 +70,10 @@ export function ImageBlockModal({ open, onClose, onSave, initialData }: ImageBlo
         };
         reader.readAsDataURL(file);
 
+        // Create new AbortController for this upload
+        const controller = new AbortController();
+        setUploadController(controller);
+
         try {
             const formData = new FormData();
             formData.append('file', file);
@@ -77,6 +82,7 @@ export function ImageBlockModal({ open, onClose, onSave, initialData }: ImageBlo
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
+                signal: controller.signal,
                 onUploadProgress: (progressEvent) => {
                     const progress = progressEvent.total
                         ? Math.round((progressEvent.loaded * 100) / progressEvent.total)
@@ -88,13 +94,30 @@ export function ImageBlockModal({ open, onClose, onSave, initialData }: ImageBlo
             setValue('content.imageUrl', response.data.url, { shouldValidate: true });
             setPreviewUrl(response.data.url);
             setLastFile(null);
+            setUploadController(null);
         } catch (error: any) {
-            console.error('Upload error:', error);
-            const errorMessage = error.response?.data?.message || 'Failed to upload image. Please try again.';
-            setUploadError(errorMessage);
+            if (axios.isCancel(error)) {
+                console.log('Upload cancelled by user');
+                setUploadError('Upload cancelled');
+            } else {
+                console.error('Upload error:', error);
+                const errorMessage = error.response?.data?.message || 'Failed to upload image. Please try again.';
+                setUploadError(errorMessage);
+            }
             setPreviewUrl(null);
+            setUploadController(null);
         } finally {
             setIsUploading(false);
+        }
+    };
+
+    const handleCancelUpload = () => {
+        if (uploadController) {
+            uploadController.abort();
+            setUploadController(null);
+            setIsUploading(false);
+            setUploadProgress(0);
+            setPreviewUrl(initialData?.content?.imageUrl || null);
         }
     };
 
@@ -153,7 +176,19 @@ export function ImageBlockModal({ open, onClose, onSave, initialData }: ImageBlo
                         />
                         {isUploading && (
                             <div className="space-y-2">
-                                <Progress value={uploadProgress} />
+                                <div className="flex items-center gap-2">
+                                    <Progress value={uploadProgress} className="flex-1" />
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={handleCancelUpload}
+                                        className="h-8 w-8 p-0"
+                                        title="Cancel upload"
+                                    >
+                                        <X className="h-4 w-4" />
+                                    </Button>
+                                </div>
                                 <p className="text-sm text-muted-foreground">
                                     Uploading... {uploadProgress}%
                                 </p>
