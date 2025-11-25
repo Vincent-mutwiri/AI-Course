@@ -47,14 +47,20 @@ export function ReflectionBlockModal({ open, onClose, onSave, initialData }: Ref
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogContent
+                className="max-w-2xl max-h-[90vh] overflow-y-auto"
+                aria-describedby="reflection-block-description"
+            >
                 <DialogHeader>
                     <DialogTitle>
                         {initialData ? 'Edit Reflection Block' : 'Add Reflection Block'}
                     </DialogTitle>
+                    <p id="reflection-block-description" className="sr-only">
+                        Configure a reflection question for students to answer
+                    </p>
                 </DialogHeader>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
                     {/* Title */}
                     <div className="space-y-2">
                         <Label htmlFor="title">Title (Optional)</Label>
@@ -62,9 +68,14 @@ export function ReflectionBlockModal({ open, onClose, onSave, initialData }: Ref
                             id="title"
                             placeholder="Reflection title"
                             {...register('content.title')}
+                            aria-describedby="title-hint"
                         />
                         {errors.content?.title && (
-                            <p className="text-sm text-destructive">
+                            <p
+                                className="text-sm text-destructive"
+                                role="alert"
+                                aria-live="assertive"
+                            >
                                 {errors.content.title.message}
                             </p>
                         )}
@@ -72,19 +83,28 @@ export function ReflectionBlockModal({ open, onClose, onSave, initialData }: Ref
 
                     {/* Question */}
                     <div className="space-y-2">
-                        <Label htmlFor="question">Question *</Label>
+                        <Label htmlFor="question">
+                            Question <span className="text-destructive" aria-label="required">*</span>
+                        </Label>
                         <Textarea
                             id="question"
                             placeholder="What question do you want students to reflect on?"
                             rows={3}
                             {...register('content.question')}
+                            aria-describedby="question-hint"
+                            aria-required="true"
+                            aria-invalid={!!errors.content?.question}
                         />
                         {errors.content?.question && (
-                            <p className="text-sm text-destructive">
+                            <p
+                                className="text-sm text-destructive"
+                                role="alert"
+                                aria-live="assertive"
+                            >
                                 {errors.content.question.message}
                             </p>
                         )}
-                        <p className="text-xs text-muted-foreground">
+                        <p id="question-hint" className="text-xs text-muted-foreground">
                             The main reflection question (10-1000 characters)
                         </p>
                     </div>
@@ -148,10 +168,19 @@ export function ReflectionBlockModal({ open, onClose, onSave, initialData }: Ref
                     </div>
 
                     <DialogFooter>
-                        <Button type="button" variant="outline" onClick={onClose}>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={onClose}
+                            aria-label="Cancel and close dialog"
+                        >
                             Cancel
                         </Button>
-                        <Button type="submit" disabled={isSubmitting}>
+                        <Button
+                            type="submit"
+                            disabled={isSubmitting}
+                            aria-label={isSubmitting ? 'Saving reflection block' : 'Save reflection block'}
+                        >
                             {isSubmitting ? 'Saving...' : 'Save'}
                         </Button>
                     </DialogFooter>

@@ -214,13 +214,22 @@ function BlockCard({ metadata, onAdd, isHighlighted = false }: BlockCardProps) {
         <Card
             className={cn(
                 "p-4 cursor-pointer transition-all hover:shadow-md hover:border-primary/50 hover:scale-[1.02]",
-                "active:scale-[0.98]",
+                "active:scale-[0.98] focus-within:ring-2 focus-within:ring-primary focus-within:border-primary",
                 isHighlighted && "ring-2 ring-primary/30"
             )}
             onClick={onAdd}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onAdd();
+                }
+            }}
+            role="button"
+            tabIndex={0}
+            aria-label={`Add ${metadata.title} block. ${metadata.description}`}
         >
             <div className="flex items-start gap-3">
-                <div className="p-2 rounded-lg bg-primary/10 text-primary shrink-0">
+                <div className="p-2 rounded-lg bg-primary/10 text-primary shrink-0" aria-hidden="true">
                     <Icon className="h-5 w-5" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -262,20 +271,22 @@ export default function BlockLibrary({ onBlockAdd }: BlockLibraryProps) {
     };
 
     return (
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full" role="complementary" aria-label="Block library">
             {/* Header */}
             <div className="p-4 border-b">
-                <h2 className="font-semibold text-sm mb-3">Block Library</h2>
+                <h2 className="font-semibold text-sm mb-3" id="block-library-heading">Block Library</h2>
 
                 {/* Search Input */}
                 <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
                     <Input
-                        type="text"
+                        type="search"
                         placeholder="Search blocks..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="pl-9 h-9"
+                        aria-label="Search for block types"
+                        aria-describedby="block-library-heading"
                     />
                 </div>
             </div>
@@ -306,26 +317,27 @@ export default function BlockLibrary({ onBlockAdd }: BlockLibraryProps) {
                         </TabsTrigger>
                     </TabsList>
 
-                    <TabsContent value="basic" className="mt-0">
+                    <TabsContent value="basic" className="mt-0" role="tabpanel" aria-label="Basic blocks">
                         {basicBlocks.length > 0 ? (
-                            <div className="space-y-2">
+                            <div className="space-y-2" role="list" aria-label={`${basicBlocks.length} basic blocks available`}>
                                 {basicBlocks.map((block) => (
-                                    <BlockCard
-                                        key={block.type}
-                                        metadata={block}
-                                        onAdd={() => handleBlockAdd(block.type)}
-                                        isHighlighted={
-                                            searchQuery !== "" &&
-                                            block.title
-                                                .toLowerCase()
-                                                .includes(searchQuery.toLowerCase())
-                                        }
-                                    />
+                                    <div key={block.type} role="listitem">
+                                        <BlockCard
+                                            metadata={block}
+                                            onAdd={() => handleBlockAdd(block.type)}
+                                            isHighlighted={
+                                                searchQuery !== "" &&
+                                                block.title
+                                                    .toLowerCase()
+                                                    .includes(searchQuery.toLowerCase())
+                                            }
+                                        />
+                                    </div>
                                 ))}
                             </div>
                         ) : (
-                            <div className="flex flex-col items-center justify-center py-12 text-center">
-                                <div className="text-muted-foreground/50 mb-2">
+                            <div className="flex flex-col items-center justify-center py-12 text-center" role="status" aria-live="polite">
+                                <div className="text-muted-foreground/50 mb-2" aria-hidden="true">
                                     <Search className="h-8 w-8 mx-auto" />
                                 </div>
                                 <p className="text-sm text-muted-foreground">
@@ -338,26 +350,27 @@ export default function BlockLibrary({ onBlockAdd }: BlockLibraryProps) {
                         )}
                     </TabsContent>
 
-                    <TabsContent value="interactive" className="mt-0">
+                    <TabsContent value="interactive" className="mt-0" role="tabpanel" aria-label="Interactive blocks">
                         {interactiveBlocks.length > 0 ? (
-                            <div className="space-y-2">
+                            <div className="space-y-2" role="list" aria-label={`${interactiveBlocks.length} interactive blocks available`}>
                                 {interactiveBlocks.map((block) => (
-                                    <BlockCard
-                                        key={block.type}
-                                        metadata={block}
-                                        onAdd={() => handleBlockAdd(block.type)}
-                                        isHighlighted={
-                                            searchQuery !== "" &&
-                                            block.title
-                                                .toLowerCase()
-                                                .includes(searchQuery.toLowerCase())
-                                        }
-                                    />
+                                    <div key={block.type} role="listitem">
+                                        <BlockCard
+                                            metadata={block}
+                                            onAdd={() => handleBlockAdd(block.type)}
+                                            isHighlighted={
+                                                searchQuery !== "" &&
+                                                block.title
+                                                    .toLowerCase()
+                                                    .includes(searchQuery.toLowerCase())
+                                            }
+                                        />
+                                    </div>
                                 ))}
                             </div>
                         ) : (
-                            <div className="flex flex-col items-center justify-center py-12 text-center">
-                                <div className="text-muted-foreground/50 mb-2">
+                            <div className="flex flex-col items-center justify-center py-12 text-center" role="status" aria-live="polite">
+                                <div className="text-muted-foreground/50 mb-2" aria-hidden="true">
                                     <Search className="h-8 w-8 mx-auto" />
                                 </div>
                                 <p className="text-sm text-muted-foreground">

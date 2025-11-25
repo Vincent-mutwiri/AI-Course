@@ -441,6 +441,14 @@ export default function CourseBuilderPage() {
 
     return (
         <div className="h-screen flex flex-col">
+            {/* Skip to main content link for keyboard navigation */}
+            <a
+                href="#main-canvas"
+                className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+            >
+                Skip to main content
+            </a>
+
             {/* Mobile Warning */}
             {!isMobileWarningDismissed && (
                 <div className="lg:hidden bg-yellow-50 dark:bg-yellow-900/20 border-b border-yellow-200 dark:border-yellow-800 px-4 py-3">
@@ -471,23 +479,28 @@ export default function CourseBuilderPage() {
                     <div className="flex items-center gap-1 lg:hidden">
                         <button
                             onClick={() => setIsStructureOpen(!isStructureOpen)}
-                            className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-md"
-                            aria-label="Toggle course structure"
+                            className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                            aria-label={isStructureOpen ? "Close course structure" : "Open course structure"}
+                            aria-expanded={isStructureOpen}
+                            aria-controls="course-structure-panel"
                         >
-                            <FileText className="h-5 w-5" />
+                            <FileText className="h-5 w-5" aria-hidden="true" />
                         </button>
                         <button
                             onClick={() => setIsLibraryOpen(!isLibraryOpen)}
-                            className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-md"
-                            aria-label="Toggle block library"
+                            className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                            aria-label={isLibraryOpen ? "Close block library" : "Open block library"}
+                            aria-expanded={isLibraryOpen}
+                            aria-controls="block-library-panel"
                         >
-                            <Library className="h-5 w-5" />
+                            <Library className="h-5 w-5" aria-hidden="true" />
                         </button>
                     </div>
 
                     <button
                         onClick={handleBackClick}
-                        className="text-muted-foreground hover:text-foreground text-sm md:text-base"
+                        className="text-muted-foreground hover:text-foreground text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded px-2 py-1"
+                        aria-label="Return to admin dashboard"
                     >
                         ← Back
                     </button>
@@ -500,18 +513,20 @@ export default function CourseBuilderPage() {
                 </div>
                 <div className="flex items-center gap-2 md:gap-3">
                     {isSaving && (
-                        <div className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground">
-                            <div className="animate-spin rounded-full h-3 w-3 md:h-4 md:w-4 border-b-2 border-primary"></div>
+                        <div className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground" role="status" aria-live="polite">
+                            <div className="animate-spin rounded-full h-3 w-3 md:h-4 md:w-4 border-b-2 border-primary" aria-hidden="true"></div>
                             <span className="hidden sm:inline">Saving...</span>
+                            <span className="sr-only">Saving changes</span>
                         </div>
                     )}
                     {!isSaving && !hasUnsavedChanges && (
-                        <div className="flex items-center gap-2 text-xs md:text-sm text-green-600">
+                        <div className="flex items-center gap-2 text-xs md:text-sm text-green-600" role="status" aria-live="polite">
                             <svg
                                 className="h-3 w-3 md:h-4 md:w-4"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
+                                aria-hidden="true"
                             >
                                 <path
                                     strokeLinecap="round"
@@ -521,6 +536,7 @@ export default function CourseBuilderPage() {
                                 />
                             </svg>
                             <span className="hidden sm:inline">Saved</span>
+                            <span className="sr-only">All changes saved</span>
                         </div>
                     )}
                     {currentLessonId && (
@@ -541,6 +557,7 @@ export default function CourseBuilderPage() {
             <div className="flex-1 flex overflow-hidden relative">
                 {/* Left Panel - Course Structure */}
                 <div
+                    id="course-structure-panel"
                     className={`
                         ${isStructureOpen ? 'translate-x-0' : '-translate-x-full'}
                         lg:translate-x-0
@@ -553,6 +570,7 @@ export default function CourseBuilderPage() {
                         transition-transform duration-300 ease-in-out
                         top-[57px] md:top-[65px]
                     `}
+                    aria-hidden={!isStructureOpen && window.innerWidth < 1024}
                 >
                     <div className="lg:hidden flex items-center justify-between p-4 border-b">
                         <h2 className="font-semibold">Course Structure</h2>
@@ -589,7 +607,7 @@ export default function CourseBuilderPage() {
                 )}
 
                 {/* Center Panel - Canvas */}
-                <div className="flex-1 overflow-y-auto bg-background">
+                <div id="main-canvas" className="flex-1 overflow-y-auto bg-background">
                     {currentLessonId ? (
                         <Canvas
                             blocks={blocks}
@@ -619,6 +637,7 @@ export default function CourseBuilderPage() {
 
                 {/* Right Panel - Block Library */}
                 <div
+                    id="block-library-panel"
                     className={`
                         ${isLibraryOpen ? 'translate-x-0' : 'translate-x-full'}
                         lg:translate-x-0
@@ -631,6 +650,7 @@ export default function CourseBuilderPage() {
                         transition-transform duration-300 ease-in-out
                         top-[57px] md:top-[65px]
                     `}
+                    aria-hidden={!isLibraryOpen && window.innerWidth < 1024}
                 >
                     <div className="lg:hidden flex items-center justify-between p-4 border-b">
                         <h2 className="font-semibold">Block Library</h2>

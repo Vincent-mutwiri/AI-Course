@@ -28,6 +28,7 @@ import {
     CheckCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getBlockAriaLabel, getBlockActionAriaLabel } from "@/lib/accessibility";
 
 interface Block {
     id: string;
@@ -342,72 +343,81 @@ const BlockRenderer = memo(function BlockRenderer({
     const [isHovered, setIsHovered] = useState(false);
     const Icon = BLOCK_ICONS[block.type] || Type;
 
+    const blockAriaLabel = getBlockAriaLabel(block.type, block.order);
+
     return (
         <div
             className={cn(
-                "relative bg-card border rounded-lg transition-all",
+                "relative bg-card border rounded-lg transition-all focus-within:ring-2 focus-within:ring-primary/50 focus-within:border-primary",
                 isDragging && "opacity-50",
                 isHovered && "border-primary/50 shadow-sm"
             )}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
+            role="article"
+            aria-label={blockAriaLabel}
         >
             {/* Block Content */}
             <div className="p-4">
                 {/* Block Header */}
                 <div className="flex items-center justify-between gap-4 mb-3">
                     <div className="flex items-center gap-2">
-                        <div className="p-1.5 rounded bg-primary/10 text-primary">
+                        <div
+                            className="p-1.5 rounded bg-primary/10 text-primary"
+                            aria-hidden="true"
+                        >
                             <Icon className="h-4 w-4" />
                         </div>
                         <div className="flex items-center gap-2">
                             <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                                 {block.type}
                             </span>
-                            <span className="text-xs text-muted-foreground/50">
+                            <span className="text-xs text-muted-foreground/50" aria-label={`Position ${block.order + 1}`}>
                                 #{block.order + 1}
                             </span>
                         </div>
                     </div>
 
-                    {/* Action Toolbar - Shows on hover */}
+                    {/* Action Toolbar - Shows on hover and focus */}
                     <div
                         className={cn(
                             "flex items-center gap-1 transition-opacity duration-200",
-                            isHovered ? "opacity-100" : "opacity-0"
+                            isHovered ? "opacity-100" : "opacity-0 focus-within:opacity-100"
                         )}
+                        role="toolbar"
+                        aria-label={`Actions for ${blockAriaLabel}`}
                     >
                         <button
                             onClick={onEdit}
-                            className="p-2 hover:bg-accent rounded-md transition-colors"
+                            className="p-2 hover:bg-accent rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                             title="Edit block"
-                            aria-label="Edit block"
+                            aria-label={getBlockActionAriaLabel('edit', block.type, block.order)}
                         >
-                            <Edit2 className="h-4 w-4" />
+                            <Edit2 className="h-4 w-4" aria-hidden="true" />
                         </button>
                         <button
                             onClick={onDuplicate}
-                            className="p-2 hover:bg-accent rounded-md transition-colors"
+                            className="p-2 hover:bg-accent rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                             title="Duplicate block"
-                            aria-label="Duplicate block"
+                            aria-label={getBlockActionAriaLabel('duplicate', block.type, block.order)}
                         >
-                            <Copy className="h-4 w-4" />
+                            <Copy className="h-4 w-4" aria-hidden="true" />
                         </button>
                         <button
                             onClick={onPreview}
-                            className="p-2 hover:bg-accent rounded-md transition-colors"
+                            className="p-2 hover:bg-accent rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                             title="Preview block"
-                            aria-label="Preview block"
+                            aria-label={getBlockActionAriaLabel('preview', block.type, block.order)}
                         >
-                            <Eye className="h-4 w-4" />
+                            <Eye className="h-4 w-4" aria-hidden="true" />
                         </button>
                         <button
                             onClick={onDelete}
-                            className="p-2 hover:bg-destructive/10 hover:text-destructive rounded-md transition-colors"
+                            className="p-2 hover:bg-destructive/10 hover:text-destructive rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-destructive focus:ring-offset-2"
                             title="Delete block"
-                            aria-label="Delete block"
+                            aria-label={getBlockActionAriaLabel('delete', block.type, block.order)}
                         >
-                            <Trash2 className="h-4 w-4" />
+                            <Trash2 className="h-4 w-4" aria-hidden="true" />
                         </button>
                     </div>
                 </div>

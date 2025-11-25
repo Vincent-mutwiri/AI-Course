@@ -73,7 +73,7 @@ const Canvas = memo(function Canvas({
     }
 
     return (
-        <div className="h-full">
+        <div className="h-full" role="main" aria-label="Course content canvas">
             <DragDropContext onDragEnd={handleDragEnd}>
                 <Droppable droppableId="canvas-blocks">
                     {(provided, snapshot) => (
@@ -84,11 +84,17 @@ const Canvas = memo(function Canvas({
                                 "min-h-full p-6 transition-colors",
                                 snapshot.isDraggingOver && "bg-accent/30"
                             )}
+                            role="region"
+                            aria-label={`Lesson content with ${blocks.length} blocks`}
                         >
                             {blocks.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center h-64 border-2 border-dashed border-muted-foreground/25 rounded-lg">
+                                <div
+                                    className="flex flex-col items-center justify-center h-64 border-2 border-dashed border-muted-foreground/25 rounded-lg"
+                                    role="status"
+                                    aria-label="Empty canvas"
+                                >
                                     <div className="text-center space-y-2">
-                                        <div className="text-muted-foreground/50 mb-2">
+                                        <div className="text-muted-foreground/50 mb-2" aria-hidden="true">
                                             <svg
                                                 className="h-12 w-12 mx-auto"
                                                 fill="none"
@@ -112,7 +118,7 @@ const Canvas = memo(function Canvas({
                                     </div>
                                 </div>
                             ) : (
-                                <div className="space-y-3">
+                                <div className="space-y-3" role="list" aria-label="Content blocks">
                                     {blocks
                                         .sort((a, b) => a.order - b.order)
                                         .map((block, index) => (
@@ -130,13 +136,17 @@ const Canvas = memo(function Canvas({
                                                             snapshot.isDragging &&
                                                             "shadow-lg ring-2 ring-primary/50 rotate-2"
                                                         )}
+                                                        role="listitem"
                                                     >
                                                         {/* Drag Handle */}
                                                         <div
                                                             {...provided.dragHandleProps}
-                                                            className="absolute left-2 top-1/2 -translate-y-1/2 z-10 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing"
+                                                            className="absolute left-2 top-1/2 -translate-y-1/2 z-10 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity cursor-grab active:cursor-grabbing focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
+                                                            role="button"
+                                                            aria-label={`Drag to reorder block ${index + 1}`}
+                                                            tabIndex={0}
                                                         >
-                                                            <GripVertical className="h-5 w-5 text-muted-foreground" />
+                                                            <GripVertical className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
                                                         </div>
 
                                                         {/* Block Content using BlockRenderer */}
