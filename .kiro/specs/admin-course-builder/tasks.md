@@ -259,7 +259,7 @@
     - Add React Hook Form with validation for each
     - _Requirements: 3.1, 3.2, 4.1, 4.2, 4.3_
 
-- [ ] 12. Integrate block rendering in student view
+- [x] 12. Integrate block rendering in student view
   - Update src/pages/ModuleContent.tsx to support blocks array
   - Add conditional rendering: use blocks if present, otherwise use legacy fields
   - Map blocks to appropriate student-facing components

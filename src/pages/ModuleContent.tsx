@@ -13,7 +13,34 @@ import { InteractiveElementRouter } from '@/components/interactive/InteractiveEl
 import { QuizComponent } from '@/components/modules/QuizComponent';
 import { CodeSnippet } from '@/components/modules/CodeSnippet';
 import { ProgressBar } from '@/components/modules/ProgressBar';
+import { BlockRenderer } from '@/components/modules/BlockRenderer';
 import { useAuth } from '@/context/AuthContext';
+
+interface Block {
+  id: string;
+  type: string;
+  order: number;
+  content: {
+    text?: string;
+    videoUrl?: string;
+    videoSource?: 'upload' | 'embed';
+    videoProvider?: 'youtube' | 'vimeo' | 's3';
+    imageUrl?: string;
+    caption?: string;
+    altText?: string;
+    code?: string;
+    language?: string;
+    items?: Array<{ text: string; checked?: boolean }>;
+    listType?: 'bullet' | 'numbered' | 'checkbox';
+    config?: any;
+    question?: string;
+    options?: any;
+    prompt?: string;
+    title?: string;
+    description?: string;
+    meta?: Record<string, any>;
+  };
+}
 
 interface Lesson {
   title: string;
@@ -23,6 +50,7 @@ interface Lesson {
   content?: any;
   interactive?: any;
   interactiveElements?: any[];
+  blocks?: Block[];
   quiz?: any;
   codeSnippet?: any;
   order: number;
@@ -288,38 +316,51 @@ const ModuleContent = () => {
                 )}
               </div>
 
-              {/* Lesson Content */}
-              {lesson.content && (
-                <ContentRenderer
-                  sections={Array.isArray(lesson.content) ? lesson.content : lesson.content.sections || []}
+              {/* Block-based Content (New Format) */}
+              {lesson.blocks && lesson.blocks.length > 0 ? (
+                <BlockRenderer
+                  blocks={lesson.blocks}
+                  userName={user?.name || 'Learner'}
                   courseId={courseId}
                   moduleId={moduleId}
                   lessonIndex={currentLesson}
-                  onContentUpdate={handleContentUpdate}
                 />
-              )}
-
-              {/* Interactive Element */}
-              {lesson.interactive && (
-                <InteractiveElement interactive={lesson.interactive} />
-              )}
-
-              {/* Interactive Elements */}
-              {lesson.interactiveElements && lesson.interactiveElements.length > 0 && (
-                <div className="space-y-6">
-                  {lesson.interactiveElements.map((element, idx) => (
-                    <InteractiveElementRouter
-                      key={`interactive-${moduleId}-${currentLesson}-${idx}`}
-                      element={element}
-                      userName={user?.name || 'Learner'}
+              ) : (
+                <>
+                  {/* Legacy Content Format - Backward Compatibility */}
+                  {lesson.content && (
+                    <ContentRenderer
+                      sections={Array.isArray(lesson.content) ? lesson.content : lesson.content.sections || []}
+                      courseId={courseId}
+                      moduleId={moduleId}
+                      lessonIndex={currentLesson}
+                      onContentUpdate={handleContentUpdate}
                     />
-                  ))}
-                </div>
-              )}
+                  )}
 
-              {/* Code Snippet */}
-              {lesson.codeSnippet && (
-                <CodeSnippet codeSnippet={lesson.codeSnippet} />
+                  {/* Interactive Element */}
+                  {lesson.interactive && (
+                    <InteractiveElement interactive={lesson.interactive} />
+                  )}
+
+                  {/* Interactive Elements */}
+                  {lesson.interactiveElements && lesson.interactiveElements.length > 0 && (
+                    <div className="space-y-6">
+                      {lesson.interactiveElements.map((element, idx) => (
+                        <InteractiveElementRouter
+                          key={`interactive-${moduleId}-${currentLesson}-${idx}`}
+                          element={element}
+                          userName={user?.name || 'Learner'}
+                        />
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Code Snippet */}
+                  {lesson.codeSnippet && (
+                    <CodeSnippet codeSnippet={lesson.codeSnippet} />
+                  )}
+                </>
               )}
 
               {/* Quiz */}
