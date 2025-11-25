@@ -441,6 +441,121 @@ export const finalAssessmentBlockSchema = z.object({
     }),
 });
 
+/**
+ * Pitch Analysis Generator Block Schema
+ * Validates pitch analysis generator configuration
+ */
+export const pitchAnalysisGeneratorBlockSchema = z.object({
+    type: z.literal('pitchAnalysisGenerator'),
+    content: z.object({
+        title: z.string()
+            .min(1, 'Title is required')
+            .max(200, 'Title must not exceed 200 characters'),
+        description: z.string()
+            .max(1000, 'Description must not exceed 1,000 characters')
+            .optional(),
+        prompt: z.string()
+            .max(2000, 'Prompt must not exceed 2,000 characters')
+            .optional(),
+        placeholder: z.string()
+            .max(200, 'Placeholder must not exceed 200 characters')
+            .optional(),
+        config: z.record(z.any()).optional(),
+    }),
+});
+
+/**
+ * Narrative Generator Block Schema
+ * Validates narrative generator configuration
+ */
+export const narrativeGeneratorBlockSchema = z.object({
+    type: z.literal('narrativeGenerator'),
+    content: z.object({
+        title: z.string()
+            .min(1, 'Title is required')
+            .max(200, 'Title must not exceed 200 characters'),
+        description: z.string()
+            .max(1000, 'Description must not exceed 1,000 characters')
+            .optional(),
+        prompt: z.string()
+            .max(2000, 'Prompt must not exceed 2,000 characters')
+            .optional(),
+        placeholder: z.string()
+            .max(200, 'Placeholder must not exceed 200 characters')
+            .optional(),
+        config: z.record(z.any()).optional(),
+    }),
+});
+
+/**
+ * Dark Pattern Redesigner Block Schema
+ * Validates dark pattern redesigner configuration
+ */
+export const darkPatternRedesignerBlockSchema = z.object({
+    type: z.literal('darkPatternRedesigner'),
+    content: z.object({
+        title: z.string()
+            .min(1, 'Title is required')
+            .max(200, 'Title must not exceed 200 characters'),
+        description: z.string()
+            .max(1000, 'Description must not exceed 1,000 characters')
+            .optional(),
+        pattern: z.string()
+            .max(2000, 'Pattern description must not exceed 2,000 characters')
+            .optional(),
+        prompt: z.string()
+            .max(2000, 'Prompt must not exceed 2,000 characters')
+            .optional(),
+        config: z.record(z.any()).optional(),
+    }),
+});
+
+/**
+ * ROE Dashboard Block Schema
+ * Validates ROE dashboard configuration
+ */
+export const roeDashboardBlockSchema = z.object({
+    type: z.literal('roeDashboard'),
+    content: z.object({
+        title: z.string()
+            .min(1, 'Title is required')
+            .max(200, 'Title must not exceed 200 characters'),
+        description: z.string()
+            .max(1000, 'Description must not exceed 1,000 characters')
+            .optional(),
+        config: z.record(z.any()).optional(),
+    }),
+});
+
+/**
+ * Journey Timeline Block Schema
+ * Validates journey timeline configuration
+ */
+export const journeyTimelineBlockSchema = z.object({
+    type: z.literal('journeyTimeline'),
+    content: z.object({
+        title: z.string()
+            .min(1, 'Title is required')
+            .max(200, 'Title must not exceed 200 characters'),
+        description: z.string()
+            .max(1000, 'Description must not exceed 1,000 characters')
+            .optional(),
+        milestones: z.array(
+            z.object({
+                id: z.string().optional(),
+                title: z.string()
+                    .min(1, 'Milestone title is required')
+                    .max(200, 'Milestone title must not exceed 200 characters'),
+                description: z.string()
+                    .max(500, 'Milestone description must not exceed 500 characters')
+                    .optional(),
+                date: z.string().optional(),
+            })
+        ).optional(),
+        config: z.record(z.any()).optional(),
+    }),
+});
+
 // Union type for all block schemas
 export const blockSchema = z.discriminatedUnion('type', [
     textBlockSchema,
@@ -460,6 +575,11 @@ export const blockSchema = z.discriminatedUnion('type', [
     flowChannelEvaluatorBlockSchema,
     certificateGeneratorBlockSchema,
     finalAssessmentBlockSchema,
+    pitchAnalysisGeneratorBlockSchema,
+    narrativeGeneratorBlockSchema,
+    darkPatternRedesignerBlockSchema,
+    roeDashboardBlockSchema,
+    journeyTimelineBlockSchema,
 ]);
 
 // Type exports for TypeScript
@@ -480,6 +600,11 @@ export type RewardScheduleDesignerBlock = z.infer<typeof rewardScheduleDesignerB
 export type FlowChannelEvaluatorBlock = z.infer<typeof flowChannelEvaluatorBlockSchema>;
 export type CertificateGeneratorBlock = z.infer<typeof certificateGeneratorBlockSchema>;
 export type FinalAssessmentBlock = z.infer<typeof finalAssessmentBlockSchema>;
+export type PitchAnalysisGeneratorBlock = z.infer<typeof pitchAnalysisGeneratorBlockSchema>;
+export type NarrativeGeneratorBlock = z.infer<typeof narrativeGeneratorBlockSchema>;
+export type DarkPatternRedesignerBlock = z.infer<typeof darkPatternRedesignerBlockSchema>;
+export type ROEDashboardBlock = z.infer<typeof roeDashboardBlockSchema>;
+export type JourneyTimelineBlock = z.infer<typeof journeyTimelineBlockSchema>;
 
 export type Block = z.infer<typeof blockSchema>;
 

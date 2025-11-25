@@ -212,8 +212,8 @@
     - Add React Hook Form with basic validation
     - _Requirements: 2.2, 4.1, 4.2_
 
-- [ ] 11. Create configuration modals for interactive blocks
-  - [ ] 11.1 Create ReflectionBlockModal
+- [x] 11. Create configuration modals for interactive blocks
+  - [x] 11.1 Create ReflectionBlockModal
     - Create src/components/admin/course-builder/modals/ReflectionBlockModal.tsx
     - Add question/prompt textarea
     - Add minLength number input
@@ -221,21 +221,21 @@
     - Add React Hook Form with reflectionBlockSchema validation
     - _Requirements: 3.1, 3.2, 4.1, 4.2, 4.3_
 
-  - [ ] 11.2 Create PollBlockModal
+  - [x] 11.2 Create PollBlockModal
     - Create src/components/admin/course-builder/modals/PollBlockModal.tsx
     - Add question input
     - Add dynamic option inputs
     - Add React Hook Form with validation
     - _Requirements: 3.1, 3.2, 4.1, 4.2, 4.3_
 
-  - [ ] 11.3 Create WordCloudBlockModal
+  - [x] 11.3 Create WordCloudBlockModal
     - Create src/components/admin/course-builder/modals/WordCloudBlockModal.tsx
     - Add prompt input
     - Add configuration options
     - Add React Hook Form with validation
     - _Requirements: 3.1, 3.2, 4.1, 4.2, 4.3_
 
-  - [ ] 11.4 Create AIGeneratorBlockModal
+  - [x] 11.4 Create AIGeneratorBlockModal
     - Create src/components/admin/course-builder/modals/AIGeneratorBlockModal.tsx
     - Add generator type selection
     - Add title and description inputs
@@ -243,7 +243,7 @@
     - Add React Hook Form with validation
     - _Requirements: 3.1, 3.2, 4.1, 4.2, 4.3_
 
-  - [ ] 11.5 Create modals for remaining interactive blocks
+  - [x] 11.5 Create modals for remaining interactive blocks
     - Create ChoiceComparisonBlockModal.tsx
     - Create DesignFixerBlockModal.tsx
     - Create PlayerTypeSimulatorBlockModal.tsx
