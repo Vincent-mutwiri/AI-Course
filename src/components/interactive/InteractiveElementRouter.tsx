@@ -58,27 +58,36 @@ Object.keys(componentRegistry);
 export const InteractiveElementRouter = ({ element, userName }: InteractiveElementProps) => {
   const renderElement = () => {
     const elementType = element.type?.trim();
-    
+
     // Handle playerTypeSimulator specifically
     if (elementType === 'playerTypeSimulator') {
       return <PlayerTypeSimulator title={element.config?.title} description={element.config?.description} />;
     }
-    
+
     switch (elementType) {
       case 'poll':
-        return <PollComponent pollData={element as any} />;
+        return <PollComponent pollData={(element as any).content || element} />;
 
       case 'designFixer':
-        return <DesignFixerComponent fixerData={element as any} />;
+        return <DesignFixerComponent fixerData={(element as any).content || element} />;
 
       case 'reflection':
-        return <ReflectionComponent question={element.question || element.prompt || "Reflect on this lesson"} {...element} />;
+        return <ReflectionComponent question={(element as any).content?.question || element.question || element.prompt || "Reflect on this lesson"} {...((element as any).content || element)} />;
 
       case 'wordCloud':
-        return <WordCloudComponent {...element} />;
+        const wordCloudData = (element as any).content || element;
+        const config = wordCloudData.config || wordCloudData;
+        return <WordCloudComponent 
+          title={config.title || wordCloudData.title || element.title}
+          description={config.description || wordCloudData.description || element.description}
+          words={config.words || wordCloudData.words || element.words}
+          mappings={config.mappings || wordCloudData.mappings || element.mappings}
+          instructionText={config.instructionText || wordCloudData.instructionText || element.instructionText}
+          summaryText={config.summaryText || wordCloudData.summaryText || element.summaryText}
+        />;
 
       case 'choiceComparison':
-        return <ChoiceComparisonComponent data={element as any} />;
+        return <ChoiceComparisonComponent data={(element as any).content || element} />;
 
       case 'visualTokens':
         return <VisualTokens />;

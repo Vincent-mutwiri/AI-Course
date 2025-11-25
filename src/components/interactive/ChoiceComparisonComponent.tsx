@@ -22,25 +22,45 @@ export const ChoiceComparisonComponent: React.FC<ChoiceComparisonProps> = ({ dat
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const isSubmitted = selectedId !== null;
 
+  // Ensure data and options exist with defaults
+  const options = data?.options || [];
+  const prompt = data?.prompt || 'Compare the following options';
+  const explanation = data?.explanation || '';
+
   const handleSelect = (optionId: string) => {
     if (isSubmitted) return;
     setSelectedId(optionId);
-    
+
     // Optional: Track this interaction
     // api.analytics.trackEvent('choice_comparison_made', { optionId });
   };
 
-  const selectedOption = data.options.find(opt => opt.id === selectedId);
+  const selectedOption = options.find(opt => opt.id === selectedId);
+
+  // If no options provided, show a message
+  if (options.length === 0) {
+    return (
+      <Card className="w-full">
+        <CardHeader>
+          <CardTitle className="text-xl">Feedback Face-off</CardTitle>
+          <CardDescription>No options configured</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground">This component needs to be configured with options.</p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="w-full">
       <CardHeader>
         <CardTitle className="text-xl">Feedback Face-off</CardTitle>
-        <CardDescription>{data.prompt}</CardDescription>
+        <CardDescription>{prompt}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {data.options.map((opt) => {
+          {options.map((opt) => {
             const isSelected = selectedId === opt.id;
             const isCorrect = opt.isCorrect;
             const showResult = isSubmitted;
@@ -100,7 +120,7 @@ export const ChoiceComparisonComponent: React.FC<ChoiceComparisonProps> = ({ dat
               <Lightbulb className="w-6 h-6 text-primary mt-1 flex-shrink-0" />
               <div className="space-y-2">
                 <h4 className="text-lg font-semibold">The Takeaway</h4>
-                <p className="text-foreground/90 leading-relaxed">{data.explanation}</p>
+                <p className="text-foreground/90 leading-relaxed">{explanation}</p>
                 {selectedOption && !selectedOption.isCorrect && (
                   <p className="text-sm text-muted-foreground mt-3 italic">
                     💡 Tip: Look for feedback that is specific, actionable, and provides a clear next step.

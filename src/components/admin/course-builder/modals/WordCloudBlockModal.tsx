@@ -30,31 +30,55 @@ interface WordEntry {
 }
 
 export function WordCloudBlockModal({ open, onClose, onSave, initialData }: WordCloudBlockModalProps) {
-    // Initialize words from initialData
-    const initialWords: WordEntry[] = initialData?.content?.words?.map((w: any, idx: number) => ({
-        text: w.text || '',
-        value: w.value || 50,
-        mapping: initialData?.content?.mappings?.[w.text] || ''
-    })) || [{ text: '', value: 50, mapping: '' }];
+    const [words, setWords] = useState<WordEntry[]>([{ text: '', value: 50, mapping: '' }]);
 
-    const [words, setWords] = useState<WordEntry[]>(initialWords);
+    // Reset words when modal opens or initialData changes
+    React.useEffect(() => {
+        if (open) {
+            console.log('[WordCloudModal] Modal opened with initialData:', initialData);
+
+            const initialWords: WordEntry[] = initialData?.content?.words?.map((w: any) => ({
+                text: w.text || '',
+                value: w.value || 50,
+                mapping: initialData?.content?.mappings?.[w.text] || ''
+            })) || [{ text: '', value: 50, mapping: '' }];
+
+            console.log('[WordCloudModal] Setting initial words:', initialWords);
+            setWords(initialWords);
+        }
+    }, [open, initialData]);
 
     const {
         register,
         handleSubmit,
+        reset,
         formState: { errors, isSubmitting },
     } = useForm<WordCloudBlock>({
-        resolver: zodResolver(wordCloudBlockSchema),
         defaultValues: {
             type: 'wordCloud',
             content: {
-                title: initialData?.content?.title || '',
-                description: initialData?.content?.description || '',
-                instructionText: initialData?.content?.instructionText || '',
-                summaryText: initialData?.content?.summaryText || '',
+                title: '',
+                description: '',
+                instructionText: '',
+                summaryText: '',
             },
         },
     });
+
+    // Reset form when modal opens with initialData
+    React.useEffect(() => {
+        if (open) {
+            reset({
+                type: 'wordCloud',
+                content: {
+                    title: initialData?.content?.title || '',
+                    description: initialData?.content?.description || '',
+                    instructionText: initialData?.content?.instructionText || '',
+                    summaryText: initialData?.content?.summaryText || '',
+                },
+            });
+        }
+    }, [open, initialData, reset]);
 
     const addWord = () => {
         setWords([...words, { text: '', value: 50, mapping: '' }]);
@@ -70,8 +94,7 @@ export function WordCloudBlockModal({ open, onClose, onSave, initialData }: Word
         setWords(newWords);
     };
 
-    const onSubmit = (data: WordCloudBlock) => {
-        // Build words array and mappings object
+    const onSubmit = (data: any) => {
         const wordsArray = words
             .filter(w => w.text.trim())
             .map(w => ({ text: w.text.trim(), value: w.value }));
@@ -84,16 +107,33 @@ export function WordCloudBlockModal({ open, onClose, onSave, initialData }: Word
             }, {} as Record<string, string>);
 
         const finalData = {
-            ...data,
+            type: 'wordCloud',
             content: {
-                ...data.content,
+                title: data.content.title || '',
+                description: data.content.description || '',
+                instructionText: data.content.instructionText || '',
+                summaryText: data.content.summaryText || '',
                 words: wordsArray,
                 mappings: mappingsObject,
             },
         };
 
+        console.log('onSubmit - finalData:', JSON.stringify(finalData, null, 2));
         onSave(finalData);
         onClose();
+    };
+
+    const handleSaveClick = () => {
+        console.log('handleSaveClick - words state:', words);
+        const formData = {
+            content: {
+                title: (document.getElementById('title') as HTMLInputElement)?.value || '',
+                description: (document.getElementById('description') as HTMLTextAreaElement)?.value || '',
+                instructionText: (document.getElementById('instructionText') as HTMLInputElement)?.value || '',
+                summaryText: (document.getElementById('summaryText') as HTMLTextAreaElement)?.value || '',
+            }
+        };
+        onSubmit(formData);
     };
 
     return (
@@ -108,7 +148,7 @@ export function WordCloudBlockModal({ open, onClose, onSave, initialData }: Word
                     </p>
                 </DialogHeader>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
                     {/* Title */}
                     <div className="space-y-2">
                         <Label htmlFor="title">Title</Label>
@@ -233,7 +273,7 @@ export function WordCloudBlockModal({ open, onClose, onSave, initialData }: Word
                         <Button type="button" variant="outline" onClick={onClose}>
                             Cancel
                         </Button>
-                        <Button type="submit" disabled={isSubmitting || words.filter(w => w.text.trim()).length === 0}>
+                        <Button type="button" onClick={handleSaveClick} disabled={isSubmitting}>
                             {isSubmitting ? 'Saving...' : 'Save'}
                         </Button>
                     </DialogFooter>

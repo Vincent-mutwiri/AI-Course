@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import * as simData from '@/data/simulations/wordCloudData';
 import { Lightbulb, Sparkles } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,16 +8,9 @@ interface WordData {
   value: number;
 }
 
-interface WordCloudData {
-  words: WordData[];
-  mappings: Record<string, string>;
-}
-
 interface WordCloudProps {
   title?: string;
-  dataKey?: keyof typeof simData;
   description?: string;
-  // New configurable props
   words?: WordData[];
   mappings?: Record<string, string>;
   instructionText?: string;
@@ -27,36 +19,26 @@ interface WordCloudProps {
 
 export const WordCloudComponent: React.FC<WordCloudProps> = ({
   title = "Community Insights",
-  dataKey,
   description = "Click on a word to see which motivation principle it connects to!",
-  words,
-  mappings,
+  words = [],
+  mappings = {},
   instructionText,
   summaryText
 }) => {
   const [selectedWord, setSelectedWord] = useState<string | null>(null);
   const [mapping, setMapping] = useState<string | null>(null);
 
-  // Determine data source: custom props > dataKey > default
-  let data: WordCloudData | null = null;
-
-  if (words && mappings) {
-    // Use custom configurable data
-    data = { words, mappings };
-  } else if (dataKey) {
-    // Use hardcoded simulation data by key
-    data = simData[dataKey];
-  } else {
-    // Fallback to default (for backward compatibility)
-    data = simData.lesson2_2_Cloud;
-  }
-
-  if (!data || !data.words || data.words.length === 0) {
+  // Check if component is properly configured
+  if (!words || words.length === 0) {
     return (
       <Card className="w-full">
+        <CardHeader>
+          <CardTitle>{title}</CardTitle>
+          <CardDescription>No words configured</CardDescription>
+        </CardHeader>
         <CardContent className="p-6">
-          <p className="text-destructive">
-            Error: No word cloud data configured. Please add words and mappings in the configuration.
+          <p className="text-muted-foreground">
+            This word cloud needs to be configured with words and mappings.
           </p>
         </CardContent>
       </Card>
@@ -64,7 +46,7 @@ export const WordCloudComponent: React.FC<WordCloudProps> = ({
   }
 
   const handleWordClick = (word: string) => {
-    const mappedValue = data.mappings[word];
+    const mappedValue = mappings[word];
     if (mappedValue) {
       setSelectedWord(word);
       setMapping(mappedValue);
@@ -72,7 +54,7 @@ export const WordCloudComponent: React.FC<WordCloudProps> = ({
   };
 
   // Sort words by value for better visual hierarchy
-  const sortedWords = [...data.words].sort((a, b) => b.value - a.value);
+  const sortedWords = [...words].sort((a, b) => b.value - a.value);
 
   return (
     <Card className="w-full">

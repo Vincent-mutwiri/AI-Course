@@ -36,21 +36,26 @@ interface DesignFixerComponentProps {
 }
 
 export const DesignFixerComponent: React.FC<DesignFixerComponentProps> = ({ fixerData, onUpdate }) => {
+  // Ensure fixerData and hotspots exist with defaults
+  const initialHotspots = fixerData?.hotspots || [];
+  const initialBadSlideUrl = fixerData?.badSlideUrl || '';
+  const initialGoodSlideUrl = fixerData?.goodSlideUrl || '';
+
   const [foundHotspots, setFoundHotspots] = useState<string[]>([]);
   const [lastFeedback, setLastFeedback] = useState<string>(
-    `Click on the ${fixerData.hotspots.length} parts of this slide that create 'bad' cognitive load.`
+    `Click on the ${initialHotspots.length} parts of this slide that create 'bad' cognitive load.`
   );
-  const [badSlideUrl, setBadSlideUrl] = useState(fixerData.badSlideUrl);
-  const [goodSlideUrl, setGoodSlideUrl] = useState(fixerData.goodSlideUrl);
-  const [hotspots, setHotspots] = useState<Hotspot[]>(fixerData.hotspots);
+  const [badSlideUrl, setBadSlideUrl] = useState(initialBadSlideUrl);
+  const [goodSlideUrl, setGoodSlideUrl] = useState(initialGoodSlideUrl);
+  const [hotspots, setHotspots] = useState<Hotspot[]>(initialHotspots);
   const [editorOpen, setEditorOpen] = useState(false);
 
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
 
   const totalHotspots = hotspots.length;
-  const allFound = foundHotspots.length === totalHotspots;
-  const progress = (foundHotspots.length / totalHotspots) * 100;
+  const allFound = foundHotspots.length === totalHotspots && totalHotspots > 0;
+  const progress = totalHotspots > 0 ? (foundHotspots.length / totalHotspots) * 100 : 0;
 
   const handleBadSlideUpdate = (url: string) => {
     setBadSlideUrl(url);
@@ -85,6 +90,39 @@ export const DesignFixerComponent: React.FC<DesignFixerComponentProps> = ({ fixe
       setLastFeedback("🎉 Great job! You found all the issues. See the difference below.");
     }
   };
+
+  // If no configuration provided, show a message
+  if (!badSlideUrl || hotspots.length === 0) {
+    return (
+      <Card className="w-full">
+        <CardHeader>
+          <CardTitle>Design Fixer Challenge</CardTitle>
+          <CardDescription>
+            Find the cognitive load issues in this slide design
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground">
+            This component needs to be configured with a slide image and hotspots.
+          </p>
+          {isAdmin && (
+            <div className="mt-4 space-y-2">
+              <ImageUploader
+                currentUrl={badSlideUrl}
+                onImageUpdate={handleBadSlideUpdate}
+                label="Bad Slide"
+                folder="design-fixer"
+              />
+              <Button onClick={() => setEditorOpen(true)} variant="outline">
+                <Settings className="h-4 w-4 mr-2" />
+                Add Hotspots
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="w-full">
@@ -135,11 +173,10 @@ export const DesignFixerComponent: React.FC<DesignFixerComponentProps> = ({ fixe
 
         {/* Feedback Box */}
         <div
-          className={`p-4 rounded-lg border-2 transition-all ${
-            allFound
-              ? "bg-green-50 border-green-500 dark:bg-green-950/20"
-              : "bg-blue-50 border-blue-500 dark:bg-blue-950/20"
-          }`}
+          className={`p-4 rounded-lg border-2 transition-all ${allFound
+            ? "bg-green-50 border-green-500 dark:bg-green-950/20"
+            : "bg-blue-50 border-blue-500 dark:bg-blue-950/20"
+            }`}
         >
           <div className="flex items-start gap-3">
             {allFound ? (
@@ -167,9 +204,8 @@ export const DesignFixerComponent: React.FC<DesignFixerComponentProps> = ({ fixe
             )}
           </div>
           <div
-            className={`relative w-full max-w-3xl mx-auto transition-all duration-500 ${
-              allFound ? "opacity-60 scale-95" : "opacity-100 scale-100"
-            }`}
+            className={`relative w-full max-w-3xl mx-auto transition-all duration-500 ${allFound ? "opacity-60 scale-95" : "opacity-100 scale-100"
+              }`}
           >
             <img
               src={badSlideUrl}
@@ -186,11 +222,10 @@ export const DesignFixerComponent: React.FC<DesignFixerComponentProps> = ({ fixe
                   aria-label={`Find design flaw: ${hotspot.id}`}
                   onClick={() => handleClick(hotspot)}
                   disabled={isFound}
-                  className={`absolute border-2 rounded-md transition-all duration-300 ${
-                    isFound
-                      ? "border-green-500 bg-green-500/30 backdrop-blur-sm cursor-default"
-                      : "border-dashed border-red-500 hover:bg-red-500/20 hover:border-solid cursor-pointer animate-pulse"
-                  }`}
+                  className={`absolute border-2 rounded-md transition-all duration-300 ${isFound
+                    ? "border-green-500 bg-green-500/30 backdrop-blur-sm cursor-default"
+                    : "border-dashed border-red-500 hover:bg-red-500/20 hover:border-solid cursor-pointer animate-pulse"
+                    }`}
                   style={{
                     top: hotspot.style.top,
                     left: hotspot.style.left,

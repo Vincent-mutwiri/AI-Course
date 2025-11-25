@@ -155,6 +155,11 @@ const blockSchema = new Schema<IBlock>({
       checked: { type: Boolean }
     }],
     listType: { type: String, enum: ['bullet', 'numbered', 'checkbox'] },
+    words: [{
+      text: { type: String },
+      value: { type: Number }
+    }],
+    mappings: { type: Schema.Types.Mixed },
     config: { type: Schema.Types.Mixed },
     question: { type: String },
     options: { type: Schema.Types.Mixed },

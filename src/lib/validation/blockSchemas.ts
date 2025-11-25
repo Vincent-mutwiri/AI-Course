@@ -229,9 +229,7 @@ export const wordCloudBlockSchema = z.object({
                     .min(1, 'Value must be at least 1')
                     .max(100, 'Value cannot exceed 100'),
             })
-        ).min(1, 'At least one word is required')
-            .max(50, 'Cannot have more than 50 words')
-            .optional(),
+        ).optional().default([]),
         mappings: z.record(z.string(), z.string()).optional(),
         instructionText: z.string()
             .max(500, 'Instruction text must not exceed 500 characters')

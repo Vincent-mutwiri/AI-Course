@@ -27,43 +27,42 @@ interface PollComponentProps {
 export const PollComponent: React.FC<PollComponentProps> = (props) => {
   // Support both nested pollData and flat props for flexibility
   const pollData = props.pollData || props;
-  const question = pollData.question || "Poll Question";
-  const title = pollData.title;
-  const options = pollData.options || [];
-  const allowMultiple = pollData.allowMultiple || false;
-  const showResults = pollData.showResults !== false; // Default to true
+
+  const question = pollData?.question || "Poll Question";
+  const title = pollData?.title;
+  const options = pollData?.options || [];
+  const allowMultiple = pollData?.allowMultiple || false;
+  const showResults = pollData?.showResults !== false; // Default to true
 
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [votes, setVotes] = useState<Record<string, number>>({});
 
-  // Generate unique poll ID for localStorage
-  const pollId = `poll_${question.substring(0, 50)}`;
+  // Generate unique poll ID for localStorage using question and first option
+  const pollId = `poll_${question.substring(0, 30)}_${options[0]?.text?.substring(0, 20) || 'default'}`.replace(/\s+/g, '_');
 
   // Load saved response and votes from localStorage
   useEffect(() => {
+    // Initialize votes first
+    initializeVotes();
+
     const savedResponse = localStorage.getItem(pollId);
     if (savedResponse) {
       try {
         const { selectedIds: saved, isSubmitted: submitted } = JSON.parse(savedResponse);
-        setSelectedIds(saved || []);
-        setIsSubmitted(submitted || false);
+        if (saved && saved.length > 0 && submitted) {
+          setSelectedIds(saved);
+          setIsSubmitted(true);
+
+          // Load saved votes
+          const savedVotes = localStorage.getItem(`${pollId}_votes`);
+          if (savedVotes) {
+            setVotes(JSON.parse(savedVotes));
+          }
+        }
       } catch (error) {
         console.error('Error loading saved poll response:', error);
       }
-    }
-
-    // Initialize votes from options or localStorage
-    const savedVotes = localStorage.getItem(`${pollId}_votes`);
-    if (savedVotes) {
-      try {
-        setVotes(JSON.parse(savedVotes));
-      } catch (error) {
-        console.error('Error loading saved votes:', error);
-        initializeVotes();
-      }
-    } else {
-      initializeVotes();
     }
   }, [pollId]);
 
@@ -126,6 +125,22 @@ export const PollComponent: React.FC<PollComponentProps> = (props) => {
 
   const isSelected = (optionId: string) => selectedIds.includes(optionId);
 
+  // If no options provided, show a message
+  if (options.length === 0) {
+    return (
+      <Card className="w-full max-w-2xl mx-auto">
+        <CardHeader>
+          {title && <CardTitle className="text-2xl mb-2">{title}</CardTitle>}
+          <CardTitle className={title ? "text-lg" : "text-xl"}>{question}</CardTitle>
+          <CardDescription>No options configured</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground">This poll needs to be configured with options.</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
@@ -151,8 +166,8 @@ export const PollComponent: React.FC<PollComponentProps> = (props) => {
                 <Button
                   variant={selected ? "default" : "outline"}
                   className={`w-full justify-start text-left h-auto py-4 px-6 transition-all ${selected
-                      ? "ring-2 ring-primary ring-offset-2"
-                      : "hover:bg-accent"
+                    ? "ring-2 ring-primary ring-offset-2"
+                    : "hover:bg-accent"
                     }`}
                   onClick={() => handleSelect(optionId)}
                   disabled={isSubmitted}
@@ -160,8 +175,8 @@ export const PollComponent: React.FC<PollComponentProps> = (props) => {
                   <div className="flex items-center gap-3 w-full">
                     <div
                       className={`w-5 h-5 ${allowMultiple ? 'rounded' : 'rounded-full'} border-2 flex items-center justify-center ${selected
-                          ? "border-primary-foreground bg-primary-foreground"
-                          : "border-muted-foreground"
+                        ? "border-primary-foreground bg-primary-foreground"
+                        : "border-muted-foreground"
                         }`}
                     >
                       {selected && (
