@@ -1,10 +1,13 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate, useBeforeUnload } from "react-router-dom";
 import { toast } from "sonner";
+import { Eye } from "lucide-react";
 import api from "@/services/api";
 import { debounce } from "@/utils/debounce";
 import CourseStructure from "@/components/admin/course-builder/CourseStructure";
 import Canvas from "@/components/admin/course-builder/Canvas";
+import PreviewModal from "@/components/admin/course-builder/PreviewModal";
+import { Button } from "@/components/ui/button";
 
 interface Block {
     id: string;
@@ -49,6 +52,8 @@ export default function CourseBuilderPage() {
     const [isSaving, setIsSaving] = useState(false);
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
     const [saveRetryCount, setSaveRetryCount] = useState(0);
+    const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+    const [currentLessonIndex, setCurrentLessonIndex] = useState(0);
 
     // Fetch course data on mount
     useEffect(() => {
@@ -218,6 +223,10 @@ export default function CourseBuilderPage() {
             setCurrentLessonId(lessonId);
             setBlocks(lesson.blocks || []);
             setHasUnsavedChanges(false);
+
+            // Calculate lesson index for preview
+            const lessonIndex = module?.lessons.findIndex((l) => l._id === lessonId) ?? 0;
+            setCurrentLessonIndex(lessonIndex);
         }
     };
 
@@ -304,9 +313,30 @@ export default function CourseBuilderPage() {
         toast.success("Block deleted");
     };
 
-    // Handle block preview
+    // Handle block preview - opens preview modal for entire lesson
     const handleBlockPreview = (blockId: string) => {
-        toast.info(`Preview block ${blockId} - Preview mode will be implemented in a future task`);
+        setIsPreviewOpen(true);
+    };
+
+    // Handle preview toggle
+    const handlePreviewToggle = () => {
+        setIsPreviewOpen(!isPreviewOpen);
+    };
+
+    // Get current lesson for preview
+    const getCurrentLesson = () => {
+        if (!currentModuleId || !currentLessonId || !course) return null;
+
+        const module = course.modules.find((m) => m._id === currentModuleId);
+        const lesson = module?.lessons.find((l) => l._id === currentLessonId);
+
+        if (!lesson) return null;
+
+        // Return lesson with current blocks state (including unsaved changes)
+        return {
+            ...lesson,
+            blocks: blocks,
+        };
     };
 
     if (isLoading) {
@@ -377,6 +407,17 @@ export default function CourseBuilderPage() {
                             <span>All changes saved</span>
                         </div>
                     )}
+                    {currentLessonId && (
+                        <Button
+                            onClick={handlePreviewToggle}
+                            variant="outline"
+                            size="sm"
+                            className="gap-2"
+                        >
+                            <Eye className="h-4 w-4" />
+                            Preview Lesson
+                        </Button>
+                    )}
                 </div>
             </div>
 
@@ -426,6 +467,16 @@ export default function CourseBuilderPage() {
                     </div>
                 </div>
             </div>
+
+            {/* Preview Modal */}
+            <PreviewModal
+                isOpen={isPreviewOpen}
+                onClose={() => setIsPreviewOpen(false)}
+                lesson={getCurrentLesson()}
+                courseId={id}
+                moduleId={currentModuleId || undefined}
+                lessonIndex={currentLessonIndex}
+            />
         </div>
     );
 }

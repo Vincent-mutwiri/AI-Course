@@ -267,7 +267,7 @@
   - Test backward compatibility with existing courses
   - _Requirements: 12.1, 12.2, 12.3, 12.4_
 
-- [ ] 13. Add preview mode
+- [x] 13. Add preview mode
   - Add preview state toggle in CourseBuilderPage
   - Create PreviewModal component to display lesson in student view
   - Render all blocks using student-facing components
