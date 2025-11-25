@@ -4,19 +4,11 @@ import { GripVertical, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import BlockRenderer from "./BlockRenderer";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
-
-interface Block {
-    id: string;
-    type: string;
-    order: number;
-    content: Record<string, any>;
-    createdAt: Date;
-    updatedAt: Date;
-}
+import type { Block } from "@/hooks/useBlockModal";
 
 interface CanvasProps {
     blocks: Block[];
-    onBlocksReorder: (blocks: Block[]) => void;
+    onBlocksReorder: (blocks: Block[]) => void | Promise<void>;
     onBlockEdit: (blockId: string) => void;
     onBlockDuplicate: (blockId: string) => void;
     onBlockDelete: (blockId: string) => void;

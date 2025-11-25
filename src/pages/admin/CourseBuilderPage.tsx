@@ -14,16 +14,7 @@ import { AddModuleModal } from "@/components/admin/course-builder/AddModuleModal
 import { AddLessonModal } from "@/components/admin/course-builder/AddLessonModal";
 import { DeleteConfirmationDialog } from "@/components/admin/course-builder/DeleteConfirmationDialog";
 import { Button } from "@/components/ui/button";
-import type { BlockType } from "@/hooks/useBlockModal";
-
-interface Block {
-    id: string;
-    type: string;
-    order: number;
-    content: Record<string, any>;
-    createdAt: Date;
-    updatedAt: Date;
-}
+import type { BlockType, Block } from "@/hooks/useBlockModal";
 
 interface Lesson {
     _id: string;

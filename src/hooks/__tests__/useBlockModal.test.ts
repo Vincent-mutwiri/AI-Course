@@ -1,22 +1,25 @@
 import { describe, it, expect, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useBlockModal } from '../useBlockModal';
+import type { Block } from '@/lib/validation/blockSchemas';
 
 describe('useBlockModal Hook', () => {
     const mockBlocks = [
         {
             id: '1',
-            type: 'text',
+            type: 'text' as const,
             order: 0,
             content: { text: 'Test' },
             createdAt: new Date(),
             updatedAt: new Date(),
         },
-    ];
+    ] as unknown as Block[];
 
     it('initializes with closed modal state', () => {
         const { result } = renderHook(() =>
             useBlockModal({
+                // @ts-ignore - test mock blocks
+                // @ts-ignore - test mock blocks
                 blocks: mockBlocks,
                 onBlocksChange: vi.fn(),
             })
@@ -30,13 +33,14 @@ describe('useBlockModal Hook', () => {
     it('opens modal with correct block data', () => {
         const { result } = renderHook(() =>
             useBlockModal({
+                // @ts-ignore - test mock blocks
                 blocks: mockBlocks,
                 onBlocksChange: vi.fn(),
             })
         );
 
         act(() => {
-            result.current.openModal('text' as any, mockBlocks[0]);
+            result.current.openModal('text', mockBlocks[0]);
         });
 
         expect(result.current.modalState.isOpen).toBe(true);
@@ -48,13 +52,14 @@ describe('useBlockModal Hook', () => {
     it('closes modal and resets state', () => {
         const { result } = renderHook(() =>
             useBlockModal({
+                // @ts-ignore - test mock blocks
                 blocks: mockBlocks,
                 onBlocksChange: vi.fn(),
             })
         );
 
         act(() => {
-            result.current.openModal('text' as any, mockBlocks[0]);
+            result.current.openModal('text', mockBlocks[0]);
         });
 
         act(() => {
@@ -69,6 +74,7 @@ describe('useBlockModal Hook', () => {
         const onBlocksChange = vi.fn();
         const { result } = renderHook(() =>
             useBlockModal({
+                // @ts-ignore - test mock blocks
                 blocks: mockBlocks,
                 onBlocksChange,
             })
@@ -76,7 +82,7 @@ describe('useBlockModal Hook', () => {
 
         // Open modal in edit mode first
         act(() => {
-            result.current.openModal('text' as any, mockBlocks[0]);
+            result.current.openModal('text', mockBlocks[0]);
         });
 
         const updatedBlockData = {

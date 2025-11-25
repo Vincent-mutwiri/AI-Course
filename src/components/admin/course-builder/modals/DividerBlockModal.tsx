@@ -26,7 +26,7 @@ export function DividerBlockModal({ open, onClose, onSave, initialData }: Divide
         watch,
         formState: { errors, isSubmitting },
     } = useForm<DividerBlock>({
-        resolver: zodResolver(dividerBlockSchema),
+        resolver: zodResolver(dividerBlockSchema) as any,
         defaultValues: {
             type: 'divider',
             content: {
@@ -39,8 +39,8 @@ export function DividerBlockModal({ open, onClose, onSave, initialData }: Divide
     const style = watch('content.style');
     const spacing = watch('content.spacing');
 
-    const onSubmit = (data: DividerBlock) => {
-        onSave(data);
+    const onSubmit = (data: any) => {
+        onSave(data as DividerBlock);
         onClose();
     };
 

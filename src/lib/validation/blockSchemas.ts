@@ -42,10 +42,10 @@ export const videoBlockSchema = z.object({
     content: z.object({
         videoUrl: z.string().min(1, 'Video URL is required'),
         videoSource: z.enum(VIDEO_SOURCES, {
-            errorMap: () => ({ message: 'Video source must be either "upload" or "embed"' }),
+            message: 'Video source must be either "upload" or "embed"',
         }),
         videoProvider: z.enum(VIDEO_PROVIDERS, {
-            errorMap: () => ({ message: 'Video provider must be "youtube", "vimeo", or "s3"' }),
+            message: 'Video provider must be "youtube", "vimeo", or "s3"',
         }).optional(),
         title: z.string().optional(),
         description: z.string().optional(),
@@ -122,7 +122,7 @@ export const listBlockSchema = z.object({
     type: z.literal('list'),
     content: z.object({
         listType: z.enum(LIST_TYPES, {
-            errorMap: () => ({ message: 'List type must be "bullet", "numbered", or "checkbox"' }),
+            message: 'List type must be "bullet", "numbered", or "checkbox"',
         }).default('bullet'),
         items: z.array(
             z.object({
@@ -145,7 +145,7 @@ export const dividerBlockSchema = z.object({
     content: z.object({
         style: z.enum(['solid', 'dashed', 'dotted']).default('solid').optional(),
         spacing: z.enum(['small', 'medium', 'large']).default('medium').optional(),
-    }).optional().default({}),
+    }).default({}),
 });
 
 // Interactive Block Schemas
@@ -264,7 +264,7 @@ export const aiGeneratorBlockSchema = z.object({
         placeholder: z.string()
             .max(200, 'Placeholder must not exceed 200 characters')
             .optional(),
-        config: z.record(z.any()).optional(),
+        config: z.record(z.string(), z.any()).optional(),
     }),
 });
 
@@ -293,7 +293,7 @@ export const choiceComparisonBlockSchema = z.object({
         title: z.string()
             .max(200, 'Title must not exceed 200 characters')
             .optional(),
-        config: z.record(z.any()).optional(),
+        config: z.record(z.string(), z.any()).optional(),
     }),
 });
 
@@ -319,7 +319,7 @@ export const designFixerBlockSchema = z.object({
                 category: z.string().optional(),
             })
         ).optional(),
-        config: z.record(z.any()).optional(),
+        config: z.record(z.string(), z.any()).optional(),
     }),
 });
 
@@ -348,7 +348,7 @@ export const playerTypeSimulatorBlockSchema = z.object({
                 traits: z.array(z.string()).optional(),
             })
         ).optional(),
-        config: z.record(z.any()).optional(),
+        config: z.record(z.string(), z.any()).optional(),
     }),
 });
 
@@ -376,7 +376,7 @@ export const rewardScheduleDesignerBlockSchema = z.object({
                     .optional(),
             })
         ).optional(),
-        config: z.record(z.any()).optional(),
+        config: z.record(z.string(), z.any()).optional(),
     }),
 });
 
@@ -396,7 +396,7 @@ export const flowChannelEvaluatorBlockSchema = z.object({
         scenario: z.string()
             .max(2000, 'Scenario must not exceed 2,000 characters')
             .optional(),
-        config: z.record(z.any()).optional(),
+        config: z.record(z.string(), z.any()).optional(),
     }),
 });
 
@@ -416,7 +416,7 @@ export const certificateGeneratorBlockSchema = z.object({
         certificateTitle: z.string()
             .max(200, 'Certificate title must not exceed 200 characters')
             .optional(),
-        config: z.record(z.any()).optional(),
+        config: z.record(z.string(), z.any()).optional(),
     }),
 });
 
@@ -448,7 +448,7 @@ export const finalAssessmentBlockSchema = z.object({
             .min(0, 'Passing score cannot be negative')
             .max(100, 'Passing score cannot exceed 100')
             .optional(),
-        config: z.record(z.any()).optional(),
+        config: z.record(z.string(), z.any()).optional(),
     }),
 });
 
@@ -471,7 +471,7 @@ export const pitchAnalysisGeneratorBlockSchema = z.object({
         placeholder: z.string()
             .max(200, 'Placeholder must not exceed 200 characters')
             .optional(),
-        config: z.record(z.any()).optional(),
+        config: z.record(z.string(), z.any()).optional(),
     }),
 });
 
@@ -494,7 +494,7 @@ export const narrativeGeneratorBlockSchema = z.object({
         placeholder: z.string()
             .max(200, 'Placeholder must not exceed 200 characters')
             .optional(),
-        config: z.record(z.any()).optional(),
+        config: z.record(z.string(), z.any()).optional(),
     }),
 });
 
@@ -517,7 +517,7 @@ export const darkPatternRedesignerBlockSchema = z.object({
         prompt: z.string()
             .max(2000, 'Prompt must not exceed 2,000 characters')
             .optional(),
-        config: z.record(z.any()).optional(),
+        config: z.record(z.string(), z.any()).optional(),
     }),
 });
 
@@ -534,7 +534,7 @@ export const roeDashboardBlockSchema = z.object({
         description: z.string()
             .max(1000, 'Description must not exceed 1,000 characters')
             .optional(),
-        config: z.record(z.any()).optional(),
+        config: z.record(z.string(), z.any()).optional(),
     }),
 });
 
@@ -563,7 +563,7 @@ export const journeyTimelineBlockSchema = z.object({
                 date: z.string().optional(),
             })
         ).optional(),
-        config: z.record(z.any()).optional(),
+        config: z.record(z.string(), z.any()).optional(),
     }),
 });
 
@@ -630,9 +630,9 @@ export const validateFileType = (file: File, allowedTypes: readonly string[]): b
 };
 
 // Helper function to get validation error messages
-export const getValidationErrors = (error: z.ZodError): Record<string, string> => {
+export const getValidationErrors = (error: z.ZodError<any>): Record<string, string> => {
     const errors: Record<string, string> = {};
-    error.errors.forEach((err) => {
+    error.issues.forEach((err) => {
         const path = err.path.join('.');
         errors[path] = err.message;
     });

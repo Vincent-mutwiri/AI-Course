@@ -60,6 +60,10 @@ export function BlockModalRouter({ modalState, onClose, onSave }: BlockModalRout
         return null;
     }
 
+    // Convert null to undefined for modal props and cast to any to avoid type conflicts
+    // between the generic Block type and specific block schemas
+    const initialData = (blockData ?? undefined) as any;
+
     // Wrap modal in Suspense for lazy loading
     const renderModal = () => {
         switch (blockType) {
@@ -70,7 +74,7 @@ export function BlockModalRouter({ modalState, onClose, onSave }: BlockModalRout
                         open={isOpen}
                         onClose={onClose}
                         onSave={onSave}
-                        initialData={blockData}
+                        initialData={initialData}
                     />
                 );
 
@@ -80,7 +84,7 @@ export function BlockModalRouter({ modalState, onClose, onSave }: BlockModalRout
                         open={isOpen}
                         onClose={onClose}
                         onSave={onSave}
-                        initialData={blockData}
+                        initialData={initialData}
                     />
                 );
 
@@ -90,7 +94,7 @@ export function BlockModalRouter({ modalState, onClose, onSave }: BlockModalRout
                         open={isOpen}
                         onClose={onClose}
                         onSave={onSave}
-                        initialData={blockData}
+                        initialData={initialData}
                     />
                 );
 
@@ -100,7 +104,7 @@ export function BlockModalRouter({ modalState, onClose, onSave }: BlockModalRout
                         open={isOpen}
                         onClose={onClose}
                         onSave={onSave}
-                        initialData={blockData}
+                        initialData={initialData}
                     />
                 );
 
@@ -110,7 +114,7 @@ export function BlockModalRouter({ modalState, onClose, onSave }: BlockModalRout
                         open={isOpen}
                         onClose={onClose}
                         onSave={onSave}
-                        initialData={blockData}
+                        initialData={initialData}
                     />
                 );
 
@@ -120,7 +124,7 @@ export function BlockModalRouter({ modalState, onClose, onSave }: BlockModalRout
                         open={isOpen}
                         onClose={onClose}
                         onSave={onSave}
-                        initialData={blockData}
+                        initialData={initialData}
                     />
                 );
 
@@ -131,7 +135,7 @@ export function BlockModalRouter({ modalState, onClose, onSave }: BlockModalRout
                         open={isOpen}
                         onClose={onClose}
                         onSave={onSave}
-                        initialData={blockData}
+                        initialData={initialData}
                     />
                 );
 
@@ -141,7 +145,7 @@ export function BlockModalRouter({ modalState, onClose, onSave }: BlockModalRout
                         open={isOpen}
                         onClose={onClose}
                         onSave={onSave}
-                        initialData={blockData}
+                        initialData={initialData}
                     />
                 );
 
@@ -151,7 +155,7 @@ export function BlockModalRouter({ modalState, onClose, onSave }: BlockModalRout
                         open={isOpen}
                         onClose={onClose}
                         onSave={onSave}
-                        initialData={blockData}
+                        initialData={initialData}
                     />
                 );
 
@@ -161,7 +165,7 @@ export function BlockModalRouter({ modalState, onClose, onSave }: BlockModalRout
                         open={isOpen}
                         onClose={onClose}
                         onSave={onSave}
-                        initialData={blockData}
+                        initialData={initialData}
                     />
                 );
 
@@ -171,7 +175,7 @@ export function BlockModalRouter({ modalState, onClose, onSave }: BlockModalRout
                         open={isOpen}
                         onClose={onClose}
                         onSave={onSave}
-                        initialData={blockData}
+                        initialData={initialData}
                     />
                 );
 
@@ -181,7 +185,7 @@ export function BlockModalRouter({ modalState, onClose, onSave }: BlockModalRout
                         open={isOpen}
                         onClose={onClose}
                         onSave={onSave}
-                        initialData={blockData}
+                        initialData={initialData}
                     />
                 );
 
@@ -191,7 +195,7 @@ export function BlockModalRouter({ modalState, onClose, onSave }: BlockModalRout
                         open={isOpen}
                         onClose={onClose}
                         onSave={onSave}
-                        initialData={blockData}
+                        initialData={initialData}
                     />
                 );
 
@@ -201,7 +205,7 @@ export function BlockModalRouter({ modalState, onClose, onSave }: BlockModalRout
                         open={isOpen}
                         onClose={onClose}
                         onSave={onSave}
-                        initialData={blockData}
+                        initialData={initialData}
                     />
                 );
 
@@ -211,7 +215,7 @@ export function BlockModalRouter({ modalState, onClose, onSave }: BlockModalRout
                         open={isOpen}
                         onClose={onClose}
                         onSave={onSave}
-                        initialData={blockData}
+                        initialData={initialData}
                     />
                 );
 
@@ -221,7 +225,7 @@ export function BlockModalRouter({ modalState, onClose, onSave }: BlockModalRout
                         open={isOpen}
                         onClose={onClose}
                         onSave={onSave}
-                        initialData={blockData}
+                        initialData={initialData}
                     />
                 );
 
@@ -231,7 +235,7 @@ export function BlockModalRouter({ modalState, onClose, onSave }: BlockModalRout
                         open={isOpen}
                         onClose={onClose}
                         onSave={onSave}
-                        initialData={blockData}
+                        initialData={initialData}
                     />
                 );
 
@@ -241,7 +245,7 @@ export function BlockModalRouter({ modalState, onClose, onSave }: BlockModalRout
                         open={isOpen}
                         onClose={onClose}
                         onSave={onSave}
-                        initialData={blockData}
+                        initialData={initialData}
                     />
                 );
 
@@ -251,7 +255,7 @@ export function BlockModalRouter({ modalState, onClose, onSave }: BlockModalRout
                         open={isOpen}
                         onClose={onClose}
                         onSave={onSave}
-                        initialData={blockData}
+                        initialData={initialData}
                     />
                 );
 
@@ -261,7 +265,7 @@ export function BlockModalRouter({ modalState, onClose, onSave }: BlockModalRout
                         open={isOpen}
                         onClose={onClose}
                         onSave={onSave}
-                        initialData={blockData}
+                        initialData={initialData}
                     />
                 );
 
@@ -271,7 +275,7 @@ export function BlockModalRouter({ modalState, onClose, onSave }: BlockModalRout
                         open={isOpen}
                         onClose={onClose}
                         onSave={onSave}
-                        initialData={blockData}
+                        initialData={initialData}
                     />
                 );
 
@@ -281,7 +285,7 @@ export function BlockModalRouter({ modalState, onClose, onSave }: BlockModalRout
                         open={isOpen}
                         onClose={onClose}
                         onSave={onSave}
-                        initialData={blockData}
+                        initialData={initialData}
                     />
                 );
 

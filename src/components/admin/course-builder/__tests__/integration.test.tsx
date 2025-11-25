@@ -5,6 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 import Canvas from '../Canvas';
 import BlockLibrary from '../BlockLibrary';
 import { v4 as uuidv4 } from 'uuid';
+import type { Block } from '@/hooks/useBlockModal';
 
 // Mock dependencies
 vi.mock('@/services/api', () => ({
@@ -21,7 +22,7 @@ vi.mock('uuid', () => ({
 }));
 
 describe('Course Builder Integration Tests', () => {
-    const mockBlocks = [
+    const mockBlocks: Block[] = [
         {
             id: '1',
             type: 'text',
@@ -96,7 +97,7 @@ describe('Course Builder Integration Tests', () => {
                         onBlockEdit={onBlockEdit}
                         onBlockDelete={onBlockDelete}
                         onBlockDuplicate={onBlockDuplicate}
-                        currentLessonId="lesson-1"
+                        onBlockPreview={vi.fn()}
                     />
                 </BrowserRouter>
             );
@@ -125,7 +126,7 @@ describe('Course Builder Integration Tests', () => {
                         onBlockEdit={vi.fn()}
                         onBlockDelete={vi.fn()}
                         onBlockDuplicate={onBlockDuplicate}
-                        currentLessonId="lesson-1"
+                        onBlockPreview={vi.fn()}
                     />
                 </BrowserRouter>
             );
@@ -154,7 +155,7 @@ describe('Course Builder Integration Tests', () => {
                         onBlockEdit={vi.fn()}
                         onBlockDelete={onBlockDelete}
                         onBlockDuplicate={vi.fn()}
-                        currentLessonId="lesson-1"
+                        onBlockPreview={vi.fn()}
                     />
                 </BrowserRouter>
             );
@@ -184,7 +185,7 @@ describe('Course Builder Integration Tests', () => {
                         onBlockEdit={vi.fn()}
                         onBlockDelete={vi.fn()}
                         onBlockDuplicate={vi.fn()}
-                        currentLessonId="lesson-1"
+                        onBlockPreview={vi.fn()}
                     />
                 </BrowserRouter>
             );

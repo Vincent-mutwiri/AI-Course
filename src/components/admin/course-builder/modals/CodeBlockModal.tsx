@@ -62,7 +62,7 @@ export function CodeBlockModal({ open, onClose, onSave, initialData }: CodeBlock
         watch,
         formState: { errors, isSubmitting },
     } = useForm<CodeBlock>({
-        resolver: zodResolver(codeBlockSchema),
+        resolver: zodResolver(codeBlockSchema) as any,
         defaultValues: {
             type: 'code',
             content: {
@@ -75,8 +75,8 @@ export function CodeBlockModal({ open, onClose, onSave, initialData }: CodeBlock
 
     const language = watch('content.language');
 
-    const onSubmit = (data: CodeBlock) => {
-        onSave(data);
+    const onSubmit = (data: any) => {
+        onSave(data as CodeBlock);
         onClose();
     };
 

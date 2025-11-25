@@ -18,7 +18,7 @@ import { Textarea } from '@/components/ui/textarea';
 const lessonSchema = z.object({
     title: z.string().min(1, 'Lesson title is required').max(100, 'Title must be less than 100 characters'),
     description: z.string().max(500, 'Description must be less than 500 characters').optional(),
-    duration: z.coerce.number().min(0, 'Duration must be positive').max(999, 'Duration must be less than 999 minutes').optional(),
+    duration: z.number().min(0, 'Duration must be positive').max(999, 'Duration must be less than 999 minutes').optional(),
 });
 
 type LessonFormData = z.infer<typeof lessonSchema>;
@@ -121,7 +121,7 @@ export function AddLessonModal({ open, onClose, onSave, moduleName }: AddLessonM
                             min="0"
                             max="999"
                             placeholder="15"
-                            {...register('duration')}
+                            {...register('duration', { valueAsNumber: true })}
                             aria-invalid={errors.duration ? 'true' : 'false'}
                         />
                         {errors.duration && (

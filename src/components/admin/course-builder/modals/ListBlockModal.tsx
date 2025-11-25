@@ -29,7 +29,7 @@ export function ListBlockModal({ open, onClose, onSave, initialData }: ListBlock
         watch,
         formState: { errors, isSubmitting },
     } = useForm<ListBlock>({
-        resolver: zodResolver(listBlockSchema),
+        resolver: zodResolver(listBlockSchema) as any,
         defaultValues: {
             type: 'list',
             content: {
@@ -46,8 +46,8 @@ export function ListBlockModal({ open, onClose, onSave, initialData }: ListBlock
 
     const listType = watch('content.listType');
 
-    const onSubmit = (data: ListBlock) => {
-        onSave(data);
+    const onSubmit = (data: any) => {
+        onSave(data as ListBlock);
         onClose();
     };
 
