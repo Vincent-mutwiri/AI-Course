@@ -12,12 +12,14 @@ Complete documentation for the Admin Course Builder V2.
 ### Comprehensive Guides
 4. **[User Guide](COURSE_BUILDER_GUIDE.md)** - Complete reference for all features
 5. **[Block Types Reference](BLOCK_TYPES_REFERENCE.md)** - Detailed guide to all 22 block types
+6. **[Interactive Elements Best Practices](INTERACTIVE_ELEMENTS_BEST_PRACTICES.md)** - Configuration guide for all 18 interactive elements
 
 ### Video Tutorials
-6. **[Video Tutorial Script](VIDEO_TUTORIAL_SCRIPT.md)** - Scripts for 5 video tutorials (31 minutes total)
+7. **[Video Tutorial Script](VIDEO_TUTORIAL_SCRIPT.md)** - Scripts for 5 video tutorials (31 minutes total)
 
 ### Developer Documentation
-7. **[Inline Help Integration](INLINE_HELP_INTEGRATION.md)** - Guide for adding help tooltips to components
+8. **[Inline Help Integration](INLINE_HELP_INTEGRATION.md)** - Guide for adding help tooltips to components
+9. **[Accessibility](ACCESSIBILITY.md)** - Accessibility guidelines and best practices
 
 ## 🎯 Quick Navigation
 
@@ -31,6 +33,9 @@ Complete documentation for the Admin Course Builder V2.
 
 **Understand block types**
 → [Block Types Reference](BLOCK_TYPES_REFERENCE.md)
+
+**Configure interactive elements**
+→ [Interactive Elements Best Practices](INTERACTIVE_ELEMENTS_BEST_PRACTICES.md)
 
 **Watch video tutorials**
 → [Video Tutorial Script](VIDEO_TUTORIAL_SCRIPT.md)
@@ -58,8 +63,9 @@ Complete documentation for the Admin Course Builder V2.
 
 ### Instructional Designers
 1. Study: [Block Types Reference](BLOCK_TYPES_REFERENCE.md)
-2. Learn: [User Guide](COURSE_BUILDER_GUIDE.md) - Best Practices
-3. Watch: [Video Tutorial Script](VIDEO_TUTORIAL_SCRIPT.md) - Video 5
+2. Configure: [Interactive Elements Best Practices](INTERACTIVE_ELEMENTS_BEST_PRACTICES.md)
+3. Learn: [User Guide](COURSE_BUILDER_GUIDE.md) - Best Practices
+4. Watch: [Video Tutorial Script](VIDEO_TUTORIAL_SCRIPT.md) - Video 5
 
 ### Developers
 1. Implement: [Inline Help Integration](INLINE_HELP_INTEGRATION.md)
@@ -79,11 +85,13 @@ Complete documentation for the Admin Course Builder V2.
 | Quick Start | 4 | 5 min | Fast onboarding |
 | User Guide | 25 | 45 min | Comprehensive reference |
 | Block Types | 20 | 30 min | Block type details |
+| Interactive Best Practices | 30 | 50 min | Interactive element configuration |
 | Video Scripts | 15 | 31 min (watch) | Visual tutorials |
 | FAQ | 18 | 25 min | Common questions |
 | Help Integration | 10 | 15 min | Developer guide |
+| Accessibility | 8 | 12 min | Accessibility guidelines |
 
-**Total:** ~100 pages, ~3 hours of content
+**Total:** ~138 pages, ~4 hours of content
 
 ## 🔍 Search by Topic
 
@@ -118,6 +126,7 @@ Complete documentation for the Admin Course Builder V2.
 - [Quick Start](COURSE_BUILDER_QUICK_START.md) - Common Issues
 
 ### Best Practices
+- [Interactive Elements Best Practices](INTERACTIVE_ELEMENTS_BEST_PRACTICES.md) - Complete interactive element guide
 - [User Guide](COURSE_BUILDER_GUIDE.md) - Tips and Best Practices
 - [Block Types Reference](BLOCK_TYPES_REFERENCE.md) - Best Practices sections
 - [Video Scripts](VIDEO_TUTORIAL_SCRIPT.md) - Video 5
@@ -157,13 +166,14 @@ For users who want to master the system.
 4. Read: [Block Types Reference](BLOCK_TYPES_REFERENCE.md) - 30 min
 5. Practice: Create a complete lesson
 
-### Path 3: Block Expert (1 hour)
-For instructional designers focusing on block selection.
+### Path 3: Block Expert (1.5 hours)
+For instructional designers focusing on block selection and interactive elements.
 
 1. Read: [Block Types Reference](BLOCK_TYPES_REFERENCE.md) - 30 min
-2. Read: [User Guide](COURSE_BUILDER_GUIDE.md) - Best Practices - 15 min
-3. Watch: Video 5 - Advanced Tips - 7 min
-4. Practice: Design a lesson structure
+2. Read: [Interactive Elements Best Practices](INTERACTIVE_ELEMENTS_BEST_PRACTICES.md) - 30 min
+3. Read: [User Guide](COURSE_BUILDER_GUIDE.md) - Best Practices - 15 min
+4. Watch: Video 5 - Advanced Tips - 7 min
+5. Practice: Design a lesson structure
 
 ### Path 4: Developer (30 minutes)
 For developers adding help tooltips.
@@ -245,11 +255,13 @@ For new users, complete this checklist:
 ### Most Popular
 1. [Quick Start Guide](COURSE_BUILDER_QUICK_START.md) - Fast onboarding
 2. [Block Types Reference](BLOCK_TYPES_REFERENCE.md) - Block selection
-3. [FAQ](COURSE_BUILDER_FAQ.md) - Common questions
+3. [Interactive Elements Best Practices](INTERACTIVE_ELEMENTS_BEST_PRACTICES.md) - Interactive configuration
+4. [FAQ](COURSE_BUILDER_FAQ.md) - Common questions
 
 ### Most Comprehensive
 1. [User Guide](COURSE_BUILDER_GUIDE.md) - Complete reference
-2. [Block Types Reference](BLOCK_TYPES_REFERENCE.md) - All block details
+2. [Interactive Elements Best Practices](INTERACTIVE_ELEMENTS_BEST_PRACTICES.md) - Interactive elements guide
+3. [Block Types Reference](BLOCK_TYPES_REFERENCE.md) - All block details
 
 ### Most Visual
 1. [Video Tutorial Script](VIDEO_TUTORIAL_SCRIPT.md) - 5 video walkthroughs
@@ -282,6 +294,12 @@ Frequently asked questions organized by topic: getting started, interface, conte
 
 ### [Inline Help Integration](INLINE_HELP_INTEGRATION.md)
 Developer guide for adding help tooltips to components with code examples and best practices.
+
+### [Interactive Elements Best Practices](INTERACTIVE_ELEMENTS_BEST_PRACTICES.md)
+Comprehensive guide for configuring all 18 interactive element types with use cases, configuration tables, troubleshooting, and examples.
+
+### [Accessibility](ACCESSIBILITY.md)
+Accessibility guidelines and best practices for creating inclusive course content.
 
 ---
 
