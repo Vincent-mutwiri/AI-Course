@@ -338,7 +338,7 @@
     - Test auto-save recovery
     - _Requirements: All requirements_
 
-- [ ] 20. Performance optimization
+- [x] 20. Performance optimization
   - Add lazy loading for modals
   - Add lazy loading for rich text editor
   - Memoize BlockRenderer components

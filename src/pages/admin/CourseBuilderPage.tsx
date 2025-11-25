@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useParams, useNavigate, useBeforeUnload } from "react-router-dom";
 import { toast } from "sonner";
 import { Eye, Menu, X, Library, FileText } from "lucide-react";
@@ -260,8 +260,8 @@ export default function CourseBuilderPage() {
         toast.info("Add module functionality will be implemented in a future task");
     };
 
-    // Handle blocks reorder
-    const handleBlocksReorder = async (reorderedBlocks: Block[]) => {
+    // Handle blocks reorder - memoized for performance
+    const handleBlocksReorder = useCallback(async (reorderedBlocks: Block[]) => {
         // Update local state immediately for optimistic UI
         const previousBlocks = [...blocks];
         setBlocks(reorderedBlocks);
@@ -284,18 +284,18 @@ export default function CourseBuilderPage() {
             const errorMessage = error.response?.data?.message || "Failed to reorder blocks. Changes have been reverted.";
             toast.error(errorMessage);
         }
-    };
+    }, [blocks, currentLessonId, id]);
 
-    // Handle block edit
-    const handleBlockEdit = (blockId: string) => {
+    // Handle block edit - memoized for performance
+    const handleBlockEdit = useCallback((blockId: string) => {
         const block = blocks.find((b) => b.id === blockId);
         if (block) {
             openModal(block.type, block);
         }
-    };
+    }, [blocks, openModal]);
 
-    // Handle block duplicate
-    const handleBlockDuplicate = async (blockId: string) => {
+    // Handle block duplicate - memoized for performance
+    const handleBlockDuplicate = useCallback(async (blockId: string) => {
         if (!currentLessonId) {
             toast.error("No lesson selected");
             return;
@@ -326,10 +326,10 @@ export default function CourseBuilderPage() {
             const errorMessage = error.response?.data?.message || "Failed to duplicate block. Please try again.";
             toast.error(errorMessage);
         }
-    };
+    }, [blocks, currentLessonId, id]);
 
-    // Handle block delete
-    const handleBlockDelete = (blockId: string) => {
+    // Handle block delete - memoized for performance
+    const handleBlockDelete = useCallback((blockId: string) => {
         const confirmed = window.confirm(
             "Are you sure you want to delete this block? This action cannot be undone."
         );
@@ -347,18 +347,18 @@ export default function CourseBuilderPage() {
         setBlocks(updatedBlocks);
         setHasUnsavedChanges(true);
         toast.success("Block deleted");
-    };
+    }, [blocks]);
 
-    // Handle block preview - opens preview modal for entire lesson
-    const handleBlockPreview = (blockId: string) => {
+    // Handle block preview - opens preview modal for entire lesson - memoized for performance
+    const handleBlockPreview = useCallback((blockId: string) => {
         setIsPreviewOpen(true);
-    };
+    }, []);
 
-    // Handle block add from library
-    const handleBlockAdd = (blockType: string) => {
+    // Handle block add from library - memoized for performance
+    const handleBlockAdd = useCallback((blockType: string) => {
         // Open modal for the selected block type to configure it
         openModal(blockType as BlockType);
-    };
+    }, [openModal]);
 
     // Handle preview toggle
     const handlePreviewToggle = () => {

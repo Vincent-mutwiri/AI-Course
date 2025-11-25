@@ -107,8 +107,11 @@ router.get("/users", async (req: AuthRequest, res: Response) => {
 // Get course for editing in builder
 router.get("/courses/:id/edit", async (req: AuthRequest, res: Response) => {
   try {
+    // Selective field loading for better performance
+    // Only load fields needed for the course builder interface
     const course = await Course.findById(req.params.id)
-      .select("title modules");
+      .select("title modules.title modules.description modules.order modules.lessons.title modules.lessons.duration modules.lessons.blocks modules._id modules.lessons._id")
+      .lean(); // Use lean() for better performance when we don't need Mongoose document methods
 
     if (!course) {
       return res.status(404).json({ message: "Course not found" });

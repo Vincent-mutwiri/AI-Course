@@ -1,8 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { lazy, Suspense } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
 import {
     Dialog,
     DialogContent,
@@ -13,8 +11,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { textBlockSchema, type TextBlock } from '@/lib/validation/blockSchemas';
-import { Bold, Italic, List, ListOrdered, Heading1, Heading2, Heading3 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+
+// Lazy load the rich text editor for better performance
+const RichTextEditor = lazy(() => import('./RichTextEditor').then(m => ({ default: m.RichTextEditor })));
 
 interface TextBlockModalProps {
     open: boolean;
@@ -39,31 +38,16 @@ export function TextBlockModal({ open, onClose, onSave, initialData }: TextBlock
         },
     });
 
-    const editor = useEditor({
-        extensions: [StarterKit],
-        content: initialData?.content?.text || '',
-        onUpdate: ({ editor }) => {
-            setValue('content.text', editor.getHTML(), { shouldValidate: true });
-        },
-    });
-
-    useEffect(() => {
-        if (editor && initialData?.content?.text) {
-            editor.commands.setContent(initialData.content.text);
-        }
-    }, [editor, initialData]);
+    const textContent = watch('content.text');
 
     const onSubmit = (data: TextBlock) => {
         onSave(data);
         onClose();
     };
 
-    const toggleBold = () => editor?.chain().focus().toggleBold().run();
-    const toggleItalic = () => editor?.chain().focus().toggleItalic().run();
-    const toggleBulletList = () => editor?.chain().focus().toggleBulletList().run();
-    const toggleOrderedList = () => editor?.chain().focus().toggleOrderedList().run();
-    const setHeading = (level: 1 | 2 | 3) =>
-        editor?.chain().focus().toggleHeading({ level }).run();
+    const handleEditorChange = (html: string) => {
+        setValue('content.text', html, { shouldValidate: true });
+    };
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
@@ -78,92 +62,22 @@ export function TextBlockModal({ open, onClose, onSave, initialData }: TextBlock
                     <div className="space-y-2">
                         <Label htmlFor="text-editor">Content</Label>
 
-                        {/* Toolbar */}
-                        <div className="flex flex-wrap gap-1 p-2 border rounded-md bg-muted/50">
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon-sm"
-                                onClick={() => setHeading(1)}
-                                className={cn(
-                                    editor?.isActive('heading', { level: 1 }) && 'bg-accent'
-                                )}
-                                title="Heading 1"
-                            >
-                                <Heading1 className="h-4 w-4" />
-                            </Button>
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon-sm"
-                                onClick={() => setHeading(2)}
-                                className={cn(
-                                    editor?.isActive('heading', { level: 2 }) && 'bg-accent'
-                                )}
-                                title="Heading 2"
-                            >
-                                <Heading2 className="h-4 w-4" />
-                            </Button>
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon-sm"
-                                onClick={() => setHeading(3)}
-                                className={cn(
-                                    editor?.isActive('heading', { level: 3 }) && 'bg-accent'
-                                )}
-                                title="Heading 3"
-                            >
-                                <Heading3 className="h-4 w-4" />
-                            </Button>
-                            <div className="w-px h-6 bg-border mx-1" />
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon-sm"
-                                onClick={toggleBold}
-                                className={cn(editor?.isActive('bold') && 'bg-accent')}
-                                title="Bold"
-                            >
-                                <Bold className="h-4 w-4" />
-                            </Button>
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon-sm"
-                                onClick={toggleItalic}
-                                className={cn(editor?.isActive('italic') && 'bg-accent')}
-                                title="Italic"
-                            >
-                                <Italic className="h-4 w-4" />
-                            </Button>
-                            <div className="w-px h-6 bg-border mx-1" />
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon-sm"
-                                onClick={toggleBulletList}
-                                className={cn(editor?.isActive('bulletList') && 'bg-accent')}
-                                title="Bullet List"
-                            >
-                                <List className="h-4 w-4" />
-                            </Button>
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon-sm"
-                                onClick={toggleOrderedList}
-                                className={cn(editor?.isActive('orderedList') && 'bg-accent')}
-                                title="Numbered List"
-                            >
-                                <ListOrdered className="h-4 w-4" />
-                            </Button>
-                        </div>
-
-                        {/* Editor */}
-                        <div className="border rounded-md min-h-[300px] p-4 prose prose-sm max-w-none focus-within:ring-2 focus-within:ring-ring">
-                            <EditorContent editor={editor} />
-                        </div>
+                        {/* Lazy-loaded Rich Text Editor */}
+                        <Suspense
+                            fallback={
+                                <div className="border rounded-md min-h-[300px] p-4 flex items-center justify-center">
+                                    <div className="flex items-center gap-2 text-muted-foreground">
+                                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
+                                        <span className="text-sm">Loading editor...</span>
+                                    </div>
+                                </div>
+                            }
+                        >
+                            <RichTextEditor
+                                content={textContent || ''}
+                                onChange={handleEditorChange}
+                            />
+                        </Suspense>
 
                         {errors.content?.text && (
                             <p className="text-sm text-destructive">

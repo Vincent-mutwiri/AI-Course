@@ -1,3 +1,4 @@
+import { useCallback, memo } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { GripVertical, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -23,7 +24,10 @@ interface CanvasProps {
     isLoading?: boolean;
 }
 
-export default function Canvas({
+/**
+ * Canvas Component - Optimized with useCallback for better performance
+ */
+const Canvas = memo(function Canvas({
     blocks,
     onBlocksReorder,
     onBlockEdit,
@@ -32,7 +36,7 @@ export default function Canvas({
     onBlockPreview,
     isLoading = false,
 }: CanvasProps) {
-    const handleDragEnd = (result: DropResult) => {
+    const handleDragEnd = useCallback((result: DropResult) => {
         // Dropped outside the list
         if (!result.destination) {
             return;
@@ -55,7 +59,7 @@ export default function Canvas({
         }));
 
         onBlocksReorder(updatedBlocks);
-    };
+    }, [blocks, onBlocksReorder]);
 
     if (isLoading) {
         return (
@@ -161,4 +165,6 @@ export default function Canvas({
             </DragDropContext>
         </div>
     );
-}
+});
+
+export default Canvas;

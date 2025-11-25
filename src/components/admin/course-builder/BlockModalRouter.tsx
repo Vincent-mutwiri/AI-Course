@@ -1,29 +1,41 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { BlockModalState } from '@/hooks/useBlockModal';
 
-// Import all block modals
-import { TextBlockModal } from './modals/TextBlockModal';
-import { VideoBlockModal } from './modals/VideoBlockModal';
-import { ImageBlockModal } from './modals/ImageBlockModal';
-import { CodeBlockModal } from './modals/CodeBlockModal';
-import { ListBlockModal } from './modals/ListBlockModal';
-import { DividerBlockModal } from './modals/DividerBlockModal';
-import { ReflectionBlockModal } from './modals/ReflectionBlockModal';
-import { PollBlockModal } from './modals/PollBlockModal';
-import { WordCloudBlockModal } from './modals/WordCloudBlockModal';
-import { AIGeneratorBlockModal } from './modals/AIGeneratorBlockModal';
-import { ChoiceComparisonBlockModal } from './modals/ChoiceComparisonBlockModal';
-import { DesignFixerBlockModal } from './modals/DesignFixerBlockModal';
-import { PlayerTypeSimulatorBlockModal } from './modals/PlayerTypeSimulatorBlockModal';
-import { RewardScheduleDesignerBlockModal } from './modals/RewardScheduleDesignerBlockModal';
-import { FlowChannelEvaluatorBlockModal } from './modals/FlowChannelEvaluatorBlockModal';
-import { CertificateGeneratorBlockModal } from './modals/CertificateGeneratorBlockModal';
-import { FinalAssessmentBlockModal } from './modals/FinalAssessmentBlockModal';
-import { PitchAnalysisGeneratorBlockModal } from './modals/PitchAnalysisGeneratorBlockModal';
-import { NarrativeGeneratorBlockModal } from './modals/NarrativeGeneratorBlockModal';
-import { DarkPatternRedesignerBlockModal } from './modals/DarkPatternRedesignerBlockModal';
-import { ROEDashboardBlockModal } from './modals/ROEDashboardBlockModal';
-import { JourneyTimelineBlockModal } from './modals/JourneyTimelineBlockModal';
+// Lazy load all block modals for better performance
+const TextBlockModal = lazy(() => import('./modals/TextBlockModal').then(m => ({ default: m.TextBlockModal })));
+const VideoBlockModal = lazy(() => import('./modals/VideoBlockModal').then(m => ({ default: m.VideoBlockModal })));
+const ImageBlockModal = lazy(() => import('./modals/ImageBlockModal').then(m => ({ default: m.ImageBlockModal })));
+const CodeBlockModal = lazy(() => import('./modals/CodeBlockModal').then(m => ({ default: m.CodeBlockModal })));
+const ListBlockModal = lazy(() => import('./modals/ListBlockModal').then(m => ({ default: m.ListBlockModal })));
+const DividerBlockModal = lazy(() => import('./modals/DividerBlockModal').then(m => ({ default: m.DividerBlockModal })));
+const ReflectionBlockModal = lazy(() => import('./modals/ReflectionBlockModal').then(m => ({ default: m.ReflectionBlockModal })));
+const PollBlockModal = lazy(() => import('./modals/PollBlockModal').then(m => ({ default: m.PollBlockModal })));
+const WordCloudBlockModal = lazy(() => import('./modals/WordCloudBlockModal').then(m => ({ default: m.WordCloudBlockModal })));
+const AIGeneratorBlockModal = lazy(() => import('./modals/AIGeneratorBlockModal').then(m => ({ default: m.AIGeneratorBlockModal })));
+const ChoiceComparisonBlockModal = lazy(() => import('./modals/ChoiceComparisonBlockModal').then(m => ({ default: m.ChoiceComparisonBlockModal })));
+const DesignFixerBlockModal = lazy(() => import('./modals/DesignFixerBlockModal').then(m => ({ default: m.DesignFixerBlockModal })));
+const PlayerTypeSimulatorBlockModal = lazy(() => import('./modals/PlayerTypeSimulatorBlockModal').then(m => ({ default: m.PlayerTypeSimulatorBlockModal })));
+const RewardScheduleDesignerBlockModal = lazy(() => import('./modals/RewardScheduleDesignerBlockModal').then(m => ({ default: m.RewardScheduleDesignerBlockModal })));
+const FlowChannelEvaluatorBlockModal = lazy(() => import('./modals/FlowChannelEvaluatorBlockModal').then(m => ({ default: m.FlowChannelEvaluatorBlockModal })));
+const CertificateGeneratorBlockModal = lazy(() => import('./modals/CertificateGeneratorBlockModal').then(m => ({ default: m.CertificateGeneratorBlockModal })));
+const FinalAssessmentBlockModal = lazy(() => import('./modals/FinalAssessmentBlockModal').then(m => ({ default: m.FinalAssessmentBlockModal })));
+const PitchAnalysisGeneratorBlockModal = lazy(() => import('./modals/PitchAnalysisGeneratorBlockModal').then(m => ({ default: m.PitchAnalysisGeneratorBlockModal })));
+const NarrativeGeneratorBlockModal = lazy(() => import('./modals/NarrativeGeneratorBlockModal').then(m => ({ default: m.NarrativeGeneratorBlockModal })));
+const DarkPatternRedesignerBlockModal = lazy(() => import('./modals/DarkPatternRedesignerBlockModal').then(m => ({ default: m.DarkPatternRedesignerBlockModal })));
+const ROEDashboardBlockModal = lazy(() => import('./modals/ROEDashboardBlockModal').then(m => ({ default: m.ROEDashboardBlockModal })));
+const JourneyTimelineBlockModal = lazy(() => import('./modals/JourneyTimelineBlockModal').then(m => ({ default: m.JourneyTimelineBlockModal })));
+
+// Loading fallback component for modals
+const ModalLoadingFallback = () => (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div className="bg-background rounded-lg p-6 shadow-lg">
+            <div className="flex items-center gap-3">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                <span className="text-sm text-muted-foreground">Loading...</span>
+            </div>
+        </div>
+    </div>
+);
 
 interface BlockModalRouterProps {
     modalState: BlockModalState;
@@ -48,232 +60,240 @@ export function BlockModalRouter({ modalState, onClose, onSave }: BlockModalRout
         return null;
     }
 
-    // Route to appropriate modal based on block type
-    switch (blockType) {
-        // Basic blocks
-        case 'text':
-            return (
-                <TextBlockModal
-                    open={isOpen}
-                    onClose={onClose}
-                    onSave={onSave}
-                    initialData={blockData}
-                />
-            );
+    // Wrap modal in Suspense for lazy loading
+    const renderModal = () => {
+        switch (blockType) {
+            // Basic blocks
+            case 'text':
+                return (
+                    <TextBlockModal
+                        open={isOpen}
+                        onClose={onClose}
+                        onSave={onSave}
+                        initialData={blockData}
+                    />
+                );
 
-        case 'video':
-            return (
-                <VideoBlockModal
-                    open={isOpen}
-                    onClose={onClose}
-                    onSave={onSave}
-                    initialData={blockData}
-                />
-            );
+            case 'video':
+                return (
+                    <VideoBlockModal
+                        open={isOpen}
+                        onClose={onClose}
+                        onSave={onSave}
+                        initialData={blockData}
+                    />
+                );
 
-        case 'image':
-            return (
-                <ImageBlockModal
-                    open={isOpen}
-                    onClose={onClose}
-                    onSave={onSave}
-                    initialData={blockData}
-                />
-            );
+            case 'image':
+                return (
+                    <ImageBlockModal
+                        open={isOpen}
+                        onClose={onClose}
+                        onSave={onSave}
+                        initialData={blockData}
+                    />
+                );
 
-        case 'code':
-            return (
-                <CodeBlockModal
-                    open={isOpen}
-                    onClose={onClose}
-                    onSave={onSave}
-                    initialData={blockData}
-                />
-            );
+            case 'code':
+                return (
+                    <CodeBlockModal
+                        open={isOpen}
+                        onClose={onClose}
+                        onSave={onSave}
+                        initialData={blockData}
+                    />
+                );
 
-        case 'list':
-            return (
-                <ListBlockModal
-                    open={isOpen}
-                    onClose={onClose}
-                    onSave={onSave}
-                    initialData={blockData}
-                />
-            );
+            case 'list':
+                return (
+                    <ListBlockModal
+                        open={isOpen}
+                        onClose={onClose}
+                        onSave={onSave}
+                        initialData={blockData}
+                    />
+                );
 
-        case 'divider':
-            return (
-                <DividerBlockModal
-                    open={isOpen}
-                    onClose={onClose}
-                    onSave={onSave}
-                    initialData={blockData}
-                />
-            );
+            case 'divider':
+                return (
+                    <DividerBlockModal
+                        open={isOpen}
+                        onClose={onClose}
+                        onSave={onSave}
+                        initialData={blockData}
+                    />
+                );
 
-        // Interactive blocks
-        case 'reflection':
-            return (
-                <ReflectionBlockModal
-                    open={isOpen}
-                    onClose={onClose}
-                    onSave={onSave}
-                    initialData={blockData}
-                />
-            );
+            // Interactive blocks
+            case 'reflection':
+                return (
+                    <ReflectionBlockModal
+                        open={isOpen}
+                        onClose={onClose}
+                        onSave={onSave}
+                        initialData={blockData}
+                    />
+                );
 
-        case 'poll':
-            return (
-                <PollBlockModal
-                    open={isOpen}
-                    onClose={onClose}
-                    onSave={onSave}
-                    initialData={blockData}
-                />
-            );
+            case 'poll':
+                return (
+                    <PollBlockModal
+                        open={isOpen}
+                        onClose={onClose}
+                        onSave={onSave}
+                        initialData={blockData}
+                    />
+                );
 
-        case 'wordCloud':
-            return (
-                <WordCloudBlockModal
-                    open={isOpen}
-                    onClose={onClose}
-                    onSave={onSave}
-                    initialData={blockData}
-                />
-            );
+            case 'wordCloud':
+                return (
+                    <WordCloudBlockModal
+                        open={isOpen}
+                        onClose={onClose}
+                        onSave={onSave}
+                        initialData={blockData}
+                    />
+                );
 
-        case 'aiGenerator':
-            return (
-                <AIGeneratorBlockModal
-                    open={isOpen}
-                    onClose={onClose}
-                    onSave={onSave}
-                    initialData={blockData}
-                />
-            );
+            case 'aiGenerator':
+                return (
+                    <AIGeneratorBlockModal
+                        open={isOpen}
+                        onClose={onClose}
+                        onSave={onSave}
+                        initialData={blockData}
+                    />
+                );
 
-        case 'choiceComparison':
-            return (
-                <ChoiceComparisonBlockModal
-                    open={isOpen}
-                    onClose={onClose}
-                    onSave={onSave}
-                    initialData={blockData}
-                />
-            );
+            case 'choiceComparison':
+                return (
+                    <ChoiceComparisonBlockModal
+                        open={isOpen}
+                        onClose={onClose}
+                        onSave={onSave}
+                        initialData={blockData}
+                    />
+                );
 
-        case 'designFixer':
-            return (
-                <DesignFixerBlockModal
-                    open={isOpen}
-                    onClose={onClose}
-                    onSave={onSave}
-                    initialData={blockData}
-                />
-            );
+            case 'designFixer':
+                return (
+                    <DesignFixerBlockModal
+                        open={isOpen}
+                        onClose={onClose}
+                        onSave={onSave}
+                        initialData={blockData}
+                    />
+                );
 
-        case 'playerTypeSimulator':
-            return (
-                <PlayerTypeSimulatorBlockModal
-                    open={isOpen}
-                    onClose={onClose}
-                    onSave={onSave}
-                    initialData={blockData}
-                />
-            );
+            case 'playerTypeSimulator':
+                return (
+                    <PlayerTypeSimulatorBlockModal
+                        open={isOpen}
+                        onClose={onClose}
+                        onSave={onSave}
+                        initialData={blockData}
+                    />
+                );
 
-        case 'rewardScheduleDesigner':
-            return (
-                <RewardScheduleDesignerBlockModal
-                    open={isOpen}
-                    onClose={onClose}
-                    onSave={onSave}
-                    initialData={blockData}
-                />
-            );
+            case 'rewardScheduleDesigner':
+                return (
+                    <RewardScheduleDesignerBlockModal
+                        open={isOpen}
+                        onClose={onClose}
+                        onSave={onSave}
+                        initialData={blockData}
+                    />
+                );
 
-        case 'flowChannelEvaluator':
-            return (
-                <FlowChannelEvaluatorBlockModal
-                    open={isOpen}
-                    onClose={onClose}
-                    onSave={onSave}
-                    initialData={blockData}
-                />
-            );
+            case 'flowChannelEvaluator':
+                return (
+                    <FlowChannelEvaluatorBlockModal
+                        open={isOpen}
+                        onClose={onClose}
+                        onSave={onSave}
+                        initialData={blockData}
+                    />
+                );
 
-        case 'pitchAnalysisGenerator':
-            return (
-                <PitchAnalysisGeneratorBlockModal
-                    open={isOpen}
-                    onClose={onClose}
-                    onSave={onSave}
-                    initialData={blockData}
-                />
-            );
+            case 'pitchAnalysisGenerator':
+                return (
+                    <PitchAnalysisGeneratorBlockModal
+                        open={isOpen}
+                        onClose={onClose}
+                        onSave={onSave}
+                        initialData={blockData}
+                    />
+                );
 
-        case 'narrativeGenerator':
-            return (
-                <NarrativeGeneratorBlockModal
-                    open={isOpen}
-                    onClose={onClose}
-                    onSave={onSave}
-                    initialData={blockData}
-                />
-            );
+            case 'narrativeGenerator':
+                return (
+                    <NarrativeGeneratorBlockModal
+                        open={isOpen}
+                        onClose={onClose}
+                        onSave={onSave}
+                        initialData={blockData}
+                    />
+                );
 
-        case 'darkPatternRedesigner':
-            return (
-                <DarkPatternRedesignerBlockModal
-                    open={isOpen}
-                    onClose={onClose}
-                    onSave={onSave}
-                    initialData={blockData}
-                />
-            );
+            case 'darkPatternRedesigner':
+                return (
+                    <DarkPatternRedesignerBlockModal
+                        open={isOpen}
+                        onClose={onClose}
+                        onSave={onSave}
+                        initialData={blockData}
+                    />
+                );
 
-        case 'roeDashboard':
-            return (
-                <ROEDashboardBlockModal
-                    open={isOpen}
-                    onClose={onClose}
-                    onSave={onSave}
-                    initialData={blockData}
-                />
-            );
+            case 'roeDashboard':
+                return (
+                    <ROEDashboardBlockModal
+                        open={isOpen}
+                        onClose={onClose}
+                        onSave={onSave}
+                        initialData={blockData}
+                    />
+                );
 
-        case 'journeyTimeline':
-            return (
-                <JourneyTimelineBlockModal
-                    open={isOpen}
-                    onClose={onClose}
-                    onSave={onSave}
-                    initialData={blockData}
-                />
-            );
+            case 'journeyTimeline':
+                return (
+                    <JourneyTimelineBlockModal
+                        open={isOpen}
+                        onClose={onClose}
+                        onSave={onSave}
+                        initialData={blockData}
+                    />
+                );
 
-        case 'certificateGenerator':
-            return (
-                <CertificateGeneratorBlockModal
-                    open={isOpen}
-                    onClose={onClose}
-                    onSave={onSave}
-                    initialData={blockData}
-                />
-            );
+            case 'certificateGenerator':
+                return (
+                    <CertificateGeneratorBlockModal
+                        open={isOpen}
+                        onClose={onClose}
+                        onSave={onSave}
+                        initialData={blockData}
+                    />
+                );
 
-        case 'finalAssessment':
-            return (
-                <FinalAssessmentBlockModal
-                    open={isOpen}
-                    onClose={onClose}
-                    onSave={onSave}
-                    initialData={blockData}
-                />
-            );
+            case 'finalAssessment':
+                return (
+                    <FinalAssessmentBlockModal
+                        open={isOpen}
+                        onClose={onClose}
+                        onSave={onSave}
+                        initialData={blockData}
+                    />
+                );
 
-        default:
-            console.warn(`Unknown block type: ${blockType}`);
-            return null;
+            default:
+                console.warn(`Unknown block type: ${blockType}`);
+                return null;
+        }
     }
+
+    return (
+        <Suspense fallback={<ModalLoadingFallback />}>
+            {renderModal()}
+        </Suspense>
+    );
 }

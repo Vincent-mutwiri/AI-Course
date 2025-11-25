@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, memo } from "react";
 import {
     Edit2,
     Copy,
@@ -327,7 +327,11 @@ function renderBlockContent(block: Block): React.ReactNode {
     }
 }
 
-export default function BlockRenderer({
+/**
+ * BlockRenderer Component - Memoized for performance
+ * Only re-renders when block data or callbacks change
+ */
+const BlockRenderer = memo(function BlockRenderer({
     block,
     onEdit,
     onDuplicate,
@@ -413,4 +417,6 @@ export default function BlockRenderer({
             </div>
         </div>
     );
-}
+});
+
+export default BlockRenderer;
