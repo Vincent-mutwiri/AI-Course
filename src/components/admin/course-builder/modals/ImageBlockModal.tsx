@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
+import api from '@/services/api';
 import {
     Dialog,
     DialogContent,
@@ -78,7 +79,7 @@ export function ImageBlockModal({ open, onClose, onSave, initialData }: ImageBlo
             const formData = new FormData();
             formData.append('file', file);
 
-            const response = await axios.post('/api/admin/upload', formData, {
+            const response = await api.post('/admin/upload', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
