@@ -87,28 +87,38 @@ export function CodeBlockModal({ open, onClose, onSave, initialData }: CodeBlock
                     <DialogTitle>
                         {initialData ? 'Edit Code Block' : 'Add Code Block'}
                     </DialogTitle>
+                    <p className="text-sm text-muted-foreground">
+                        Add code snippets with syntax highlighting to your lesson
+                    </p>
                 </DialogHeader>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                     {/* Title (Optional) */}
                     <div className="space-y-2">
-                        <Label htmlFor="title">Title (Optional)</Label>
+                        <Label htmlFor="title" className="text-sm font-medium">
+                            Title <span className="text-muted-foreground text-xs">(Optional)</span>
+                        </Label>
                         <Input
                             id="title"
-                            placeholder="e.g., Example: User Authentication"
+                            placeholder="e.g., Example: User Authentication Function"
                             {...register('content.title')}
+                            aria-describedby="title-hint"
                         />
                         {errors.content?.title && (
-                            <p className="text-sm text-destructive">
+                            <p className="text-sm text-destructive flex items-center gap-1" role="alert">
+                                <span>⚠️</span>
                                 {errors.content.title.message}
                             </p>
                         )}
+                        <p id="title-hint" className="text-xs text-muted-foreground">
+                            Optional title displayed above the code block (max 200 characters)
+                        </p>
                     </div>
 
                     {/* Language Selection */}
                     <div className="space-y-2">
-                        <Label htmlFor="language">
-                            Programming Language <span className="text-destructive">*</span>
+                        <Label htmlFor="language" className="text-sm font-medium">
+                            Programming Language <span className="text-destructive" aria-label="required">*</span>
                         </Label>
                         <Select
                             value={language}
@@ -126,16 +136,20 @@ export function CodeBlockModal({ open, onClose, onSave, initialData }: CodeBlock
                             </SelectContent>
                         </Select>
                         {errors.content?.language && (
-                            <p className="text-sm text-destructive">
+                            <p className="text-sm text-destructive flex items-center gap-1" role="alert">
+                                <span>⚠️</span>
                                 {errors.content.language.message}
                             </p>
                         )}
+                        <p className="text-xs text-muted-foreground">
+                            Select the language for proper syntax highlighting
+                        </p>
                     </div>
 
                     {/* Code Input */}
                     <div className="space-y-2">
-                        <Label htmlFor="code">
-                            Code <span className="text-destructive">*</span>
+                        <Label htmlFor="code" className="text-sm font-medium">
+                            Code <span className="text-destructive" aria-label="required">*</span>
                         </Label>
                         <Textarea
                             id="code"
@@ -143,22 +157,40 @@ export function CodeBlockModal({ open, onClose, onSave, initialData }: CodeBlock
                             rows={15}
                             className="font-mono text-sm"
                             {...register('content.code')}
+                            aria-describedby="code-hint"
+                            aria-required="true"
+                            aria-invalid={!!errors.content?.code}
                         />
                         {errors.content?.code && (
-                            <p className="text-sm text-destructive">
+                            <p className="text-sm text-destructive flex items-center gap-1" role="alert" aria-live="assertive">
+                                <span>⚠️</span>
                                 {errors.content.code.message}
                             </p>
                         )}
-                        <p className="text-xs text-muted-foreground">
-                            Maximum 10,000 characters
+                        <p id="code-hint" className="text-xs text-muted-foreground">
+                            Paste or type your code snippet (max 10,000 characters). The code will be displayed with syntax highlighting.
                         </p>
                     </div>
 
+                    <div className="text-xs text-muted-foreground bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded p-3">
+                        <strong>💡 Best Practice:</strong> Keep code examples concise and focused on the concept you're teaching.
+                        Add comments to explain key parts of the code.
+                    </div>
+
                     <DialogFooter>
-                        <Button type="button" variant="outline" onClick={onClose}>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={onClose}
+                            aria-label="Cancel and close dialog"
+                        >
                             Cancel
                         </Button>
-                        <Button type="submit" disabled={isSubmitting}>
+                        <Button
+                            type="submit"
+                            disabled={isSubmitting}
+                            aria-label={isSubmitting ? 'Saving code block' : 'Save code block'}
+                        >
                             {isSubmitting ? 'Saving...' : 'Save'}
                         </Button>
                     </DialogFooter>

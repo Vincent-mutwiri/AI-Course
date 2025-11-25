@@ -156,12 +156,15 @@ export function VideoBlockModal({ open, onClose, onSave, initialData }: VideoBlo
                     <DialogTitle>
                         {initialData ? 'Edit Video Block' : 'Add Video Block'}
                     </DialogTitle>
+                    <p className="text-sm text-muted-foreground">
+                        Add video content by embedding a URL or uploading a file
+                    </p>
                 </DialogHeader>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                     {/* Video Source Selection */}
                     <div className="space-y-2">
-                        <Label>Video Source</Label>
+                        <Label className="text-sm font-medium">Video Source <span className="text-destructive" aria-label="required">*</span></Label>
                         <div className="flex gap-4">
                             <label className="flex items-center gap-2 cursor-pointer">
                                 <input
@@ -189,19 +192,25 @@ export function VideoBlockModal({ open, onClose, onSave, initialData }: VideoBlo
                     {/* Embed URL Input */}
                     {videoSource === 'embed' && (
                         <div className="space-y-2">
-                            <Label htmlFor="videoUrl">Video URL</Label>
+                            <Label htmlFor="videoUrl" className="text-sm font-medium">
+                                Video URL <span className="text-destructive" aria-label="required">*</span>
+                            </Label>
                             <Input
                                 id="videoUrl"
                                 placeholder="https://www.youtube.com/watch?v=..."
                                 {...register('content.videoUrl')}
+                                aria-describedby="videoUrl-hint"
+                                aria-required="true"
+                                aria-invalid={!!errors.content?.videoUrl}
                             />
                             {errors.content?.videoUrl && (
-                                <p className="text-sm text-destructive">
+                                <p className="text-sm text-destructive flex items-center gap-1" role="alert" aria-live="assertive">
+                                    <span>⚠️</span>
                                     {errors.content.videoUrl.message}
                                 </p>
                             )}
-                            <p className="text-xs text-muted-foreground">
-                                Supports YouTube, Vimeo, and direct video URLs
+                            <p id="videoUrl-hint" className="text-xs text-muted-foreground">
+                                Paste a YouTube, Vimeo, or direct video URL. The video will be embedded in the lesson.
                             </p>
                         </div>
                     )}
@@ -209,7 +218,9 @@ export function VideoBlockModal({ open, onClose, onSave, initialData }: VideoBlo
                     {/* File Upload Input */}
                     {videoSource === 'upload' && (
                         <div className="space-y-2">
-                            <Label htmlFor="videoFile">Upload Video</Label>
+                            <Label htmlFor="videoFile" className="text-sm font-medium">
+                                Upload Video <span className="text-destructive" aria-label="required">*</span>
+                            </Label>
                             <Input
                                 id="videoFile"
                                 type="file"
@@ -267,40 +278,68 @@ export function VideoBlockModal({ open, onClose, onSave, initialData }: VideoBlo
 
                     {/* Title */}
                     <div className="space-y-2">
-                        <Label htmlFor="title">Title (Optional)</Label>
+                        <Label htmlFor="title" className="text-sm font-medium">
+                            Title <span className="text-muted-foreground text-xs">(Optional)</span>
+                        </Label>
                         <Input
                             id="title"
-                            placeholder="Video title"
+                            placeholder="e.g., Introduction to Gamification"
                             {...register('content.title')}
+                            aria-describedby="title-hint"
                         />
                         {errors.content?.title && (
-                            <p className="text-sm text-destructive">
+                            <p className="text-sm text-destructive flex items-center gap-1" role="alert">
+                                <span>⚠️</span>
                                 {errors.content.title.message}
                             </p>
                         )}
+                        <p id="title-hint" className="text-xs text-muted-foreground">
+                            Optional title displayed above the video player
+                        </p>
                     </div>
 
                     {/* Description */}
                     <div className="space-y-2">
-                        <Label htmlFor="description">Description (Optional)</Label>
+                        <Label htmlFor="description" className="text-sm font-medium">
+                            Description <span className="text-muted-foreground text-xs">(Optional)</span>
+                        </Label>
                         <Textarea
                             id="description"
-                            placeholder="Video description"
+                            placeholder="e.g., In this video, we'll explore the key principles of gamification..."
                             rows={3}
                             {...register('content.description')}
+                            aria-describedby="description-hint"
                         />
                         {errors.content?.description && (
-                            <p className="text-sm text-destructive">
+                            <p className="text-sm text-destructive flex items-center gap-1" role="alert">
+                                <span>⚠️</span>
                                 {errors.content.description.message}
                             </p>
                         )}
+                        <p id="description-hint" className="text-xs text-muted-foreground">
+                            Optional description or context for the video content
+                        </p>
+                    </div>
+
+                    <div className="text-xs text-muted-foreground bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded p-3">
+                        <strong>💡 Tip:</strong> For best performance, use YouTube or Vimeo for longer videos.
+                        Upload directly only for short clips or when embedding isn't possible.
                     </div>
 
                     <DialogFooter>
-                        <Button type="button" variant="outline" onClick={onClose}>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={onClose}
+                            aria-label="Cancel and close dialog"
+                        >
                             Cancel
                         </Button>
-                        <Button type="submit" disabled={isSubmitting || isUploading}>
+                        <Button
+                            type="submit"
+                            disabled={isSubmitting || isUploading}
+                            aria-label={isSubmitting ? 'Saving video block' : 'Save video block'}
+                        >
                             {isSubmitting ? 'Saving...' : 'Save'}
                         </Button>
                     </DialogFooter>

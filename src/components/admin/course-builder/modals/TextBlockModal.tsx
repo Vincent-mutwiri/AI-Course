@@ -59,16 +59,19 @@ export function TextBlockModal({ open, onClose, onSave, initialData }: TextBlock
                     <DialogTitle>
                         {initialData ? 'Edit Text Block' : 'Add Text Block'}
                     </DialogTitle>
-                    <p id="text-block-description" className="sr-only">
-                        Configure the text content for this block using the rich text editor
+                    <p id="text-block-description" className="text-sm text-muted-foreground">
+                        Create rich text content with formatting, headings, lists, and more
                     </p>
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
                     <div className="space-y-2">
-                        <Label htmlFor="text-editor">
+                        <Label htmlFor="text-editor" className="text-sm font-medium">
                             Content <span className="text-destructive" aria-label="required">*</span>
                         </Label>
+                        <p className="text-xs text-muted-foreground">
+                            Use the editor toolbar to format your text, add headings, lists, links, and more (max 50,000 characters)
+                        </p>
 
                         {/* Lazy-loaded Rich Text Editor */}
                         <Suspense
@@ -93,13 +96,19 @@ export function TextBlockModal({ open, onClose, onSave, initialData }: TextBlock
 
                         {errors.content?.text && (
                             <p
-                                className="text-sm text-destructive"
+                                className="text-sm text-destructive flex items-center gap-1"
                                 role="alert"
                                 aria-live="assertive"
                             >
+                                <span className="inline-block">⚠️</span>
                                 {errors.content.text.message}
                             </p>
                         )}
+                    </div>
+
+                    <div className="text-xs text-muted-foreground bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded p-3">
+                        <strong>💡 Tip:</strong> Break up long text blocks with headings, bullet points, and formatting
+                        to improve readability. Consider adding images or videos between text sections for visual variety.
                     </div>
 
                     <DialogFooter>

@@ -62,12 +62,17 @@ export function ListBlockModal({ open, onClose, onSave, initialData }: ListBlock
                     <DialogTitle>
                         {initialData ? 'Edit List Block' : 'Add List Block'}
                     </DialogTitle>
+                    <p className="text-sm text-muted-foreground">
+                        Create bullet points, numbered lists, or checklists to organize information
+                    </p>
                 </DialogHeader>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                     {/* List Type Selection */}
                     <div className="space-y-2">
-                        <Label>List Type</Label>
+                        <Label className="text-sm font-medium">
+                            List Type <span className="text-destructive" aria-label="required">*</span>
+                        </Label>
                         <div className="flex gap-4">
                             <label className="flex items-center gap-2 cursor-pointer">
                                 <input
@@ -98,17 +103,23 @@ export function ListBlockModal({ open, onClose, onSave, initialData }: ListBlock
                             </label>
                         </div>
                         {errors.content?.listType && (
-                            <p className="text-sm text-destructive">
+                            <p className="text-sm text-destructive flex items-center gap-1" role="alert">
+                                <span>⚠️</span>
                                 {errors.content.listType.message}
                             </p>
                         )}
+                        <p className="text-xs text-muted-foreground">
+                            • Bullet: Unordered list with bullet points<br />
+                            • Numbered: Ordered list with sequential numbers<br />
+                            • Checkbox: Interactive checklist for students
+                        </p>
                     </div>
 
                     {/* List Items */}
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                            <Label>
-                                List Items <span className="text-destructive">*</span>
+                            <Label className="text-sm font-medium">
+                                List Items <span className="text-destructive" aria-label="required">*</span>
                             </Label>
                             <Button
                                 type="button"
@@ -132,9 +143,11 @@ export function ListBlockModal({ open, onClose, onSave, initialData }: ListBlock
                                         <Input
                                             placeholder={`Item ${index + 1}`}
                                             {...register(`content.items.${index}.text`)}
+                                            aria-label={`List item ${index + 1}`}
                                         />
                                         {errors.content?.items?.[index]?.text && (
-                                            <p className="text-xs text-destructive mt-1">
+                                            <p className="text-xs text-destructive mt-1 flex items-center gap-1" role="alert">
+                                                <span>⚠️</span>
                                                 {errors.content.items[index]?.text?.message}
                                             </p>
                                         )}
@@ -165,20 +178,35 @@ export function ListBlockModal({ open, onClose, onSave, initialData }: ListBlock
                         </div>
 
                         {errors.content?.items && typeof errors.content.items === 'object' && 'message' in errors.content.items && (
-                            <p className="text-sm text-destructive">
+                            <p className="text-sm text-destructive flex items-center gap-1" role="alert">
+                                <span>⚠️</span>
                                 {errors.content.items.message as string}
                             </p>
                         )}
                         <p className="text-xs text-muted-foreground">
-                            Add at least one item. Maximum 100 items.
+                            Minimum 1 item required, maximum 100 items. Each item can be up to 1,000 characters.
                         </p>
                     </div>
 
+                    <div className="text-xs text-muted-foreground bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded p-3">
+                        <strong>💡 Tip:</strong> Use bullet lists for unordered information, numbered lists for sequential steps,
+                        and checkbox lists for tasks or learning objectives students can track.
+                    </div>
+
                     <DialogFooter>
-                        <Button type="button" variant="outline" onClick={onClose}>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={onClose}
+                            aria-label="Cancel and close dialog"
+                        >
                             Cancel
                         </Button>
-                        <Button type="submit" disabled={isSubmitting}>
+                        <Button
+                            type="submit"
+                            disabled={isSubmitting}
+                            aria-label={isSubmitting ? 'Saving list block' : 'Save list block'}
+                        >
                             {isSubmitting ? 'Saving...' : 'Save'}
                         </Button>
                     </DialogFooter>

@@ -69,12 +69,15 @@ export function DividerBlockModal({ open, onClose, onSave, initialData }: Divide
                     <DialogTitle>
                         {initialData ? 'Edit Divider Block' : 'Add Divider Block'}
                     </DialogTitle>
+                    <p className="text-sm text-muted-foreground">
+                        Add a visual separator to break up content sections
+                    </p>
                 </DialogHeader>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                     {/* Style Selection */}
                     <div className="space-y-2">
-                        <Label>Divider Style</Label>
+                        <Label className="text-sm font-medium">Divider Style</Label>
                         <div className="space-y-2">
                             <label className="flex items-center gap-2 cursor-pointer">
                                 <input
@@ -105,15 +108,19 @@ export function DividerBlockModal({ open, onClose, onSave, initialData }: Divide
                             </label>
                         </div>
                         {errors.content?.style && (
-                            <p className="text-sm text-destructive">
+                            <p className="text-sm text-destructive flex items-center gap-1" role="alert">
+                                <span>⚠️</span>
                                 {errors.content.style.message}
                             </p>
                         )}
+                        <p className="text-xs text-muted-foreground">
+                            Choose the visual style of the divider line
+                        </p>
                     </div>
 
                     {/* Spacing Selection */}
                     <div className="space-y-2">
-                        <Label>Spacing</Label>
+                        <Label className="text-sm font-medium">Spacing</Label>
                         <div className="space-y-2">
                             <label className="flex items-center gap-2 cursor-pointer">
                                 <input
@@ -144,27 +151,48 @@ export function DividerBlockModal({ open, onClose, onSave, initialData }: Divide
                             </label>
                         </div>
                         {errors.content?.spacing && (
-                            <p className="text-sm text-destructive">
+                            <p className="text-sm text-destructive flex items-center gap-1" role="alert">
+                                <span>⚠️</span>
                                 {errors.content.spacing.message}
                             </p>
                         )}
+                        <p className="text-xs text-muted-foreground">
+                            Control the vertical space above and below the divider
+                        </p>
                     </div>
 
                     {/* Preview */}
                     <div className="space-y-2">
-                        <Label>Preview</Label>
+                        <Label className="text-sm font-medium">Preview</Label>
                         <div className="border rounded-md p-4 bg-muted/50">
                             <div className={getSpacingClass()}>
                                 <div className={getDividerStyle()} />
                             </div>
                         </div>
+                        <p className="text-xs text-muted-foreground">
+                            This is how the divider will appear in your lesson
+                        </p>
+                    </div>
+
+                    <div className="text-xs text-muted-foreground bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded p-3">
+                        <strong>💡 Tip:</strong> Use dividers to create visual breaks between major sections or topics.
+                        Solid lines work well for strong separations, while dashed or dotted lines are more subtle.
                     </div>
 
                     <DialogFooter>
-                        <Button type="button" variant="outline" onClick={onClose}>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={onClose}
+                            aria-label="Cancel and close dialog"
+                        >
                             Cancel
                         </Button>
-                        <Button type="submit" disabled={isSubmitting}>
+                        <Button
+                            type="submit"
+                            disabled={isSubmitting}
+                            aria-label={isSubmitting ? 'Saving divider block' : 'Save divider block'}
+                        >
                             {isSubmitting ? 'Saving...' : 'Save'}
                         </Button>
                     </DialogFooter>

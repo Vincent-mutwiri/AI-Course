@@ -162,12 +162,17 @@ export function ImageBlockModal({ open, onClose, onSave, initialData }: ImageBlo
                     <DialogTitle>
                         {initialData ? 'Edit Image Block' : 'Add Image Block'}
                     </DialogTitle>
+                    <p className="text-sm text-muted-foreground">
+                        Add images to enhance your lesson content with visual elements
+                    </p>
                 </DialogHeader>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                     {/* File Upload */}
                     <div className="space-y-2">
-                        <Label htmlFor="imageFile">Upload Image</Label>
+                        <Label htmlFor="imageFile" className="text-sm font-medium">
+                            Upload Image <span className="text-destructive" aria-label="required">*</span>
+                        </Label>
                         <Input
                             id="imageFile"
                             type="file"
@@ -213,19 +218,20 @@ export function ImageBlockModal({ open, onClose, onSave, initialData }: ImageBlo
                             </div>
                         )}
                         {errors.content?.imageUrl && (
-                            <p className="text-sm text-destructive">
+                            <p className="text-sm text-destructive flex items-center gap-1" role="alert">
+                                <span>⚠️</span>
                                 {errors.content.imageUrl.message}
                             </p>
                         )}
                         <p className="text-xs text-muted-foreground">
-                            Maximum file size: 5MB. Supported formats: JPEG, PNG, GIF, WebP
+                            Maximum file size: 5MB. Supported formats: JPEG, PNG, GIF, WebP. For best results, use images at least 800px wide.
                         </p>
                     </div>
 
                     {/* Image Preview */}
                     {previewUrl && (
                         <div className="space-y-2">
-                            <Label>Preview</Label>
+                            <Label className="text-sm font-medium">Preview</Label>
                             <div className="border rounded-md p-4 bg-muted/50">
                                 <img
                                     src={previewUrl}
@@ -238,45 +244,70 @@ export function ImageBlockModal({ open, onClose, onSave, initialData }: ImageBlo
 
                     {/* Alt Text (Required) */}
                     <div className="space-y-2">
-                        <Label htmlFor="altText">
-                            Alt Text <span className="text-destructive">*</span>
+                        <Label htmlFor="altText" className="text-sm font-medium">
+                            Alt Text <span className="text-destructive" aria-label="required">*</span>
                         </Label>
                         <Input
                             id="altText"
-                            placeholder="Describe the image for accessibility"
+                            placeholder="e.g., Diagram showing the flow of a gamified learning experience"
                             {...register('content.altText')}
+                            aria-describedby="altText-hint"
+                            aria-required="true"
+                            aria-invalid={!!errors.content?.altText}
                         />
                         {errors.content?.altText && (
-                            <p className="text-sm text-destructive">
+                            <p className="text-sm text-destructive flex items-center gap-1" role="alert" aria-live="assertive">
+                                <span>⚠️</span>
                                 {errors.content.altText.message}
                             </p>
                         )}
-                        <p className="text-xs text-muted-foreground">
-                            Required for accessibility. Describe what the image shows.
+                        <p id="altText-hint" className="text-xs text-muted-foreground">
+                            <strong>Required for accessibility.</strong> Describe what the image shows so screen reader users understand the content (max 250 characters)
                         </p>
                     </div>
 
                     {/* Caption (Optional) */}
                     <div className="space-y-2">
-                        <Label htmlFor="caption">Caption (Optional)</Label>
+                        <Label htmlFor="caption" className="text-sm font-medium">
+                            Caption <span className="text-muted-foreground text-xs">(Optional)</span>
+                        </Label>
                         <Textarea
                             id="caption"
-                            placeholder="Add a caption for the image"
+                            placeholder="e.g., Figure 1: The gamification feedback loop"
                             rows={2}
                             {...register('content.caption')}
+                            aria-describedby="caption-hint"
                         />
                         {errors.content?.caption && (
-                            <p className="text-sm text-destructive">
+                            <p className="text-sm text-destructive flex items-center gap-1" role="alert">
+                                <span>⚠️</span>
                                 {errors.content.caption.message}
                             </p>
                         )}
+                        <p id="caption-hint" className="text-xs text-muted-foreground">
+                            Optional caption displayed below the image (max 500 characters)
+                        </p>
+                    </div>
+
+                    <div className="text-xs text-muted-foreground bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded p-3">
+                        <strong>💡 Accessibility Tip:</strong> Alt text should describe the content and function of the image.
+                        For decorative images, use brief alt text. For complex diagrams, provide detailed descriptions.
                     </div>
 
                     <DialogFooter>
-                        <Button type="button" variant="outline" onClick={onClose}>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={onClose}
+                            aria-label="Cancel and close dialog"
+                        >
                             Cancel
                         </Button>
-                        <Button type="submit" disabled={isSubmitting || isUploading}>
+                        <Button
+                            type="submit"
+                            disabled={isSubmitting || isUploading}
+                            aria-label={isSubmitting ? 'Saving image block' : 'Save image block'}
+                        >
                             {isSubmitting ? 'Saving...' : 'Save'}
                         </Button>
                     </DialogFooter>
