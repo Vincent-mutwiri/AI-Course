@@ -10,6 +10,8 @@ import Canvas from "@/components/admin/course-builder/Canvas";
 import BlockLibrary from "@/components/admin/course-builder/BlockLibrary";
 import PreviewModal from "@/components/admin/course-builder/PreviewModal";
 import { BlockModalRouter } from "@/components/admin/course-builder/BlockModalRouter";
+import { AddModuleModal } from "@/components/admin/course-builder/AddModuleModal";
+import { AddLessonModal } from "@/components/admin/course-builder/AddLessonModal";
 import { Button } from "@/components/ui/button";
 import type { BlockType } from "@/hooks/useBlockModal";
 
@@ -62,11 +64,15 @@ export default function CourseBuilderPage() {
     const [isStructureOpen, setIsStructureOpen] = useState(false);
     const [isLibraryOpen, setIsLibraryOpen] = useState(false);
     const [isMobileWarningDismissed, setIsMobileWarningDismissed] = useState(false);
+    const [isAddModuleModalOpen, setIsAddModuleModalOpen] = useState(false);
+    const [isAddLessonModalOpen, setIsAddLessonModalOpen] = useState(false);
+    const [selectedModuleForLesson, setSelectedModuleForLesson] = useState<string | null>(null);
 
     // Initialize block modal management
     const { modalState, openModal, closeModal, handleSave } = useBlockModal({
         blocks,
         onBlocksChange: (updatedBlocks) => {
+            console.log('[CourseBuilderPage] onBlocksChange called', { oldLength: blocks.length, newLength: updatedBlocks.length, updatedBlocks });
             setBlocks(updatedBlocks);
             setHasUnsavedChanges(true);
         },
@@ -257,7 +263,78 @@ export default function CourseBuilderPage() {
 
     // Handle add module
     const handleAddModule = () => {
-        toast.info("Add module functionality will be implemented in a future task");
+        setIsAddModuleModalOpen(true);
+    };
+
+    // Handle save new module
+    const handleSaveModule = async (data: { title: string; description?: string }) => {
+        try {
+            const response = await api.post(`/admin/courses/${id}/modules`, data);
+            const newModule = response.data.module;
+
+            // Update course state with new module
+            setCourse((prevCourse) => {
+                if (!prevCourse) return prevCourse;
+                return {
+                    ...prevCourse,
+                    modules: [...prevCourse.modules, newModule],
+                };
+            });
+
+            toast.success("Module created successfully");
+        } catch (error: any) {
+            console.error("Failed to create module:", error);
+            toast.error(error.response?.data?.message || "Failed to create module");
+            throw error;
+        }
+    };
+
+    // Handle add lesson
+    const handleAddLesson = (moduleId: string) => {
+        setSelectedModuleForLesson(moduleId);
+        setIsAddLessonModalOpen(true);
+    };
+
+    // Handle save new lesson
+    const handleSaveLesson = async (data: { title: string; description?: string; duration?: number }) => {
+        if (!selectedModuleForLesson) return;
+
+        try {
+            const response = await api.post(
+                `/admin/courses/${id}/modules/${selectedModuleForLesson}/lessons`,
+                data
+            );
+            const newLesson = response.data.lesson;
+
+            // Update course state with new lesson
+            setCourse((prevCourse) => {
+                if (!prevCourse) return prevCourse;
+                return {
+                    ...prevCourse,
+                    modules: prevCourse.modules.map((module) => {
+                        if (module._id === selectedModuleForLesson) {
+                            return {
+                                ...module,
+                                lessons: [...module.lessons, newLesson],
+                            };
+                        }
+                        return module;
+                    }),
+                };
+            });
+
+            toast.success("Lesson created successfully");
+
+            // Automatically select the new lesson
+            setCurrentModuleId(selectedModuleForLesson);
+            setCurrentLessonId(newLesson._id);
+            setBlocks([]);
+            setHasUnsavedChanges(false);
+        } catch (error: any) {
+            console.error("Failed to create lesson:", error);
+            toast.error(error.response?.data?.message || "Failed to create lesson");
+            throw error;
+        }
     };
 
     // Handle blocks reorder - memoized for performance
@@ -591,6 +668,7 @@ export default function CourseBuilderPage() {
                             setIsStructureOpen(false);
                         }}
                         onAddModule={handleAddModule}
+                        onAddLesson={handleAddLesson}
                     />
                 </div>
 
@@ -686,6 +764,28 @@ export default function CourseBuilderPage() {
                 modalState={modalState}
                 onClose={closeModal}
                 onSave={handleSave}
+            />
+
+            {/* Add Module Modal */}
+            <AddModuleModal
+                open={isAddModuleModalOpen}
+                onClose={() => setIsAddModuleModalOpen(false)}
+                onSave={handleSaveModule}
+            />
+
+            {/* Add Lesson Modal */}
+            <AddLessonModal
+                open={isAddLessonModalOpen}
+                onClose={() => {
+                    setIsAddLessonModalOpen(false);
+                    setSelectedModuleForLesson(null);
+                }}
+                onSave={handleSaveLesson}
+                moduleName={
+                    selectedModuleForLesson
+                        ? course?.modules.find((m) => m._id === selectedModuleForLesson)?.title
+                        : undefined
+                }
             />
         </div>
     );

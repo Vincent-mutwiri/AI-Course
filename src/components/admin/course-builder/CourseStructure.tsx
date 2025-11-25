@@ -36,6 +36,7 @@ interface CourseStructureProps {
     currentLessonId: string | null;
     onLessonSelect: (moduleId: string, lessonId: string) => void;
     onAddModule?: () => void;
+    onAddLesson?: (moduleId: string) => void;
 }
 
 export default function CourseStructure({
@@ -44,6 +45,7 @@ export default function CourseStructure({
     currentLessonId,
     onLessonSelect,
     onAddModule,
+    onAddLesson,
 }: CourseStructureProps) {
     // Track which modules are expanded in the accordion
     const [expandedModules, setExpandedModules] = useState<string[]>(
@@ -153,6 +155,23 @@ export default function CourseStructure({
                                                     </button>
                                                 );
                                             })}
+                                        {onAddLesson && (
+                                            <div className="px-2 pt-1">
+                                                <Button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        onAddLesson(module._id);
+                                                    }}
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    className="w-full text-xs h-8"
+                                                    aria-label={`Add new lesson to ${module.title}`}
+                                                >
+                                                    <Plus className="h-3 w-3 mr-1" aria-hidden="true" />
+                                                    Add Lesson
+                                                </Button>
+                                            </div>
+                                        )}
                                     </nav>
                                 </AccordionContent>
                             </AccordionItem>

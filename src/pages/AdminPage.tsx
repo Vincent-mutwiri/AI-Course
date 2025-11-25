@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { adminAPI, courseAPI } from "@/services/api";
 import api from "@/services/api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Users, BookOpen, GraduationCap, TrendingUp, Activity, Award, Zap } from "lucide-react";
+import { Users, BookOpen, GraduationCap, TrendingUp, Activity, Award, Zap, Edit } from "lucide-react";
 import { ProfileWidget } from "@/components/admin/ProfileWidget";
 
 export default function AdminPage() {
+  const navigate = useNavigate();
   const [stats, setStats] = useState<any>(null);
   const [courses, setCourses] = useState<any[]>([]);
   const [analytics, setAnalytics] = useState<any>(null);
@@ -28,7 +30,7 @@ export default function AdminPage() {
       ]);
       setStats(statsData.stats);
       setCourses(coursesData.courses);
-      
+
       // Fetch analytics for first course
       if (coursesData.courses.length > 0) {
         const analyticsData = await api.get(`/analytics/stats?courseId=${coursesData.courses[0]._id}`);
@@ -44,7 +46,7 @@ export default function AdminPage() {
   const handleCreateCourse = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    
+
     try {
       await adminAPI.createCourse({
         title: formData.get("title"),
@@ -65,7 +67,7 @@ export default function AdminPage() {
   const handleCreateQuiz = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    
+
     try {
       await adminAPI.createQuiz({
         courseId: formData.get("courseId"),
@@ -108,45 +110,45 @@ export default function AdminPage() {
         {/* Right Column - Stats */}
         <div className="lg:col-span-2 space-y-6">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.totalUsers || 0}</div>
-          </CardContent>
-        </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+                <Users className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stats?.totalUsers || 0}</div>
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Courses</CardTitle>
-            <BookOpen className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.totalCourses || 0}</div>
-          </CardContent>
-        </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total Courses</CardTitle>
+                <BookOpen className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stats?.totalCourses || 0}</div>
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Published</CardTitle>
-            <GraduationCap className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.publishedCourses || 0}</div>
-          </CardContent>
-        </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Published</CardTitle>
+                <GraduationCap className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stats?.publishedCourses || 0}</div>
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Enrollments</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.totalEnrollments || 0}</div>
-          </CardContent>
-        </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Enrollments</CardTitle>
+                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stats?.totalEnrollments || 0}</div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
@@ -168,7 +170,7 @@ export default function AdminPage() {
                   </p>
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-3 p-4 border rounded-lg">
                 <Award className="h-8 w-8 text-green-600" />
                 <div>
@@ -176,7 +178,7 @@ export default function AdminPage() {
                   <p className="text-2xl font-bold">{analytics.certificateCompletionRate || 0}</p>
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-3 p-4 border rounded-lg">
                 <Zap className="h-8 w-8 text-yellow-600" />
                 <div>
@@ -185,7 +187,7 @@ export default function AdminPage() {
                 </div>
               </div>
             </div>
-            
+
             {analytics.stats && analytics.stats.length > 0 && (
               <div className="mt-6">
                 <h3 className="font-semibold mb-3">Event Breakdown</h3>
@@ -250,11 +252,27 @@ export default function AdminPage() {
             <div className="mt-6 space-y-2">
               <h3 className="font-semibold">Existing Courses ({courses.length})</h3>
               {courses.slice(0, 5).map((course) => (
-                <div key={course._id} className="flex justify-between items-center p-2 border rounded">
-                  <span className="text-sm">{course.title}</span>
-                  <span className="text-xs text-muted-foreground">{course.level}</span>
+                <div key={course._id} className="flex justify-between items-center p-3 border rounded hover:bg-muted/50 transition-colors">
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">{course.title}</p>
+                    <p className="text-xs text-muted-foreground capitalize">{course.level}</p>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => navigate(`/admin/courses/${course._id}/builder`)}
+                    className="gap-2"
+                  >
+                    <Edit className="h-4 w-4" />
+                    Edit Course
+                  </Button>
                 </div>
               ))}
+              {courses.length > 5 && (
+                <p className="text-xs text-muted-foreground text-center pt-2">
+                  Showing 5 of {courses.length} courses
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>

@@ -133,6 +133,8 @@ export function useBlockModal({ blocks, onBlocksChange }: UseBlockModalProps): U
     const handleSave = useCallback((blockData: any) => {
         const { mode, blockId } = modalState;
 
+        console.log('[useBlockModal] handleSave called', { mode, blockId, blockData, currentBlocks: blocks.length });
+
         if (mode === 'create') {
             // Create new block
             const newBlock: Block = {
@@ -144,8 +146,11 @@ export function useBlockModal({ blocks, onBlocksChange }: UseBlockModalProps): U
                 updatedAt: new Date(),
             };
 
+            console.log('[useBlockModal] Creating new block', newBlock);
+
             // Add to end of blocks array
             const updatedBlocks = [...blocks, newBlock];
+            console.log('[useBlockModal] Updated blocks array', { oldLength: blocks.length, newLength: updatedBlocks.length });
             onBlocksChange(updatedBlocks);
         } else if (mode === 'edit' && blockId) {
             // Update existing block
@@ -161,6 +166,7 @@ export function useBlockModal({ blocks, onBlocksChange }: UseBlockModalProps): U
                 return block;
             });
 
+            console.log('[useBlockModal] Updated existing block', blockId);
             onBlocksChange(updatedBlocks);
         }
 

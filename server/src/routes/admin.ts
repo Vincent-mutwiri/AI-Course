@@ -355,4 +355,246 @@ router.post("/courses/:courseId/lessons/:lessonId/blocks/:blockId/duplicate", as
   }
 });
 
+// Create a new module
+router.post("/courses/:courseId/modules", async (req: AuthRequest, res: Response) => {
+  try {
+    const { courseId } = req.params;
+    const { title, description } = req.body;
+
+    if (!title) {
+      return res.status(400).json({ message: "Module title is required" });
+    }
+
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+
+    // Create new module
+    const newModule = {
+      title,
+      description: description || '',
+      order: course.modules.length,
+      lessons: []
+    };
+
+    course.modules.push(newModule as any);
+    await course.save();
+
+    // Get the created module with its ID
+    const createdModule = course.modules[course.modules.length - 1];
+
+    res.status(201).json({
+      module: {
+        _id: (createdModule as any)._id,
+        title: createdModule.title,
+        description: createdModule.description,
+        order: createdModule.order,
+        lessons: createdModule.lessons
+      }
+    });
+  } catch (error) {
+    console.error("[Admin] Error creating module:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Create a new lesson in a module
+router.post("/courses/:courseId/modules/:moduleId/lessons", async (req: AuthRequest, res: Response) => {
+  try {
+    const { courseId, moduleId } = req.params;
+    const { title, duration } = req.body;
+
+    console.log('[Admin] Creating lesson:', { courseId, moduleId, title, duration });
+
+    if (!title) {
+      return res.status(400).json({ message: "Lesson title is required" });
+    }
+
+    const course = await Course.findById(courseId);
+    if (!course) {
+      console.log('[Admin] Course not found:', courseId);
+      return res.status(404).json({ message: "Course not found" });
+    }
+
+    console.log('[Admin] Found course, modules:', course.modules.length);
+
+    const module = course.modules.find((m: any) => m._id.toString() === moduleId);
+    if (!module) {
+      console.log('[Admin] Module not found:', moduleId);
+      console.log('[Admin] Available modules:', course.modules.map((m: any) => m._id.toString()));
+      return res.status(404).json({ message: "Module not found" });
+    }
+
+    console.log('[Admin] Found module:', module.title);
+
+    // Create new lesson with all required fields
+    const newLesson = {
+      title,
+      description: '', // Default empty description
+      duration: duration || 15,
+      order: module.lessons.length, // Set order based on current lesson count
+      blocks: []
+    };
+
+    console.log('[Admin] Pushing new lesson to module');
+    module.lessons.push(newLesson as any);
+
+    console.log('[Admin] Saving course');
+    await course.save();
+
+    // Get the created lesson with its ID
+    const createdLesson = module.lessons[module.lessons.length - 1];
+
+    res.status(201).json({
+      lesson: {
+        _id: (createdLesson as any)._id,
+        title: createdLesson.title,
+        duration: createdLesson.duration,
+        blocks: createdLesson.blocks
+      }
+    });
+  } catch (error) {
+    console.error("[Admin] Error creating lesson:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Update module
+router.put("/courses/:courseId/modules/:moduleId", async (req: AuthRequest, res: Response) => {
+  try {
+    const { courseId, moduleId } = req.params;
+    const { title, description } = req.body;
+
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+
+    const module = course.modules.find((m: any) => m._id.toString() === moduleId);
+    if (!module) {
+      return res.status(404).json({ message: "Module not found" });
+    }
+
+    if (title) module.title = title;
+    if (description !== undefined) module.description = description;
+
+    await course.save();
+
+    res.json({
+      module: {
+        _id: (module as any)._id,
+        title: module.title,
+        description: module.description,
+        order: module.order,
+        lessons: module.lessons
+      }
+    });
+  } catch (error) {
+    console.error("[Admin] Error updating module:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Update lesson
+router.put("/courses/:courseId/modules/:moduleId/lessons/:lessonId", async (req: AuthRequest, res: Response) => {
+  try {
+    const { courseId, moduleId, lessonId } = req.params;
+    const { title, duration } = req.body;
+
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+
+    const module = course.modules.find((m: any) => m._id.toString() === moduleId);
+    if (!module) {
+      return res.status(404).json({ message: "Module not found" });
+    }
+
+    const lesson = module.lessons.find((l: any) => l._id.toString() === lessonId);
+    if (!lesson) {
+      return res.status(404).json({ message: "Lesson not found" });
+    }
+
+    if (title) lesson.title = title;
+    if (duration !== undefined) lesson.duration = duration;
+
+    await course.save();
+
+    res.json({
+      lesson: {
+        _id: (lesson as any)._id,
+        title: lesson.title,
+        duration: lesson.duration,
+        blocks: lesson.blocks
+      }
+    });
+  } catch (error) {
+    console.error("[Admin] Error updating lesson:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Delete module
+router.delete("/courses/:courseId/modules/:moduleId", async (req: AuthRequest, res: Response) => {
+  try {
+    const { courseId, moduleId } = req.params;
+
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+
+    const moduleIndex = course.modules.findIndex((m: any) => m._id.toString() === moduleId);
+    if (moduleIndex === -1) {
+      return res.status(404).json({ message: "Module not found" });
+    }
+
+    course.modules.splice(moduleIndex, 1);
+
+    // Reorder remaining modules
+    course.modules.forEach((m: any, index: number) => {
+      m.order = index;
+    });
+
+    await course.save();
+
+    res.json({ message: "Module deleted successfully" });
+  } catch (error) {
+    console.error("[Admin] Error deleting module:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Delete lesson
+router.delete("/courses/:courseId/modules/:moduleId/lessons/:lessonId", async (req: AuthRequest, res: Response) => {
+  try {
+    const { courseId, moduleId, lessonId } = req.params;
+
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+
+    const module = course.modules.find((m: any) => m._id.toString() === moduleId);
+    if (!module) {
+      return res.status(404).json({ message: "Module not found" });
+    }
+
+    const lessonIndex = module.lessons.findIndex((l: any) => l._id.toString() === lessonId);
+    if (lessonIndex === -1) {
+      return res.status(404).json({ message: "Lesson not found" });
+    }
+
+    module.lessons.splice(lessonIndex, 1);
+    await course.save();
+
+    res.json({ message: "Lesson deleted successfully" });
+  } catch (error) {
+    console.error("[Admin] Error deleting lesson:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 export default router;

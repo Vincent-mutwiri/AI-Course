@@ -90,7 +90,7 @@ export interface IInteractiveElement {
 
 interface ILesson {
   title: string;
-  description: string;
+  description?: string;
   videoUrl?: string;
   duration: number;
   order: number;
@@ -167,7 +167,7 @@ const blockSchema = new Schema<IBlock>({
 
 const lessonSchema = new Schema<ILesson>({
   title: { type: String, required: true },
-  description: { type: String, required: true },
+  description: { type: String, required: false, default: '' },
   videoUrl: { type: String },
   duration: { type: Number, required: true },
   order: { type: Number, required: true },
