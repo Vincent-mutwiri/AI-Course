@@ -86,6 +86,8 @@ export const ReflectionComponent: React.FC<ReflectionComponentProps> = ({
 
   const characterCount = answer.length;
   const isValid = characterCount >= minLength;
+  const remainingChars = Math.max(0, minLength - characterCount);
+  const progressPercentage = minLength > 0 ? Math.min(100, (characterCount / minLength) * 100) : 100;
 
   return (
     <Card className="w-full">
@@ -110,17 +112,56 @@ export const ReflectionComponent: React.FC<ReflectionComponentProps> = ({
                 value={answer}
                 onChange={(e) => setAnswer(e.target.value)}
                 placeholder={placeholder}
-                className="min-h-[150px] resize-y"
+                className={`min-h-[150px] resize-y transition-colors ${answer.length > 0 && !isValid
+                    ? 'border-amber-400 focus-visible:ring-amber-400'
+                    : isValid
+                      ? 'border-green-500 focus-visible:ring-green-500'
+                      : ''
+                  }`}
                 disabled={isSaving}
+                aria-describedby="character-count-info"
               />
-              <div className="flex items-center justify-between text-sm">
-                <span className={`${isValid ? 'text-green-600' : 'text-muted-foreground'}`}>
-                  {characterCount} / {minLength} characters {isValid && '✓'}
-                </span>
-                {!isValid && (
-                  <span className="text-muted-foreground">
-                    {minLength - characterCount} more needed
+
+              {/* Character count with progress indicator */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span
+                    id="character-count-info"
+                    className={`font-medium transition-colors ${isValid
+                        ? 'text-green-600 dark:text-green-500'
+                        : characterCount > 0
+                          ? 'text-amber-600 dark:text-amber-500'
+                          : 'text-muted-foreground'
+                      }`}
+                  >
+                    {characterCount} / {minLength} characters
+                    {isValid && ' ✓'}
                   </span>
+                  {!isValid && characterCount > 0 && (
+                    <span className="text-sm text-amber-600 dark:text-amber-500">
+                      {remainingChars} more character{remainingChars !== 1 ? 's' : ''} needed
+                    </span>
+                  )}
+                </div>
+
+                {/* Visual progress bar */}
+                {minLength > 0 && (
+                  <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
+                    <div
+                      className={`h-full transition-all duration-300 ${isValid
+                          ? 'bg-green-500'
+                          : characterCount > 0
+                            ? 'bg-amber-400'
+                            : 'bg-muted-foreground/20'
+                        }`}
+                      style={{ width: `${progressPercentage}%` }}
+                      role="progressbar"
+                      aria-valuenow={characterCount}
+                      aria-valuemin={0}
+                      aria-valuemax={minLength}
+                      aria-label="Character count progress"
+                    />
+                  </div>
                 )}
               </div>
             </div>
@@ -166,7 +207,7 @@ export const ReflectionComponent: React.FC<ReflectionComponentProps> = ({
         {!isSubmitted && (
           <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg">
             <p className="text-xs text-blue-900 dark:text-blue-100">
-              <strong>💡 Tip:</strong> Be specific! Instead of "it was fun," try "students were 
+              <strong>💡 Tip:</strong> Be specific! Instead of "it was fun," try "students were
               engaged because they could choose their own project topics."
             </p>
           </div>

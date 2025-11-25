@@ -398,7 +398,7 @@
     - Test rendering in both canvas and student view
     - _Requirements: 3.1, 3.2, 3.3, 3.4_
 
-  - [ ] 24.3 Refine Poll component
+  - [x] 24.3 Refine Poll component
     - Remove any prefilled test data
     - Ensure clean initial state
     - Improve option management in configuration modal
@@ -406,7 +406,7 @@
     - Test real-time voting functionality
     - _Requirements: 3.1, 3.2, 3.3, 3.4_
 
-  - [ ] 24.4 Refine Reflection component
+  - [x] 24.4 Refine Reflection component
     - Remove any prefilled test data
     - Ensure clean initial state with proper placeholder
     - Improve prompt configuration

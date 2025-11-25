@@ -60,13 +60,15 @@ export function ReflectionBlockModal({ open, onClose, onSave, initialData }: Ref
                     </p>
                 </DialogHeader>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
                     {/* Title */}
                     <div className="space-y-2">
-                        <Label htmlFor="title">Title (Optional)</Label>
+                        <Label htmlFor="title" className="text-sm font-medium">
+                            Title (Optional)
+                        </Label>
                         <Input
                             id="title"
-                            placeholder="Reflection title"
+                            placeholder="e.g., Reflect on Your Teaching Practice"
                             {...register('content.title')}
                             aria-describedby="title-hint"
                         />
@@ -79,16 +81,19 @@ export function ReflectionBlockModal({ open, onClose, onSave, initialData }: Ref
                                 {errors.content.title.message}
                             </p>
                         )}
+                        <p id="title-hint" className="text-xs text-muted-foreground">
+                            Optional title displayed above the reflection question
+                        </p>
                     </div>
 
                     {/* Question */}
                     <div className="space-y-2">
-                        <Label htmlFor="question">
-                            Question <span className="text-destructive" aria-label="required">*</span>
+                        <Label htmlFor="question" className="text-sm font-medium">
+                            Reflection Question <span className="text-destructive" aria-label="required">*</span>
                         </Label>
                         <Textarea
                             id="question"
-                            placeholder="What question do you want students to reflect on?"
+                            placeholder="e.g., How have you used gamification in your classroom? What worked well and what didn't?"
                             rows={3}
                             {...register('content.question')}
                             aria-describedby="question-hint"
@@ -105,32 +110,37 @@ export function ReflectionBlockModal({ open, onClose, onSave, initialData }: Ref
                             </p>
                         )}
                         <p id="question-hint" className="text-xs text-muted-foreground">
-                            The main reflection question (10-1000 characters)
+                            The main question students will reflect on (10-1000 characters)
                         </p>
                     </div>
 
                     {/* Prompt */}
                     <div className="space-y-2">
-                        <Label htmlFor="prompt">Additional Prompt (Optional)</Label>
+                        <Label htmlFor="prompt" className="text-sm font-medium">
+                            Additional Context (Optional)
+                        </Label>
                         <Textarea
                             id="prompt"
-                            placeholder="Provide additional context or guidance for the reflection..."
+                            placeholder="e.g., Think about specific examples from your experience. Consider both successes and challenges."
                             rows={3}
                             {...register('content.prompt')}
+                            aria-describedby="prompt-hint"
                         />
                         {errors.content?.prompt && (
-                            <p className="text-sm text-destructive">
+                            <p className="text-sm text-destructive" role="alert">
                                 {errors.content.prompt.message}
                             </p>
                         )}
-                        <p className="text-xs text-muted-foreground">
-                            Additional instructions or context (max 2000 characters)
+                        <p id="prompt-hint" className="text-xs text-muted-foreground">
+                            Additional guidance or context to help students write meaningful reflections (max 2000 characters)
                         </p>
                     </div>
 
                     {/* Minimum Length */}
                     <div className="space-y-2">
-                        <Label htmlFor="minLength">Minimum Response Length</Label>
+                        <Label htmlFor="minLength" className="text-sm font-medium">
+                            Minimum Character Count
+                        </Label>
                         <Input
                             id="minLength"
                             type="number"
@@ -138,32 +148,40 @@ export function ReflectionBlockModal({ open, onClose, onSave, initialData }: Ref
                             max="5000"
                             placeholder="50"
                             {...register('content.minLength', { valueAsNumber: true })}
+                            aria-describedby="minLength-hint"
                         />
                         {errors.content?.minLength && (
-                            <p className="text-sm text-destructive">
+                            <p className="text-sm text-destructive" role="alert">
                                 {errors.content.minLength.message}
                             </p>
                         )}
-                        <p className="text-xs text-muted-foreground">
-                            Minimum number of characters required (0-5000)
+                        <p id="minLength-hint" className="text-xs text-muted-foreground">
+                            Minimum number of characters required for submission (0-5000). Default is 50 characters.
                         </p>
+                        <div className="text-xs text-muted-foreground bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded p-2">
+                            <strong>💡 Tip:</strong> For thoughtful reflections, aim for 100-300 characters minimum.
+                            Too low may result in superficial responses, too high may discourage participation.
+                        </div>
                     </div>
 
                     {/* Placeholder */}
                     <div className="space-y-2">
-                        <Label htmlFor="placeholder">Placeholder Text (Optional)</Label>
+                        <Label htmlFor="placeholder" className="text-sm font-medium">
+                            Placeholder Text (Optional)
+                        </Label>
                         <Input
                             id="placeholder"
-                            placeholder="Start typing your reflection..."
+                            placeholder="e.g., Share your thoughts and experiences here..."
                             {...register('content.placeholder')}
+                            aria-describedby="placeholder-hint"
                         />
                         {errors.content?.placeholder && (
-                            <p className="text-sm text-destructive">
+                            <p className="text-sm text-destructive" role="alert">
                                 {errors.content.placeholder.message}
                             </p>
                         )}
-                        <p className="text-xs text-muted-foreground">
-                            Placeholder text shown in the input field
+                        <p id="placeholder-hint" className="text-xs text-muted-foreground">
+                            Hint text displayed in the empty text area (max 200 characters)
                         </p>
                     </div>
 
