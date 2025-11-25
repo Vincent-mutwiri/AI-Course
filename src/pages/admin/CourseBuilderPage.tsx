@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate, useBeforeUnload } from "react-router-dom";
 import { toast } from "sonner";
-import { Eye } from "lucide-react";
+import { Eye, Menu, X, Library, FileText } from "lucide-react";
 import api from "@/services/api";
 import { debounce } from "@/utils/debounce";
 import { useBlockModal } from "@/hooks/useBlockModal";
@@ -59,6 +59,9 @@ export default function CourseBuilderPage() {
     const [saveRetryCount, setSaveRetryCount] = useState(0);
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
     const [currentLessonIndex, setCurrentLessonIndex] = useState(0);
+    const [isStructureOpen, setIsStructureOpen] = useState(false);
+    const [isLibraryOpen, setIsLibraryOpen] = useState(false);
+    const [isMobileWarningDismissed, setIsMobileWarningDismissed] = useState(false);
 
     // Initialize block modal management
     const { modalState, openModal, closeModal, handleSave } = useBlockModal({
@@ -438,31 +441,74 @@ export default function CourseBuilderPage() {
 
     return (
         <div className="h-screen flex flex-col">
+            {/* Mobile Warning */}
+            {!isMobileWarningDismissed && (
+                <div className="lg:hidden bg-yellow-50 dark:bg-yellow-900/20 border-b border-yellow-200 dark:border-yellow-800 px-4 py-3">
+                    <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1">
+                            <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+                                Limited Mobile Support
+                            </p>
+                            <p className="text-xs text-yellow-700 dark:text-yellow-300 mt-1">
+                                The course builder is optimized for tablet and desktop. Some features may be limited on smaller screens.
+                            </p>
+                        </div>
+                        <button
+                            onClick={() => setIsMobileWarningDismissed(true)}
+                            className="text-yellow-600 dark:text-yellow-400 hover:text-yellow-800 dark:hover:text-yellow-200"
+                            aria-label="Dismiss warning"
+                        >
+                            <X className="h-4 w-4" />
+                        </button>
+                    </div>
+                </div>
+            )}
+
             {/* Header */}
-            <div className="border-b bg-background px-6 py-4 flex items-center justify-between">
-                <div className="flex items-center gap-4">
+            <div className="border-b bg-background px-4 md:px-6 py-3 md:py-4 flex items-center justify-between">
+                <div className="flex items-center gap-2 md:gap-4">
+                    {/* Mobile menu buttons */}
+                    <div className="flex items-center gap-1 lg:hidden">
+                        <button
+                            onClick={() => setIsStructureOpen(!isStructureOpen)}
+                            className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-md"
+                            aria-label="Toggle course structure"
+                        >
+                            <FileText className="h-5 w-5" />
+                        </button>
+                        <button
+                            onClick={() => setIsLibraryOpen(!isLibraryOpen)}
+                            className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-md"
+                            aria-label="Toggle block library"
+                        >
+                            <Library className="h-5 w-5" />
+                        </button>
+                    </div>
+
                     <button
                         onClick={handleBackClick}
-                        className="text-muted-foreground hover:text-foreground"
+                        className="text-muted-foreground hover:text-foreground text-sm md:text-base"
                     >
                         ← Back
                     </button>
-                    <div>
-                        <h1 className="text-xl font-semibold">{course.title}</h1>
-                        <p className="text-sm text-muted-foreground">Course Builder</p>
+                    <div className="hidden sm:block">
+                        <h1 className="text-lg md:text-xl font-semibold truncate max-w-[200px] md:max-w-none">
+                            {course.title}
+                        </h1>
+                        <p className="text-xs md:text-sm text-muted-foreground">Course Builder</p>
                     </div>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 md:gap-3">
                     {isSaving && (
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
-                            <span>Saving...</span>
+                        <div className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground">
+                            <div className="animate-spin rounded-full h-3 w-3 md:h-4 md:w-4 border-b-2 border-primary"></div>
+                            <span className="hidden sm:inline">Saving...</span>
                         </div>
                     )}
                     {!isSaving && !hasUnsavedChanges && (
-                        <div className="flex items-center gap-2 text-sm text-green-600">
+                        <div className="flex items-center gap-2 text-xs md:text-sm text-green-600">
                             <svg
-                                className="h-4 w-4"
+                                className="h-3 w-3 md:h-4 md:w-4"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -474,7 +520,7 @@ export default function CourseBuilderPage() {
                                     d="M5 13l4 4L19 7"
                                 />
                             </svg>
-                            <span>All changes saved</span>
+                            <span className="hidden sm:inline">Saved</span>
                         </div>
                     )}
                     {currentLessonId && (
@@ -482,27 +528,65 @@ export default function CourseBuilderPage() {
                             onClick={handlePreviewToggle}
                             variant="outline"
                             size="sm"
-                            className="gap-2"
+                            className="gap-1 md:gap-2 text-xs md:text-sm"
                         >
-                            <Eye className="h-4 w-4" />
-                            Preview Lesson
+                            <Eye className="h-3 w-3 md:h-4 md:w-4" />
+                            <span className="hidden sm:inline">Preview</span>
                         </Button>
                     )}
                 </div>
             </div>
 
             {/* Three-panel layout */}
-            <div className="flex-1 flex overflow-hidden">
+            <div className="flex-1 flex overflow-hidden relative">
                 {/* Left Panel - Course Structure */}
-                <div className="w-64 border-r bg-muted/30 overflow-y-auto">
+                <div
+                    className={`
+                        ${isStructureOpen ? 'translate-x-0' : '-translate-x-full'}
+                        lg:translate-x-0
+                        fixed lg:static
+                        inset-y-0 left-0
+                        w-64 md:w-72 lg:w-64
+                        border-r bg-background lg:bg-muted/30
+                        overflow-y-auto
+                        z-30
+                        transition-transform duration-300 ease-in-out
+                        top-[57px] md:top-[65px]
+                    `}
+                >
+                    <div className="lg:hidden flex items-center justify-between p-4 border-b">
+                        <h2 className="font-semibold">Course Structure</h2>
+                        <button
+                            onClick={() => setIsStructureOpen(false)}
+                            className="p-1 hover:bg-muted rounded"
+                            aria-label="Close course structure"
+                        >
+                            <X className="h-5 w-5" />
+                        </button>
+                    </div>
                     <CourseStructure
                         course={course}
                         currentModuleId={currentModuleId}
                         currentLessonId={currentLessonId}
-                        onLessonSelect={handleLessonSelect}
+                        onLessonSelect={(moduleId, lessonId) => {
+                            handleLessonSelect(moduleId, lessonId);
+                            setIsStructureOpen(false);
+                        }}
                         onAddModule={handleAddModule}
                     />
                 </div>
+
+                {/* Overlay for mobile sidebars */}
+                {(isStructureOpen || isLibraryOpen) && (
+                    <div
+                        className="fixed inset-0 bg-black/50 z-20 lg:hidden"
+                        onClick={() => {
+                            setIsStructureOpen(false);
+                            setIsLibraryOpen(false);
+                        }}
+                        aria-hidden="true"
+                    />
+                )}
 
                 {/* Center Panel - Canvas */}
                 <div className="flex-1 overflow-y-auto bg-background">
@@ -517,19 +601,53 @@ export default function CourseBuilderPage() {
                             isLoading={isLoading}
                         />
                     ) : (
-                        <div className="flex items-center justify-center h-full">
+                        <div className="flex items-center justify-center h-full p-4">
                             <div className="text-center">
-                                <p className="text-muted-foreground">
+                                <p className="text-muted-foreground text-sm md:text-base">
                                     Select a lesson to start editing
                                 </p>
+                                <button
+                                    onClick={() => setIsStructureOpen(true)}
+                                    className="mt-4 lg:hidden text-primary hover:underline text-sm"
+                                >
+                                    Open Course Structure
+                                </button>
                             </div>
                         </div>
                     )}
                 </div>
 
                 {/* Right Panel - Block Library */}
-                <div className="w-80 border-l bg-muted/30 overflow-y-auto">
-                    <BlockLibrary onBlockAdd={handleBlockAdd} />
+                <div
+                    className={`
+                        ${isLibraryOpen ? 'translate-x-0' : 'translate-x-full'}
+                        lg:translate-x-0
+                        fixed lg:static
+                        inset-y-0 right-0
+                        w-80 md:w-96 lg:w-80
+                        border-l bg-background lg:bg-muted/30
+                        overflow-y-auto
+                        z-30
+                        transition-transform duration-300 ease-in-out
+                        top-[57px] md:top-[65px]
+                    `}
+                >
+                    <div className="lg:hidden flex items-center justify-between p-4 border-b">
+                        <h2 className="font-semibold">Block Library</h2>
+                        <button
+                            onClick={() => setIsLibraryOpen(false)}
+                            className="p-1 hover:bg-muted rounded"
+                            aria-label="Close block library"
+                        >
+                            <X className="h-5 w-5" />
+                        </button>
+                    </div>
+                    <BlockLibrary
+                        onBlockAdd={(blockType) => {
+                            handleBlockAdd(blockType);
+                            setIsLibraryOpen(false);
+                        }}
+                    />
                 </div>
             </div>
 

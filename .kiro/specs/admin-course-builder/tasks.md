@@ -298,7 +298,7 @@
   - Handle upload cancellation
   - _Requirements: 9.4_
 
-- [ ] 17. Add responsive design
+- [x] 17. Add responsive design
   - Make three-panel layout responsive for tablet and desktop
   - Collapse sidebars on smaller screens
   - Add mobile warning message
