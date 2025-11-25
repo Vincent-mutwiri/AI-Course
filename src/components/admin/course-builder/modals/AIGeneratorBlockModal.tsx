@@ -29,10 +29,56 @@ interface AIGeneratorBlockModalProps {
 }
 
 const GENERATOR_TYPES = [
-    { value: 'gameMaster', label: 'Game Master Generator' },
-    { value: 'narrative', label: 'Narrative Generator' },
-    { value: 'pitchAnalysis', label: 'Pitch Analysis Generator' },
-    { value: 'general', label: 'General AI Generator' },
+    {
+        value: 'studyBuddy',
+        label: 'Study Buddy',
+        description: 'Text summarization and concept explanation'
+    },
+    {
+        value: 'writingPartner',
+        label: 'Writing Partner',
+        description: 'Writing feedback and improvement suggestions'
+    },
+    {
+        value: 'codeDebugger',
+        label: 'Code Debugger',
+        description: 'Code analysis and debugging assistance'
+    },
+    {
+        value: 'lessonPlanner',
+        label: 'Lesson Planner',
+        description: 'Lesson plan generation for educators'
+    },
+    {
+        value: 'rubricBuilder',
+        label: 'Rubric Builder',
+        description: 'Assessment rubric creation'
+    },
+    {
+        value: 'policyDrafter',
+        label: 'Policy Drafter',
+        description: 'AI usage policy drafting'
+    },
+    {
+        value: 'buildABot',
+        label: 'Build-A-Bot',
+        description: 'Custom AI personality builder'
+    },
+    {
+        value: 'activityBuilder',
+        label: 'Activity Builder',
+        description: 'Active learning activity generator'
+    },
+    {
+        value: 'quizGenerator',
+        label: 'Quiz Generator',
+        description: 'Quiz and assessment question generator'
+    },
+    {
+        value: 'general',
+        label: 'General AI Assistant',
+        description: 'General-purpose AI assistance'
+    },
 ];
 
 export function AIGeneratorBlockModal({ open, onClose, onSave, initialData }: AIGeneratorBlockModalProps) {
@@ -47,7 +93,7 @@ export function AIGeneratorBlockModal({ open, onClose, onSave, initialData }: AI
         defaultValues: {
             type: 'aiGenerator',
             content: {
-                generatorType: initialData?.content?.generatorType || 'general',
+                generatorType: initialData?.content?.generatorType || '',
                 title: initialData?.content?.title || '',
                 description: initialData?.content?.description || '',
                 prompt: initialData?.content?.prompt || '',
@@ -84,10 +130,13 @@ export function AIGeneratorBlockModal({ open, onClose, onSave, initialData }: AI
                             <SelectTrigger>
                                 <SelectValue placeholder="Select generator type" />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="max-h-[300px]">
                                 {GENERATOR_TYPES.map((type) => (
                                     <SelectItem key={type.value} value={type.value}>
-                                        {type.label}
+                                        <div className="flex flex-col">
+                                            <span className="font-medium">{type.label}</span>
+                                            <span className="text-xs text-muted-foreground">{type.description}</span>
+                                        </div>
                                     </SelectItem>
                                 ))}
                             </SelectContent>
@@ -98,16 +147,16 @@ export function AIGeneratorBlockModal({ open, onClose, onSave, initialData }: AI
                             </p>
                         )}
                         <p className="text-xs text-muted-foreground">
-                            The type of AI generator to use
+                            Choose the type of AI assistance this generator will provide
                         </p>
                     </div>
 
                     {/* Title */}
                     <div className="space-y-2">
-                        <Label htmlFor="title">Title *</Label>
+                        <Label htmlFor="title">Display Title *</Label>
                         <Input
                             id="title"
-                            placeholder="AI Generator title"
+                            placeholder="e.g., AI Study Buddy, Writing Assistant, Code Helper"
                             {...register('content.title')}
                         />
                         {errors.content?.title && (
@@ -116,16 +165,16 @@ export function AIGeneratorBlockModal({ open, onClose, onSave, initialData }: AI
                             </p>
                         )}
                         <p className="text-xs text-muted-foreground">
-                            The title displayed to students (max 200 characters)
+                            The heading students will see for this AI tool (max 200 characters)
                         </p>
                     </div>
 
                     {/* Description */}
                     <div className="space-y-2">
-                        <Label htmlFor="description">Description (Optional)</Label>
+                        <Label htmlFor="description">Instructions for Students (Optional)</Label>
                         <Textarea
                             id="description"
-                            placeholder="Describe what this AI generator does..."
+                            placeholder="e.g., Paste your text here to get an AI-powered summary, or ask questions about concepts you want to understand better."
                             rows={3}
                             {...register('content.description')}
                         />
@@ -135,16 +184,16 @@ export function AIGeneratorBlockModal({ open, onClose, onSave, initialData }: AI
                             </p>
                         )}
                         <p className="text-xs text-muted-foreground">
-                            Instructions or context for students (max 1000 characters)
+                            Help text explaining how students should use this tool (max 1000 characters)
                         </p>
                     </div>
 
                     {/* Prompt */}
                     <div className="space-y-2">
-                        <Label htmlFor="prompt">System Prompt (Optional)</Label>
+                        <Label htmlFor="prompt">Custom System Prompt (Advanced, Optional)</Label>
                         <Textarea
                             id="prompt"
-                            placeholder="Enter the system prompt for the AI..."
+                            placeholder="Leave blank to use the default prompt for the selected generator type. Only customize if you need specific AI behavior."
                             rows={4}
                             {...register('content.prompt')}
                         />
@@ -154,16 +203,16 @@ export function AIGeneratorBlockModal({ open, onClose, onSave, initialData }: AI
                             </p>
                         )}
                         <p className="text-xs text-muted-foreground">
-                            The system prompt that guides the AI's behavior (max 2000 characters)
+                            Override the default AI system prompt. Each generator type has a pre-configured prompt that works well for most cases. (max 2000 characters)
                         </p>
                     </div>
 
                     {/* Placeholder */}
                     <div className="space-y-2">
-                        <Label htmlFor="placeholder">Input Placeholder (Optional)</Label>
+                        <Label htmlFor="placeholder">Input Field Placeholder (Optional)</Label>
                         <Input
                             id="placeholder"
-                            placeholder="Enter your input..."
+                            placeholder="e.g., Paste your text here, Enter your code, Describe your lesson topic..."
                             {...register('content.placeholder')}
                         />
                         {errors.content?.placeholder && (
@@ -172,7 +221,7 @@ export function AIGeneratorBlockModal({ open, onClose, onSave, initialData }: AI
                             </p>
                         )}
                         <p className="text-xs text-muted-foreground">
-                            Placeholder text for the student input field
+                            Placeholder text shown in the student's input field before they type
                         </p>
                     </div>
 

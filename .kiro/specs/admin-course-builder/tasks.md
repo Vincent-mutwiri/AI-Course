@@ -414,7 +414,7 @@
     - Test save and display functionality
     - _Requirements: 3.1, 3.2, 3.3, 3.4_
 
-  - [ ] 24.5 Refine AI Generator component
+  - [x] 24.5 Refine AI Generator component
     - Remove any prefilled test data
     - Ensure clean initial state
     - Improve generator type selection
