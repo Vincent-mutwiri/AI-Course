@@ -256,8 +256,13 @@ function renderBlockContent(block: Block): React.ReactNode {
                     {content.title && (
                         <p className="text-sm font-medium line-clamp-1">{content.title}</p>
                     )}
-                    <p className="text-sm line-clamp-2">
-                        {content.prompt || "No prompt provided"}
+                    {content.description && (
+                        <p className="text-xs text-muted-foreground line-clamp-2">
+                            {content.description}
+                        </p>
+                    )}
+                    <p className="text-xs text-muted-foreground">
+                        {content.words?.length || 0} words configured
                     </p>
                 </div>
             );

@@ -4,28 +4,60 @@ import { Lightbulb, Sparkles } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
+interface WordData {
+  text: string;
+  value: number;
+}
+
+interface WordCloudData {
+  words: WordData[];
+  mappings: Record<string, string>;
+}
+
 interface WordCloudProps {
   title?: string;
   dataKey?: keyof typeof simData;
   description?: string;
+  // New configurable props
+  words?: WordData[];
+  mappings?: Record<string, string>;
+  instructionText?: string;
+  summaryText?: string;
 }
 
-export const WordCloudComponent: React.FC<WordCloudProps> = ({ 
-  title = "Community Insights", 
+export const WordCloudComponent: React.FC<WordCloudProps> = ({
+  title = "Community Insights",
   dataKey,
-  description = "Click on a word to see which motivation principle it connects to!"
+  description = "Click on a word to see which motivation principle it connects to!",
+  words,
+  mappings,
+  instructionText,
+  summaryText
 }) => {
   const [selectedWord, setSelectedWord] = useState<string | null>(null);
   const [mapping, setMapping] = useState<string | null>(null);
 
-  // Default to lesson2_2_Cloud if no dataKey provided
-  const data = dataKey ? simData[dataKey] : simData.lesson2_2_Cloud;
-  
-  if (!data) {
+  // Determine data source: custom props > dataKey > default
+  let data: WordCloudData | null = null;
+
+  if (words && mappings) {
+    // Use custom configurable data
+    data = { words, mappings };
+  } else if (dataKey) {
+    // Use hardcoded simulation data by key
+    data = simData[dataKey];
+  } else {
+    // Fallback to default (for backward compatibility)
+    data = simData.lesson2_2_Cloud;
+  }
+
+  if (!data || !data.words || data.words.length === 0) {
     return (
       <Card className="w-full">
         <CardContent className="p-6">
-          <p className="text-destructive">Error: Could not load simulation data{dataKey ? ` for "${dataKey}"` : ''}</p>
+          <p className="text-destructive">
+            Error: No word cloud data configured. Please add words and mappings in the configuration.
+          </p>
         </CardContent>
       </Card>
     );
@@ -59,7 +91,7 @@ export const WordCloudComponent: React.FC<WordCloudProps> = ({
               const isSelected = selectedWord === word.text;
               // Calculate font size based on value (20-60px range)
               const fontSize = Math.floor(20 + (word.value / 100) * 40);
-              
+
               return (
                 <Button
                   key={word.text}
@@ -85,7 +117,7 @@ export const WordCloudComponent: React.FC<WordCloudProps> = ({
         {!selectedWord && (
           <div className="text-center p-4 bg-muted/50 rounded-lg">
             <p className="text-sm text-muted-foreground">
-              👆 Click on any word above to discover its connection to learner motivation
+              {instructionText || "👆 Click on any word above to discover its connection"}
             </p>
           </div>
         )}
@@ -100,11 +132,7 @@ export const WordCloudComponent: React.FC<WordCloudProps> = ({
                   You clicked <span className="text-primary font-bold">"{selectedWord}"</span>!
                 </p>
                 <p className="text-lg">
-                  This is a fantastic example of <span className="font-bold text-purple-600 dark:text-purple-400">{mapping}</span>.
-                </p>
-                <p className="text-sm text-muted-foreground mt-2">
-                  When educators mention "{selectedWord}" as their secret ingredient, they're tapping into 
-                  the power of {mapping} to fuel intrinsic motivation.
+                  This connects to: <span className="font-bold text-purple-600 dark:text-purple-400">{mapping}</span>
                 </p>
               </div>
             </div>
@@ -112,13 +140,13 @@ export const WordCloudComponent: React.FC<WordCloudProps> = ({
         )}
 
         {/* Summary */}
-        <div className="mt-6 p-4 bg-muted rounded-lg">
-          <p className="text-sm text-muted-foreground">
-            <strong>What you're seeing:</strong> These are the most common "secret ingredients" 
-            mentioned by {data.words.length * 100}+ educators. Notice how they all connect back to 
-            Autonomy, Mastery, or Purpose—the three pillars of intrinsic motivation.
-          </p>
-        </div>
+        {summaryText && (
+          <div className="mt-6 p-4 bg-muted rounded-lg">
+            <p className="text-sm text-muted-foreground">
+              <strong>What you're seeing:</strong> {summaryText}
+            </p>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

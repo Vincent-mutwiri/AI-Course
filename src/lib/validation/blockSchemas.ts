@@ -208,25 +208,36 @@ export const pollBlockSchema = z.object({
 
 /**
  * Word Cloud Block Schema
- * Validates word cloud prompt and configuration
+ * Validates word cloud with configurable words and mappings
  */
 export const wordCloudBlockSchema = z.object({
     type: z.literal('wordCloud'),
     content: z.object({
-        prompt: z.string()
-            .min(5, 'Prompt must be at least 5 characters')
-            .max(500, 'Prompt must not exceed 500 characters'),
         title: z.string()
             .max(200, 'Title must not exceed 200 characters')
             .optional(),
-        maxWords: z.number()
-            .int('Maximum words must be a whole number')
-            .min(1, 'Maximum words must be at least 1')
-            .max(10, 'Maximum words cannot exceed 10')
-            .default(3)
+        description: z.string()
+            .max(500, 'Description must not exceed 500 characters')
             .optional(),
-        placeholder: z.string()
-            .max(200, 'Placeholder must not exceed 200 characters')
+        words: z.array(
+            z.object({
+                text: z.string()
+                    .min(1, 'Word text is required')
+                    .max(100, 'Word text must not exceed 100 characters'),
+                value: z.number()
+                    .int('Value must be a whole number')
+                    .min(1, 'Value must be at least 1')
+                    .max(100, 'Value cannot exceed 100'),
+            })
+        ).min(1, 'At least one word is required')
+            .max(50, 'Cannot have more than 50 words')
+            .optional(),
+        mappings: z.record(z.string(), z.string()).optional(),
+        instructionText: z.string()
+            .max(500, 'Instruction text must not exceed 500 characters')
+            .optional(),
+        summaryText: z.string()
+            .max(1000, 'Summary text must not exceed 1,000 characters')
             .optional(),
     }),
 });

@@ -1,5 +1,5 @@
-import React from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useState } from 'react';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
     Dialog,
@@ -12,6 +12,8 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Plus, Trash2, HelpCircle } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { wordCloudBlockSchema, type WordCloudBlock } from '@/lib/validation/blockSchemas';
 
 interface WordCloudBlockModalProps {
@@ -21,7 +23,22 @@ interface WordCloudBlockModalProps {
     initialData?: Partial<WordCloudBlock>;
 }
 
+interface WordEntry {
+    text: string;
+    value: number;
+    mapping: string;
+}
+
 export function WordCloudBlockModal({ open, onClose, onSave, initialData }: WordCloudBlockModalProps) {
+    // Initialize words from initialData
+    const initialWords: WordEntry[] = initialData?.content?.words?.map((w: any, idx: number) => ({
+        text: w.text || '',
+        value: w.value || 50,
+        mapping: initialData?.content?.mappings?.[w.text] || ''
+    })) || [{ text: '', value: 50, mapping: '' }];
+
+    const [words, setWords] = useState<WordEntry[]>(initialWords);
+
     const {
         register,
         handleSubmit,
@@ -31,35 +48,73 @@ export function WordCloudBlockModal({ open, onClose, onSave, initialData }: Word
         defaultValues: {
             type: 'wordCloud',
             content: {
-                prompt: initialData?.content?.prompt || '',
                 title: initialData?.content?.title || '',
-                maxWords: initialData?.content?.maxWords || 3,
-                placeholder: initialData?.content?.placeholder || '',
+                description: initialData?.content?.description || '',
+                instructionText: initialData?.content?.instructionText || '',
+                summaryText: initialData?.content?.summaryText || '',
             },
         },
     });
 
+    const addWord = () => {
+        setWords([...words, { text: '', value: 50, mapping: '' }]);
+    };
+
+    const removeWord = (index: number) => {
+        setWords(words.filter((_, i) => i !== index));
+    };
+
+    const updateWord = (index: number, field: keyof WordEntry, value: string | number) => {
+        const newWords = [...words];
+        newWords[index] = { ...newWords[index], [field]: value };
+        setWords(newWords);
+    };
+
     const onSubmit = (data: WordCloudBlock) => {
-        onSave(data);
+        // Build words array and mappings object
+        const wordsArray = words
+            .filter(w => w.text.trim())
+            .map(w => ({ text: w.text.trim(), value: w.value }));
+
+        const mappingsObject = words
+            .filter(w => w.text.trim() && w.mapping.trim())
+            .reduce((acc, w) => {
+                acc[w.text.trim()] = w.mapping.trim();
+                return acc;
+            }, {} as Record<string, string>);
+
+        const finalData = {
+            ...data,
+            content: {
+                ...data.content,
+                words: wordsArray,
+                mappings: mappingsObject,
+            },
+        };
+
+        onSave(finalData);
         onClose();
     };
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>
                         {initialData ? 'Edit Word Cloud Block' : 'Add Word Cloud Block'}
                     </DialogTitle>
+                    <p className="text-sm text-muted-foreground">
+                        Create an interactive word cloud where students can click words to see their connections
+                    </p>
                 </DialogHeader>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                     {/* Title */}
                     <div className="space-y-2">
-                        <Label htmlFor="title">Title (Optional)</Label>
+                        <Label htmlFor="title">Title</Label>
                         <Input
                             id="title"
-                            placeholder="Word cloud title"
+                            placeholder="e.g., Community Insights"
                             {...register('content.title')}
                         />
                         {errors.content?.title && (
@@ -69,61 +124,108 @@ export function WordCloudBlockModal({ open, onClose, onSave, initialData }: Word
                         )}
                     </div>
 
-                    {/* Prompt */}
+                    {/* Description */}
                     <div className="space-y-2">
-                        <Label htmlFor="prompt">Prompt *</Label>
+                        <Label htmlFor="description">Description</Label>
                         <Textarea
-                            id="prompt"
-                            placeholder="What words or phrases should students contribute?"
-                            rows={3}
-                            {...register('content.prompt')}
+                            id="description"
+                            placeholder="e.g., Click on a word to see which motivation principle it connects to!"
+                            rows={2}
+                            {...register('content.description')}
                         />
-                        {errors.content?.prompt && (
+                        {errors.content?.description && (
                             <p className="text-sm text-destructive">
-                                {errors.content.prompt.message}
+                                {errors.content.description.message}
                             </p>
                         )}
+                    </div>
+
+                    {/* Words Configuration */}
+                    <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <Label>Words & Mappings *</Label>
+                                <TooltipProvider>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                                        </TooltipTrigger>
+                                        <TooltipContent className="max-w-xs">
+                                            <p>Add words with their importance values (1-100) and what concept they map to. Higher values = larger text.</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
+                            </div>
+                            <Button type="button" variant="outline" size="sm" onClick={addWord}>
+                                <Plus className="h-4 w-4 mr-1" />
+                                Add Word
+                            </Button>
+                        </div>
+
+                        <div className="space-y-2 max-h-64 overflow-y-auto border rounded-lg p-3">
+                            {words.map((word, index) => (
+                                <div key={index} className="flex gap-2 items-start p-2 bg-muted/50 rounded">
+                                    <div className="flex-1 grid grid-cols-3 gap-2">
+                                        <Input
+                                            placeholder="Word"
+                                            value={word.text}
+                                            onChange={(e) => updateWord(index, 'text', e.target.value)}
+                                        />
+                                        <Input
+                                            type="number"
+                                            placeholder="Value (1-100)"
+                                            min="1"
+                                            max="100"
+                                            value={word.value}
+                                            onChange={(e) => updateWord(index, 'value', parseInt(e.target.value) || 50)}
+                                        />
+                                        <Input
+                                            placeholder="Maps to..."
+                                            value={word.mapping}
+                                            onChange={(e) => updateWord(index, 'mapping', e.target.value)}
+                                        />
+                                    </div>
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={() => removeWord(index)}
+                                        disabled={words.length === 1}
+                                    >
+                                        <Trash2 className="h-4 w-4 text-destructive" />
+                                    </Button>
+                                </div>
+                            ))}
+                        </div>
                         <p className="text-xs text-muted-foreground">
-                            The prompt asking students to contribute words (5-500 characters)
+                            Add at least one word. Each word needs a text, value (size), and what it maps to.
                         </p>
                     </div>
 
-                    {/* Max Words */}
+                    {/* Instruction Text */}
                     <div className="space-y-2">
-                        <Label htmlFor="maxWords">Maximum Words Per Student</Label>
+                        <Label htmlFor="instructionText">Instruction Text (Optional)</Label>
                         <Input
-                            id="maxWords"
-                            type="number"
-                            min="1"
-                            max="10"
-                            placeholder="3"
-                            {...register('content.maxWords', { valueAsNumber: true })}
+                            id="instructionText"
+                            placeholder="e.g., 👆 Click on any word above to discover its connection"
+                            {...register('content.instructionText')}
                         />
-                        {errors.content?.maxWords && (
-                            <p className="text-sm text-destructive">
-                                {errors.content.maxWords.message}
-                            </p>
-                        )}
                         <p className="text-xs text-muted-foreground">
-                            How many words each student can contribute (1-10)
+                            Text shown before a word is clicked
                         </p>
                     </div>
 
-                    {/* Placeholder */}
+                    {/* Summary Text */}
                     <div className="space-y-2">
-                        <Label htmlFor="placeholder">Placeholder Text (Optional)</Label>
-                        <Input
-                            id="placeholder"
-                            placeholder="Enter a word or phrase..."
-                            {...register('content.placeholder')}
+                        <Label htmlFor="summaryText">Summary Text (Optional)</Label>
+                        <Textarea
+                            id="summaryText"
+                            placeholder="e.g., These are the most common responses from educators..."
+                            rows={2}
+                            {...register('content.summaryText')}
                         />
-                        {errors.content?.placeholder && (
-                            <p className="text-sm text-destructive">
-                                {errors.content.placeholder.message}
-                            </p>
-                        )}
                         <p className="text-xs text-muted-foreground">
-                            Placeholder text shown in the input field
+                            Summary text shown at the bottom of the word cloud
                         </p>
                     </div>
 
@@ -131,7 +233,7 @@ export function WordCloudBlockModal({ open, onClose, onSave, initialData }: Word
                         <Button type="button" variant="outline" onClick={onClose}>
                             Cancel
                         </Button>
-                        <Button type="submit" disabled={isSubmitting}>
+                        <Button type="submit" disabled={isSubmitting || words.filter(w => w.text.trim()).length === 0}>
                             {isSubmitting ? 'Saving...' : 'Save'}
                         </Button>
                     </DialogFooter>
