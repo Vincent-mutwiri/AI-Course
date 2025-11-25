@@ -12,6 +12,7 @@ import PreviewModal from "@/components/admin/course-builder/PreviewModal";
 import { BlockModalRouter } from "@/components/admin/course-builder/BlockModalRouter";
 import { AddModuleModal } from "@/components/admin/course-builder/AddModuleModal";
 import { AddLessonModal } from "@/components/admin/course-builder/AddLessonModal";
+import { DeleteConfirmationDialog } from "@/components/admin/course-builder/DeleteConfirmationDialog";
 import { Button } from "@/components/ui/button";
 import type { BlockType } from "@/hooks/useBlockModal";
 
@@ -67,6 +68,10 @@ export default function CourseBuilderPage() {
     const [isAddModuleModalOpen, setIsAddModuleModalOpen] = useState(false);
     const [isAddLessonModalOpen, setIsAddLessonModalOpen] = useState(false);
     const [selectedModuleForLesson, setSelectedModuleForLesson] = useState<string | null>(null);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [blockToDelete, setBlockToDelete] = useState<Block | null>(null);
+    const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
+    const [selectedBlockIds, setSelectedBlockIds] = useState<Set<string>>(new Set());
 
     // Initialize block modal management
     const { modalState, openModal, closeModal, handleSave } = useBlockModal({
@@ -173,22 +178,34 @@ export default function CourseBuilderPage() {
     // Handle keyboard shortcuts
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
+            // Ignore keyboard shortcuts when typing in input fields
+            const target = e.target as HTMLElement;
+            const isInputField = target.tagName === "INPUT" ||
+                target.tagName === "TEXTAREA" ||
+                target.isContentEditable;
+
             // Cmd/Ctrl+Z for undo
-            if ((e.metaKey || e.ctrlKey) && e.key === "z" && !e.shiftKey) {
+            if ((e.metaKey || e.ctrlKey) && e.key === "z" && !e.shiftKey && !isInputField) {
                 e.preventDefault();
                 handleUndo();
             }
 
             // Cmd/Ctrl+D for duplicate
-            if ((e.metaKey || e.ctrlKey) && e.key === "d") {
+            if ((e.metaKey || e.ctrlKey) && e.key === "d" && !isInputField) {
                 e.preventDefault();
                 handleDuplicate();
+            }
+
+            // Delete/Backspace for deletion
+            if ((e.key === "Delete" || e.key === "Backspace") && !isInputField && selectedBlockId) {
+                e.preventDefault();
+                handleBlockDelete(selectedBlockId);
             }
         };
 
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [blocks]);
+    }, [blocks, selectedBlockId]);
 
     // Undo handler - to be connected with block operations
     const handleUndo = () => {
@@ -254,6 +271,8 @@ export default function CourseBuilderPage() {
             setCurrentLessonId(lessonId);
             setBlocks(lesson.blocks || []);
             setHasUnsavedChanges(false);
+            setSelectedBlockId(null); // Clear selection when switching lessons
+            setSelectedBlockIds(new Set()); // Clear multi-selection when switching lessons
 
             // Calculate lesson index for preview
             const lessonIndex = module?.lessons.findIndex((l) => l._id === lessonId) ?? 0;
@@ -407,24 +426,48 @@ export default function CourseBuilderPage() {
 
     // Handle block delete - memoized for performance
     const handleBlockDelete = useCallback((blockId: string) => {
-        const confirmed = window.confirm(
-            "Are you sure you want to delete this block? This action cannot be undone."
-        );
-
-        if (!confirmed) return;
-
-        // Remove block from local state
-        const updatedBlocks = blocks
-            .filter((block) => block.id !== blockId)
-            .map((block, index) => ({
-                ...block,
-                order: index,
-            }));
-
-        setBlocks(updatedBlocks);
-        setHasUnsavedChanges(true);
-        toast.success("Block deleted");
+        const block = blocks.find((b) => b.id === blockId);
+        if (block) {
+            setBlockToDelete(block);
+            setIsDeleteDialogOpen(true);
+        }
     }, [blocks]);
+
+    // Confirm block deletion
+    const handleConfirmDelete = useCallback(() => {
+        if (!blockToDelete && selectedBlockIds.size === 0) return;
+
+        if (selectedBlockIds.size > 0) {
+            // Bulk delete
+            const updatedBlocks = blocks
+                .filter((block) => !selectedBlockIds.has(block.id))
+                .map((block, index) => ({
+                    ...block,
+                    order: index,
+                }));
+
+            setBlocks(updatedBlocks);
+            setHasUnsavedChanges(true);
+            toast.success(`${selectedBlockIds.size} block${selectedBlockIds.size !== 1 ? "s" : ""} deleted`);
+            setSelectedBlockIds(new Set());
+        } else if (blockToDelete) {
+            // Single delete
+            const updatedBlocks = blocks
+                .filter((block) => block.id !== blockToDelete.id)
+                .map((block, index) => ({
+                    ...block,
+                    order: index,
+                }));
+
+            setBlocks(updatedBlocks);
+            setHasUnsavedChanges(true);
+            toast.success("Block deleted");
+        }
+
+        // Reset delete state
+        setBlockToDelete(null);
+        setIsDeleteDialogOpen(false);
+    }, [blocks, blockToDelete, selectedBlockIds]);
 
     // Handle block preview - opens preview modal for entire lesson - memoized for performance
     const handleBlockPreview = useCallback((blockId: string) => {
@@ -436,6 +479,41 @@ export default function CourseBuilderPage() {
         // Open modal for the selected block type to configure it
         openModal(blockType as BlockType);
     }, [openModal]);
+
+    // Handle block selection - memoized for performance
+    const handleBlockSelect = useCallback((blockId: string | null, isMultiSelect: boolean = false) => {
+        if (!blockId) {
+            setSelectedBlockId(null);
+            setSelectedBlockIds(new Set());
+            return;
+        }
+
+        if (isMultiSelect) {
+            // Multi-select mode (Cmd/Ctrl+Click)
+            setSelectedBlockIds((prev) => {
+                const newSet = new Set(prev);
+                if (newSet.has(blockId)) {
+                    newSet.delete(blockId);
+                } else {
+                    newSet.add(blockId);
+                }
+                return newSet;
+            });
+            setSelectedBlockId(null); // Clear single selection in multi-select mode
+        } else {
+            // Single select mode
+            setSelectedBlockId(blockId);
+            setSelectedBlockIds(new Set()); // Clear multi-selection
+        }
+    }, []);
+
+    // Handle bulk delete - memoized for performance
+    const handleBulkDelete = useCallback(() => {
+        if (selectedBlockIds.size === 0) return;
+
+        // Set up for bulk deletion
+        setIsDeleteDialogOpen(true);
+    }, [selectedBlockIds]);
 
     // Handle preview toggle
     const handlePreviewToggle = () => {
@@ -694,6 +772,10 @@ export default function CourseBuilderPage() {
                             onBlockDuplicate={handleBlockDuplicate}
                             onBlockDelete={handleBlockDelete}
                             onBlockPreview={handleBlockPreview}
+                            selectedBlockId={selectedBlockId}
+                            selectedBlockIds={selectedBlockIds}
+                            onBlockSelect={handleBlockSelect}
+                            onBulkDelete={handleBulkDelete}
                             isLoading={isLoading}
                         />
                     ) : (
@@ -786,6 +868,18 @@ export default function CourseBuilderPage() {
                         ? course?.modules.find((m) => m._id === selectedModuleForLesson)?.title
                         : undefined
                 }
+            />
+
+            {/* Delete Confirmation Dialog */}
+            <DeleteConfirmationDialog
+                open={isDeleteDialogOpen}
+                onClose={() => {
+                    setIsDeleteDialogOpen(false);
+                    setBlockToDelete(null);
+                }}
+                onConfirm={handleConfirmDelete}
+                block={blockToDelete}
+                blockCount={selectedBlockIds.size > 0 ? selectedBlockIds.size : 1}
             />
         </div>
     );

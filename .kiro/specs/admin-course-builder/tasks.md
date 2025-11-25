@@ -360,3 +360,136 @@
   - Add inline help text and tooltips
   - Create video tutorial
   - _Requirements: User experience requirements_
+
+- [x] 23. Enhance block deletion functionality
+  - [x] 23.1 Improve delete confirmation dialog
+    - Update Canvas component to show clear confirmation dialog
+    - Add block type and content preview in confirmation
+    - Implement immediate canvas update on deletion
+    - Ensure auto-save triggers after deletion
+    - _Requirements: 6.2, 6.3, 6.4, 6.7_
+
+  - [x] 23.2 Add keyboard shortcut for deletion
+    - Implement Delete/Backspace key handler
+    - Track currently selected/focused block
+    - Show confirmation dialog on keyboard delete
+    - Add visual indicator for selected block
+    - _Requirements: 6.6_
+
+  - [x] 23.3 Add bulk delete capability
+    - Allow selection of multiple blocks (Cmd/Ctrl+Click)
+    - Add "Delete Selected" button when multiple blocks selected
+    - Confirm bulk deletion with count of blocks
+    - _Requirements: 6.7_
+
+- [ ] 24. Strengthen and refine existing interactive elements
+  - [ ] 24.1 Audit existing interactive components
+    - Review all supported interactive components for quality and functionality
+    - Identify components with prefilled test data or placeholder content
+    - Document issues with user experience, configuration, or rendering
+    - Create list of improvements needed for each component
+    - _Requirements: 3.1, 3.2, 3.4_
+
+  - [ ] 24.2 Refine Word Cloud component
+    - Remove any prefilled test data
+    - Ensure clean initial state with proper placeholder
+    - Improve configuration modal with clear field labels
+    - Add validation for required fields
+    - Test rendering in both canvas and student view
+    - _Requirements: 3.1, 3.2, 3.3, 3.4_
+
+  - [ ] 24.3 Refine Poll component
+    - Remove any prefilled test data
+    - Ensure clean initial state
+    - Improve option management in configuration modal
+    - Add proper validation for minimum options
+    - Test real-time voting functionality
+    - _Requirements: 3.1, 3.2, 3.3, 3.4_
+
+  - [ ] 24.4 Refine Reflection component
+    - Remove any prefilled test data
+    - Ensure clean initial state with proper placeholder
+    - Improve prompt configuration
+    - Add character count and validation
+    - Test save and display functionality
+    - _Requirements: 3.1, 3.2, 3.3, 3.4_
+
+  - [ ] 24.5 Refine AI Generator component
+    - Remove any prefilled test data
+    - Ensure clean initial state
+    - Improve generator type selection
+    - Add clear configuration options
+    - Test AI integration functionality
+    - _Requirements: 3.1, 3.2, 3.3, 3.4_
+
+  - [ ] 24.6 Refine remaining interactive components
+    - Apply same cleanup process to: Choice Comparison, Certificate Generator, Final Assessment, AI Journey, Build A Bot, Concept Map, Data Dashboard, Ethical Dilemma Solver, Gamification Concept Map, Identify Personalization, Player Type Analyzer, Presentation Coach, Sentence Builder, Visual Tokens
+    - Remove prefilled data from all components
+    - Ensure consistent configuration patterns
+    - Test each component thoroughly
+    - _Requirements: 3.1, 3.2, 3.3, 3.4_
+
+  - [ ] 24.7 Update configuration modals for refined components
+    - Ensure all modals have clear field labels and help text
+    - Add proper validation messages
+    - Implement consistent styling
+    - Add preview functionality where applicable
+    - _Requirements: 4.1, 4.2, 4.3, 4.7_
+
+  - [ ] 24.8 Document interactive element best practices
+    - Create guide for configuring each interactive type
+    - Add examples of effective use cases
+    - Document required vs optional fields
+    - Add troubleshooting section
+    - _Requirements: 3.2, 3.4_
+
+- [ ] 25. Remove deprecated interactive block types
+  - [ ] 25.1 Remove deprecated component files
+    - Delete src/components/interactive/DesignFixerComponent.tsx
+    - Delete src/components/interactive/PlayerTypeSimulator.tsx
+    - Delete src/components/interactive/RewardScheduleDesigner.tsx
+    - Delete src/components/interactive/FlowChannelEvaluator.tsx
+    - Delete src/components/interactive/ROEDashboard.tsx
+    - Delete any files for PitchAnalysisGenerator, NarrativeGenerator, DarkPatternRedesigner, JourneyTimeline if they exist
+    - _Requirements: 13.4_
+
+  - [ ] 25.2 Update type definitions
+    - Remove deprecated block types from BlockType enum in Course model
+    - Update BlockType in frontend types
+    - Remove deprecated types from validation schemas
+    - _Requirements: 13.2_
+
+  - [ ] 25.3 Update BlockLibrary component
+    - Remove deprecated block types from block metadata array
+    - Ensure only supported interactive types appear in library
+    - Update block count and categories
+    - _Requirements: 13.1_
+
+  - [ ] 25.4 Remove deprecated configuration modals
+    - Delete DesignFixerBlockModal.tsx if it exists
+    - Delete PlayerTypeSimulatorBlockModal.tsx if it exists
+    - Delete RewardScheduleDesignerBlockModal.tsx if it exists
+    - Delete FlowChannelEvaluatorBlockModal.tsx if it exists
+    - Delete ROEDashboardBlockModal.tsx if it exists
+    - Delete modals for other deprecated types
+    - _Requirements: 13.3_
+
+  - [ ] 25.5 Update InteractiveElementRouter
+    - Add deprecation handling for old block types
+    - Display warning message for deprecated blocks
+    - Provide "Delete this block" action for deprecated blocks
+    - Ensure router doesn't crash on deprecated types
+    - _Requirements: 13.5, 13.6_
+
+  - [ ] 25.6 Update modal management
+    - Remove deprecated block types from useBlockModal hook
+    - Update modal routing logic
+    - Ensure no references to deprecated modals
+    - _Requirements: 13.3_
+
+  - [ ] 25.7 Test backward compatibility
+    - Test courses with deprecated blocks display warnings
+    - Test deletion of deprecated blocks works correctly
+    - Verify no console errors for deprecated types
+    - Ensure new courses cannot add deprecated types
+    - _Requirements: 13.6, 13.7_

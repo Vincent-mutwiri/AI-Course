@@ -37,11 +37,10 @@ The system follows a client-server architecture with React frontend and Express 
 export type BlockType = 
   | 'text' | 'video' | 'image' | 'code' | 'list' | 'divider'
   | 'reflection' | 'poll' | 'wordCloud' | 'aiGenerator'
-  | 'choiceComparison' | 'designFixer' | 'playerTypeSimulator'
-  | 'rewardScheduleDesigner' | 'flowChannelEvaluator'
-  | 'pitchAnalysisGenerator' | 'narrativeGenerator'
-  | 'darkPatternRedesigner' | 'roeDashboard' | 'journeyTimeline'
-  | 'certificateGenerator' | 'finalAssessment';
+  | 'choiceComparison' | 'certificateGenerator' | 'finalAssessment'
+  | 'aiJourney' | 'buildABot' | 'conceptMap' | 'dataDashboard'
+  | 'ethicalDilemmaSolver' | 'gamificationConceptMap' | 'identifyPersonalization'
+  | 'playerTypeAnalyzer' | 'presentationCoach' | 'sentenceBuilder' | 'visualTokens';
 
 export interface IBlock {
   id: string;
@@ -88,7 +87,7 @@ Displays course modules and lessons in accordion format, highlights currently se
 
 ### 3. Canvas Component
 
-Renders blocks in order using @hello-pangea/dnd for drag-and-drop reordering. Provides block action buttons for edit, duplicate, delete, and preview operations.
+Renders blocks in order using @hello-pangea/dnd for drag-and-drop reordering. Provides block action buttons for edit, duplicate, delete, and preview operations. Implements delete confirmation dialog with immediate canvas update and auto-save persistence. Supports keyboard shortcuts including Delete/Backspace for removing selected blocks.
 
 ### 4. BlockLibrary Component
 
@@ -103,6 +102,7 @@ Renders block preview in canvas with action toolbar. Routes to appropriate block
 Each block type has its own component:
 - TextBlock, VideoBlock, ImageBlock, CodeBlock, ListBlock, DividerBlock
 - Interactive blocks reuse existing components from src/components/interactive/
+- Deprecated block types (Design Fixer, Player Type Simulator, Reward Schedule Designer, Flow Channel Evaluator, Pitch Analysis Generator, Narrative Generator, Dark Pattern Redesigner, ROE Dashboard, Journey Timeline) are excluded from the system
 
 ### 7. Configuration Modals
 
@@ -214,6 +214,17 @@ Support both old and new formats in ModuleContent.tsx. Render blocks array if pr
 ### Migration Script
 
 Create script to convert existing interactiveElements to blocks format, preserving all configuration and maintaining order.
+
+### Deprecated Block Cleanup
+
+Remove deprecated interactive block types from the system:
+1. Delete component files: DesignFixerComponent.tsx, PlayerTypeSimulator.tsx, RewardScheduleDesigner.tsx, FlowChannelEvaluator.tsx, ROEDashboard.tsx
+2. Remove from BlockType enum and type definitions
+3. Remove from BlockLibrary metadata
+4. Remove configuration modals
+5. Update InteractiveElementRouter to handle deprecated types gracefully
+6. Display warning for existing courses with deprecated blocks
+7. Allow deletion of deprecated blocks through standard delete operation
 
 ## Accessibility
 

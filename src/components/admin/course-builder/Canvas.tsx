@@ -21,6 +21,10 @@ interface CanvasProps {
     onBlockDuplicate: (blockId: string) => void;
     onBlockDelete: (blockId: string) => void;
     onBlockPreview: (blockId: string) => void;
+    selectedBlockId?: string | null;
+    selectedBlockIds?: Set<string>;
+    onBlockSelect?: (blockId: string | null, isMultiSelect?: boolean) => void;
+    onBulkDelete?: () => void;
     isLoading?: boolean;
 }
 
@@ -34,6 +38,10 @@ const Canvas = memo(function Canvas({
     onBlockDuplicate,
     onBlockDelete,
     onBlockPreview,
+    selectedBlockId,
+    selectedBlockIds = new Set(),
+    onBlockSelect,
+    onBulkDelete,
     isLoading = false,
 }: CanvasProps) {
     const handleDragEnd = useCallback((result: DropResult) => {
@@ -118,56 +126,98 @@ const Canvas = memo(function Canvas({
                                     </div>
                                 </div>
                             ) : (
-                                <div className="space-y-3" role="list" aria-label="Content blocks">
-                                    {blocks
-                                        .sort((a, b) => a.order - b.order)
-                                        .map((block, index) => (
-                                            <Draggable
-                                                key={block.id}
-                                                draggableId={block.id}
-                                                index={index}
-                                            >
-                                                {(provided, snapshot) => (
-                                                    <div
-                                                        ref={provided.innerRef}
-                                                        {...provided.draggableProps}
-                                                        className={cn(
-                                                            "group relative transition-all",
-                                                            snapshot.isDragging &&
-                                                            "shadow-lg ring-2 ring-primary/50 rotate-2"
-                                                        )}
-                                                        role="listitem"
-                                                    >
-                                                        {/* Drag Handle */}
+                                <>
+                                    {/* Bulk Delete Button */}
+                                    {selectedBlockIds.size > 0 && (
+                                        <div className="mb-4 flex items-center justify-between bg-primary/10 border border-primary/20 rounded-lg p-3">
+                                            <div className="flex items-center gap-2">
+                                                <AlertCircle className="h-4 w-4 text-primary" />
+                                                <span className="text-sm font-medium">
+                                                    {selectedBlockIds.size} block{selectedBlockIds.size !== 1 ? "s" : ""} selected
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <button
+                                                    onClick={() => onBlockSelect?.(null)}
+                                                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                                                >
+                                                    Clear Selection
+                                                </button>
+                                                <button
+                                                    onClick={onBulkDelete}
+                                                    className="px-3 py-1.5 bg-destructive text-destructive-foreground rounded-md text-sm font-medium hover:bg-destructive/90 transition-colors"
+                                                >
+                                                    Delete Selected
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                    <div className="space-y-3" role="list" aria-label="Content blocks">
+                                        {blocks
+                                            .sort((a, b) => a.order - b.order)
+                                            .map((block, index) => (
+                                                <Draggable
+                                                    key={block.id}
+                                                    draggableId={block.id}
+                                                    index={index}
+                                                >
+                                                    {(provided, snapshot) => (
                                                         <div
-                                                            {...provided.dragHandleProps}
-                                                            className="absolute left-2 top-1/2 -translate-y-1/2 z-10 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity cursor-grab active:cursor-grabbing focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
-                                                            role="button"
-                                                            aria-label={`Drag to reorder block ${index + 1}`}
+                                                            ref={provided.innerRef}
+                                                            {...provided.draggableProps}
+                                                            className={cn(
+                                                                "group relative transition-all",
+                                                                snapshot.isDragging &&
+                                                                "shadow-lg ring-2 ring-primary/50 rotate-2",
+                                                                (selectedBlockId === block.id || selectedBlockIds.has(block.id)) &&
+                                                                "ring-2 ring-primary shadow-md"
+                                                            )}
+                                                            role="listitem"
+                                                            onClick={(e) => {
+                                                                const isMultiSelect = e.metaKey || e.ctrlKey;
+                                                                onBlockSelect?.(block.id, isMultiSelect);
+                                                            }}
                                                             tabIndex={0}
+                                                            onKeyDown={(e) => {
+                                                                if (e.key === "Enter" || e.key === " ") {
+                                                                    e.preventDefault();
+                                                                    const isMultiSelect = e.metaKey || e.ctrlKey;
+                                                                    onBlockSelect?.(block.id, isMultiSelect);
+                                                                }
+                                                            }}
                                                         >
-                                                            <GripVertical className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
-                                                        </div>
+                                                            {/* Drag Handle */}
+                                                            <div
+                                                                {...provided.dragHandleProps}
+                                                                className="absolute left-2 top-1/2 -translate-y-1/2 z-10 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity cursor-grab active:cursor-grabbing focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
+                                                                role="button"
+                                                                aria-label={`Drag to reorder block ${index + 1}`}
+                                                                tabIndex={0}
+                                                            >
+                                                                <GripVertical className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
+                                                            </div>
 
-                                                        {/* Block Content using BlockRenderer */}
-                                                        <div className="pl-10">
-                                                            <ErrorBoundary>
-                                                                <BlockRenderer
-                                                                    block={block}
-                                                                    onEdit={() => onBlockEdit(block.id)}
-                                                                    onDuplicate={() => onBlockDuplicate(block.id)}
-                                                                    onPreview={() => onBlockPreview(block.id)}
-                                                                    onDelete={() => onBlockDelete(block.id)}
-                                                                    isDragging={snapshot.isDragging}
-                                                                />
-                                                            </ErrorBoundary>
+                                                            {/* Block Content using BlockRenderer */}
+                                                            <div className="pl-10">
+                                                                <ErrorBoundary>
+                                                                    <BlockRenderer
+                                                                        block={block}
+                                                                        onEdit={() => onBlockEdit(block.id)}
+                                                                        onDuplicate={() => onBlockDuplicate(block.id)}
+                                                                        onPreview={() => onBlockPreview(block.id)}
+                                                                        onDelete={() => onBlockDelete(block.id)}
+                                                                        isDragging={snapshot.isDragging}
+                                                                        isSelected={selectedBlockId === block.id || selectedBlockIds.has(block.id)}
+                                                                    />
+                                                                </ErrorBoundary>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                )}
-                                            </Draggable>
-                                        ))}
-                                    {provided.placeholder}
-                                </div>
+                                                    )}
+                                                </Draggable>
+                                            ))}
+                                        {provided.placeholder}
+                                    </div>
+                                </>
                             )}
                         </div>
                     )}

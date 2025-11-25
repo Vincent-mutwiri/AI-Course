@@ -46,6 +46,7 @@ interface BlockRendererProps {
     onPreview: () => void;
     onDelete: () => void;
     isDragging?: boolean;
+    isSelected?: boolean;
 }
 
 // Map block types to their icons
@@ -339,6 +340,7 @@ const BlockRenderer = memo(function BlockRenderer({
     onPreview,
     onDelete,
     isDragging = false,
+    isSelected = false,
 }: BlockRendererProps) {
     const [isHovered, setIsHovered] = useState(false);
     const Icon = BLOCK_ICONS[block.type] || Type;
@@ -350,12 +352,14 @@ const BlockRenderer = memo(function BlockRenderer({
             className={cn(
                 "relative bg-card border rounded-lg transition-all focus-within:ring-2 focus-within:ring-primary/50 focus-within:border-primary",
                 isDragging && "opacity-50",
-                isHovered && "border-primary/50 shadow-sm"
+                isHovered && "border-primary/50 shadow-sm",
+                isSelected && "border-primary bg-primary/5"
             )}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             role="article"
             aria-label={blockAriaLabel}
+            aria-selected={isSelected}
         >
             {/* Block Content */}
             <div className="p-4">

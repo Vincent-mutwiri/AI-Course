@@ -52,10 +52,11 @@ The Admin Course Builder V2 is a comprehensive block-based course creation syste
 #### Acceptance Criteria
 
 1. WHEN an admin clicks on an interactive block type in the Block Library, THE Admin System SHALL add the interactive block to the current lesson canvas
-2. THE Admin System SHALL support all 16 existing interactive element types: Reflection, Poll, Word Cloud, AI Generator, Choice Comparison, Design Fixer, Player Type Simulator, Reward Schedule Designer, Flow Channel Evaluator, Pitch Analysis Generator, Narrative Generator, Dark Pattern Redesigner, ROE Dashboard, Journey Timeline, Certificate Generator, and Final Assessment
-3. THE Admin System SHALL display interactive blocks with their configured settings in the canvas
-4. THE Admin System SHALL preserve all existing interactive element configurations when migrating to the block system
-5. THE Admin System SHALL render interactive blocks in the student view using existing rendering logic
+2. THE Admin System SHALL support the following interactive element types: Reflection, Poll, Word Cloud, AI Generator, Choice Comparison, Certificate Generator, Final Assessment, AI Journey, Build A Bot, Concept Map, Data Dashboard, Ethical Dilemma Solver, Gamification Concept Map, Identify Personalization, Player Type Analyzer, Presentation Coach, Sentence Builder, and Visual Tokens
+3. THE Admin System SHALL NOT include the following deprecated interactive types: Design Fixer, Player Type Simulator, Reward Schedule Designer, Flow Channel Evaluator, Pitch Analysis Generator, Narrative Generator, Dark Pattern Redesigner, ROE Dashboard, and Journey Timeline
+4. THE Admin System SHALL display interactive blocks with their configured settings in the canvas
+5. THE Admin System SHALL preserve all existing interactive element configurations when migrating to the block system
+6. THE Admin System SHALL render interactive blocks in the student view using existing rendering logic
 
 ### Requirement 4
 
@@ -91,9 +92,11 @@ The Admin Course Builder V2 is a comprehensive block-based course creation syste
 
 1. WHEN an admin clicks the duplicate action on a block, THE Admin System SHALL create a copy of the block with a new unique identifier
 2. WHEN an admin clicks the delete action on a block, THE Admin System SHALL display a confirmation dialog before deletion
-3. WHEN an admin confirms deletion, THE Admin System SHALL remove the block from the lesson
-4. THE Admin System SHALL provide a preview action that displays the block in student view format
-5. THE Admin System SHALL support keyboard shortcuts for undo (Cmd+Z/Ctrl+Z) and duplicate (Cmd+D/Ctrl+D) operations
+3. WHEN an admin confirms deletion, THE Admin System SHALL remove the block from the lesson and update the canvas immediately
+4. WHEN an admin deletes a block, THE Admin System SHALL persist the deletion to the database via auto-save
+5. THE Admin System SHALL provide a preview action that displays the block in student view format
+6. THE Admin System SHALL support keyboard shortcuts for undo (Cmd+Z/Ctrl+Z), duplicate (Cmd+D/Ctrl+D), and delete (Delete/Backspace) operations
+7. THE Admin System SHALL allow deletion of any block type including basic content blocks and interactive elements
 
 ### Requirement 7
 
@@ -166,3 +169,17 @@ The Admin Course Builder V2 is a comprehensive block-based course creation syste
 3. THE Admin System SHALL maintain backward compatibility with existing courses that use the legacy interactiveElements structure
 4. THE Admin System SHALL display interactive elements with full functionality in student view
 5. THE Admin System SHALL track student progress through block-based lessons using existing progress tracking mechanisms
+
+### Requirement 13
+
+**User Story:** As an admin, I want to remove deprecated interactive block types from the system, so that the course builder only shows well-functioning interactive elements
+
+#### Acceptance Criteria
+
+1. THE Admin System SHALL remove the following deprecated interactive block types from the Block Library: Design Fixer, Player Type Simulator, Reward Schedule Designer, Flow Channel Evaluator, Pitch Analysis Generator, Narrative Generator, Dark Pattern Redesigner, ROE Dashboard, and Journey Timeline
+2. THE Admin System SHALL remove the corresponding TypeScript type definitions for deprecated block types from the BlockType enum
+3. THE Admin System SHALL remove configuration modals for deprecated block types
+4. THE Admin System SHALL remove the deprecated interactive component files from the codebase
+5. THE Admin System SHALL update the InteractiveElementRouter to exclude deprecated block types
+6. WHEN existing courses contain deprecated block types, THE Admin System SHALL display a warning message in the canvas indicating the block type is no longer supported
+7. THE Admin System SHALL allow admins to delete deprecated blocks from existing courses using the standard delete operation
