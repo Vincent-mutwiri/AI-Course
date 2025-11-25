@@ -40,11 +40,10 @@ import { v4 as uuidv4 } from 'uuid';
 export type BlockType =
     | 'text' | 'video' | 'image' | 'code' | 'list' | 'divider'
     | 'reflection' | 'poll' | 'wordCloud' | 'aiGenerator'
-    | 'choiceComparison' | 'designFixer' | 'playerTypeSimulator'
-    | 'rewardScheduleDesigner' | 'flowChannelEvaluator'
-    | 'pitchAnalysisGenerator' | 'narrativeGenerator'
-    | 'darkPatternRedesigner' | 'roeDashboard' | 'journeyTimeline'
-    | 'certificateGenerator' | 'finalAssessment';
+    | 'choiceComparison' | 'certificateGenerator' | 'finalAssessment'
+    | 'aiJourney' | 'buildABot' | 'conceptMap' | 'dataDashboard'
+    | 'ethicalDilemmaSolver' | 'gamificationConceptMap' | 'identifyPersonalization'
+    | 'playerTypeAnalyzer' | 'presentationCoach' | 'sentenceBuilder' | 'visualTokens';
 
 export interface Block {
     id: string;

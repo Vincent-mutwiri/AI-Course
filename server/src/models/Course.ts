@@ -4,12 +4,10 @@ import mongoose, { Document, Schema } from "mongoose";
 export type BlockType =
   | 'text' | 'video' | 'image' | 'code' | 'list' | 'divider'
   | 'reflection' | 'poll' | 'wordCloud' | 'aiGenerator'
-  | 'choiceComparison' | 'designFixer' | 'playerTypeSimulator'
-  | 'rewardScheduleDesigner' | 'flowChannelEvaluator'
-  | 'pitchAnalysisGenerator' | 'narrativeGenerator'
-  | 'darkPatternRedesigner' | 'roeDashboard' | 'journeyTimeline'
-  | 'certificateGenerator' | 'finalAssessment'
-  | 'visualTokens' | 'sentenceBuilder' | 'simulation';
+  | 'choiceComparison' | 'certificateGenerator' | 'finalAssessment'
+  | 'aiJourney' | 'buildABot' | 'conceptMap' | 'dataDashboard'
+  | 'ethicalDilemmaSolver' | 'gamificationConceptMap' | 'identifyPersonalization'
+  | 'playerTypeAnalyzer' | 'presentationCoach' | 'sentenceBuilder' | 'visualTokens';
 
 // Block Interface
 export interface IBlock {
@@ -130,12 +128,10 @@ const blockSchema = new Schema<IBlock>({
     enum: [
       'text', 'video', 'image', 'code', 'list', 'divider',
       'reflection', 'poll', 'wordCloud', 'aiGenerator',
-      'choiceComparison', 'designFixer', 'playerTypeSimulator',
-      'rewardScheduleDesigner', 'flowChannelEvaluator',
-      'pitchAnalysisGenerator', 'narrativeGenerator',
-      'darkPatternRedesigner', 'roeDashboard', 'journeyTimeline',
-      'certificateGenerator', 'finalAssessment',
-      'visualTokens', 'sentenceBuilder', 'simulation'
+      'choiceComparison', 'certificateGenerator', 'finalAssessment',
+      'aiJourney', 'buildABot', 'conceptMap', 'dataDashboard',
+      'ethicalDilemmaSolver', 'gamificationConceptMap', 'identifyPersonalization',
+      'playerTypeAnalyzer', 'presentationCoach', 'sentenceBuilder', 'visualTokens'
     ],
     required: true
   },

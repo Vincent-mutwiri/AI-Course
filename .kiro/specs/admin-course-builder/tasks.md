@@ -443,8 +443,8 @@
     - Add troubleshooting section
     - _Requirements: 3.2, 3.4_
 
-- [ ] 25. Remove deprecated interactive block types
-  - [ ] 25.1 Remove deprecated component files
+- [x] 25. Remove deprecated interactive block types
+  - [x] 25.1 Remove deprecated component files
     - Delete src/components/interactive/DesignFixerComponent.tsx
     - Delete src/components/interactive/PlayerTypeSimulator.tsx
     - Delete src/components/interactive/RewardScheduleDesigner.tsx
@@ -453,19 +453,19 @@
     - Delete any files for PitchAnalysisGenerator, NarrativeGenerator, DarkPatternRedesigner, JourneyTimeline if they exist
     - _Requirements: 13.4_
 
-  - [ ] 25.2 Update type definitions
+  - [x] 25.2 Update type definitions
     - Remove deprecated block types from BlockType enum in Course model
     - Update BlockType in frontend types
     - Remove deprecated types from validation schemas
     - _Requirements: 13.2_
 
-  - [ ] 25.3 Update BlockLibrary component
+  - [x] 25.3 Update BlockLibrary component
     - Remove deprecated block types from block metadata array
     - Ensure only supported interactive types appear in library
     - Update block count and categories
     - _Requirements: 13.1_
 
-  - [ ] 25.4 Remove deprecated configuration modals
+  - [x] 25.4 Remove deprecated configuration modals
     - Delete DesignFixerBlockModal.tsx if it exists
     - Delete PlayerTypeSimulatorBlockModal.tsx if it exists
     - Delete RewardScheduleDesignerBlockModal.tsx if it exists
@@ -474,20 +474,20 @@
     - Delete modals for other deprecated types
     - _Requirements: 13.3_
 
-  - [ ] 25.5 Update InteractiveElementRouter
+  - [x] 25.5 Update InteractiveElementRouter
     - Add deprecation handling for old block types
     - Display warning message for deprecated blocks
     - Provide "Delete this block" action for deprecated blocks
     - Ensure router doesn't crash on deprecated types
     - _Requirements: 13.5, 13.6_
 
-  - [ ] 25.6 Update modal management
+  - [x] 25.6 Update modal management
     - Remove deprecated block types from useBlockModal hook
     - Update modal routing logic
     - Ensure no references to deprecated modals
     - _Requirements: 13.3_
 
-  - [ ] 25.7 Test backward compatibility
+  - [x] 25.7 Test backward compatibility
     - Test courses with deprecated blocks display warnings
     - Test deletion of deprecated blocks works correctly
     - Verify no console errors for deprecated types

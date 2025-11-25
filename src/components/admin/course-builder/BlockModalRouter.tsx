@@ -13,17 +13,8 @@ const PollBlockModal = lazy(() => import('./modals/PollBlockModal').then(m => ({
 const WordCloudBlockModal = lazy(() => import('./modals/WordCloudBlockModal').then(m => ({ default: m.WordCloudBlockModal })));
 const AIGeneratorBlockModal = lazy(() => import('./modals/AIGeneratorBlockModal').then(m => ({ default: m.AIGeneratorBlockModal })));
 const ChoiceComparisonBlockModal = lazy(() => import('./modals/ChoiceComparisonBlockModal').then(m => ({ default: m.ChoiceComparisonBlockModal })));
-const DesignFixerBlockModal = lazy(() => import('./modals/DesignFixerBlockModal').then(m => ({ default: m.DesignFixerBlockModal })));
-const PlayerTypeSimulatorBlockModal = lazy(() => import('./modals/PlayerTypeSimulatorBlockModal').then(m => ({ default: m.PlayerTypeSimulatorBlockModal })));
-const RewardScheduleDesignerBlockModal = lazy(() => import('./modals/RewardScheduleDesignerBlockModal').then(m => ({ default: m.RewardScheduleDesignerBlockModal })));
-const FlowChannelEvaluatorBlockModal = lazy(() => import('./modals/FlowChannelEvaluatorBlockModal').then(m => ({ default: m.FlowChannelEvaluatorBlockModal })));
 const CertificateGeneratorBlockModal = lazy(() => import('./modals/CertificateGeneratorBlockModal').then(m => ({ default: m.CertificateGeneratorBlockModal })));
 const FinalAssessmentBlockModal = lazy(() => import('./modals/FinalAssessmentBlockModal').then(m => ({ default: m.FinalAssessmentBlockModal })));
-const PitchAnalysisGeneratorBlockModal = lazy(() => import('./modals/PitchAnalysisGeneratorBlockModal').then(m => ({ default: m.PitchAnalysisGeneratorBlockModal })));
-const NarrativeGeneratorBlockModal = lazy(() => import('./modals/NarrativeGeneratorBlockModal').then(m => ({ default: m.NarrativeGeneratorBlockModal })));
-const DarkPatternRedesignerBlockModal = lazy(() => import('./modals/DarkPatternRedesignerBlockModal').then(m => ({ default: m.DarkPatternRedesignerBlockModal })));
-const ROEDashboardBlockModal = lazy(() => import('./modals/ROEDashboardBlockModal').then(m => ({ default: m.ROEDashboardBlockModal })));
-const JourneyTimelineBlockModal = lazy(() => import('./modals/JourneyTimelineBlockModal').then(m => ({ default: m.JourneyTimelineBlockModal })));
 
 // Loading fallback component for modals
 const ModalLoadingFallback = () => (
@@ -172,96 +163,6 @@ export function BlockModalRouter({ modalState, onClose, onSave }: BlockModalRout
             case 'choiceComparison':
                 return (
                     <ChoiceComparisonBlockModal
-                        open={isOpen}
-                        onClose={onClose}
-                        onSave={onSave}
-                        initialData={initialData}
-                    />
-                );
-
-            case 'designFixer':
-                return (
-                    <DesignFixerBlockModal
-                        open={isOpen}
-                        onClose={onClose}
-                        onSave={onSave}
-                        initialData={initialData}
-                    />
-                );
-
-            case 'playerTypeSimulator':
-                return (
-                    <PlayerTypeSimulatorBlockModal
-                        open={isOpen}
-                        onClose={onClose}
-                        onSave={onSave}
-                        initialData={initialData}
-                    />
-                );
-
-            case 'rewardScheduleDesigner':
-                return (
-                    <RewardScheduleDesignerBlockModal
-                        open={isOpen}
-                        onClose={onClose}
-                        onSave={onSave}
-                        initialData={initialData}
-                    />
-                );
-
-            case 'flowChannelEvaluator':
-                return (
-                    <FlowChannelEvaluatorBlockModal
-                        open={isOpen}
-                        onClose={onClose}
-                        onSave={onSave}
-                        initialData={initialData}
-                    />
-                );
-
-            case 'pitchAnalysisGenerator':
-                return (
-                    <PitchAnalysisGeneratorBlockModal
-                        open={isOpen}
-                        onClose={onClose}
-                        onSave={onSave}
-                        initialData={initialData}
-                    />
-                );
-
-            case 'narrativeGenerator':
-                return (
-                    <NarrativeGeneratorBlockModal
-                        open={isOpen}
-                        onClose={onClose}
-                        onSave={onSave}
-                        initialData={initialData}
-                    />
-                );
-
-            case 'darkPatternRedesigner':
-                return (
-                    <DarkPatternRedesignerBlockModal
-                        open={isOpen}
-                        onClose={onClose}
-                        onSave={onSave}
-                        initialData={initialData}
-                    />
-                );
-
-            case 'roeDashboard':
-                return (
-                    <ROEDashboardBlockModal
-                        open={isOpen}
-                        onClose={onClose}
-                        onSave={onSave}
-                        initialData={initialData}
-                    />
-                );
-
-            case 'journeyTimeline':
-                return (
-                    <JourneyTimelineBlockModal
                         open={isOpen}
                         onClose={onClose}
                         onSave={onSave}

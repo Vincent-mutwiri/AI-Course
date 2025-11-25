@@ -1,4 +1,5 @@
 import { lazy, Suspense } from 'react';
+import { AlertTriangle } from 'lucide-react';
 import { AIGeneratorComponent } from './AIGeneratorComponent';
 import { VisualTokens } from './VisualTokens';
 import { SentenceBuilder } from './SentenceBuilder';
@@ -8,17 +9,12 @@ import { BuildABot } from './BuildABot';
 import { DataDashboard } from './DataDashboard';
 import { AIJourney } from './AIJourney';
 import { PollComponent } from './PollComponent';
-import { DesignFixerComponent } from './DesignFixerComponent';
 import { ReflectionComponent } from './ReflectionComponent';
 import { WordCloudComponent } from './WordCloudComponent';
 import { ChoiceComparisonComponent } from './ChoiceComparisonComponent';
-import { PlayerTypeSimulator } from './PlayerTypeSimulator';
 import { PlayerTypeAnalyzer } from './PlayerTypeAnalyzer';
-import { RewardScheduleDesigner } from './RewardScheduleDesigner';
-import { FlowChannelEvaluator } from './FlowChannelEvaluator';
 import { GameMasterGenerator } from './GameMasterGenerator';
 import { AIGameMasterGenerator } from './AIGameMasterGenerator';
-import { ROEDashboard } from './ROEDashboard';
 import { GamificationConceptMap } from './GamificationConceptMap';
 import { ErrorBoundary } from '@/components/shared/ErrorBoundary';
 import { CardSkeleton } from '@/components/shared/Skeleton';
@@ -42,34 +38,52 @@ interface InteractiveElementProps {
   userName?: string;
 }
 
-// Force registration of components to prevent tree-shaking
-const componentRegistry = {
-  PlayerTypeSimulator,
-  RewardScheduleDesigner,
-  FlowChannelEvaluator,
-  AIGameMasterGenerator,
-  ROEDashboard,
-  GamificationConceptMap
-};
+// Deprecated block types that are no longer supported
+const DEPRECATED_TYPES = [
+  'designFixer',
+  'playerTypeSimulator',
+  'rewardScheduleDesigner',
+  'flowChannelEvaluator',
+  'pitchAnalysisGenerator',
+  'narrativeGenerator',
+  'darkPatternRedesigner',
+  'roeDashboard',
+  'journeyTimeline'
+];
 
-// Ensure components are registered
-Object.keys(componentRegistry);
+// Component to display deprecation warning
+const DeprecatedBlockWarning = ({ blockType }: { blockType: string }) => (
+  <div className="p-6 border-2 border-amber-500 bg-amber-50 dark:bg-amber-950/20 rounded-lg">
+    <div className="flex items-start gap-3">
+      <AlertTriangle className="h-6 w-6 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+      <div className="flex-1">
+        <h3 className="font-semibold text-amber-900 dark:text-amber-100 mb-2">
+          Deprecated Block Type
+        </h3>
+        <p className="text-sm text-amber-800 dark:text-amber-200 mb-3">
+          The <strong>{blockType}</strong> block type is no longer supported and has been removed from the system.
+          This block will not function correctly and should be deleted.
+        </p>
+        <p className="text-xs text-amber-700 dark:text-amber-300">
+          Please use the course builder to remove this block and replace it with a supported interactive element.
+        </p>
+      </div>
+    </div>
+  </div>
+);
 
 export const InteractiveElementRouter = ({ element, userName }: InteractiveElementProps) => {
   const renderElement = () => {
     const elementType = element.type?.trim();
 
-    // Handle playerTypeSimulator specifically
-    if (elementType === 'playerTypeSimulator') {
-      return <PlayerTypeSimulator title={element.config?.title} description={element.config?.description} />;
+    // Check if this is a deprecated block type
+    if (DEPRECATED_TYPES.includes(elementType)) {
+      return <DeprecatedBlockWarning blockType={elementType} />;
     }
 
     switch (elementType) {
       case 'poll':
         return <PollComponent pollData={(element as any).content || element} />;
-
-      case 'designFixer':
-        return <DesignFixerComponent fixerData={(element as any).content || element} />;
 
       case 'reflection':
         return <ReflectionComponent question={(element as any).content?.question || element.question || element.prompt || "Reflect on this lesson"} {...((element as any).content || element)} />;
@@ -77,7 +91,7 @@ export const InteractiveElementRouter = ({ element, userName }: InteractiveEleme
       case 'wordCloud':
         const wordCloudData = (element as any).content || element;
         const config = wordCloudData.config || wordCloudData;
-        return <WordCloudComponent 
+        return <WordCloudComponent
           title={config.title || wordCloudData.title || element.title}
           description={config.description || wordCloudData.description || element.description}
           words={config.words || wordCloudData.words || element.words}
@@ -131,18 +145,9 @@ export const InteractiveElementRouter = ({ element, userName }: InteractiveEleme
                 <CertificateGenerator />
               </Suspense>
             );
-          case 'playerTypeSimulator':
-            return <PlayerTypeSimulator {...element} />;
           default:
             return <div>Unknown simulation type: {element.simulationType}</div>;
         }
-
-      case 'journeyTimeline':
-        return (
-          <Suspense fallback={<CardSkeleton />}>
-            <AIJourneyComponent data={element} />
-          </Suspense>
-        );
 
       case 'finalAssessment':
         return (
@@ -152,9 +157,6 @@ export const InteractiveElementRouter = ({ element, userName }: InteractiveEleme
         );
 
       // Gamification Course Components  
-      case 'playerTypeSimulator':
-        return <PlayerTypeSimulator title={element.config?.title} description={element.config?.description} />;
-
       case 'playerTypeAnalyzer':
         try {
           return <PlayerTypeAnalyzer />;
@@ -162,52 +164,6 @@ export const InteractiveElementRouter = ({ element, userName }: InteractiveEleme
           console.error('PlayerTypeAnalyzer error:', error);
           return <div className="p-4 border border-red-500 bg-red-50 rounded-lg">Error loading Player Type Analyzer</div>;
         }
-
-      case 'rewardScheduleDesigner':
-        try {
-          return <RewardScheduleDesigner />;
-        } catch (error) {
-          console.error('RewardScheduleDesigner error:', error);
-          return <div className="p-4 border border-red-500 bg-red-50 rounded-lg">Error loading Reward Schedule Designer</div>;
-        }
-
-      case 'flowChannelEvaluator':
-        try {
-          return <FlowChannelEvaluator />;
-        } catch (error) {
-          console.error('FlowChannelEvaluator error:', error);
-          return <div className="p-4 border border-red-500 bg-red-50 rounded-lg">Error loading Flow Channel Evaluator</div>;
-        }
-
-      case 'pitchAnalysisGenerator':
-        return (
-          <AIGameMasterGenerator
-            generatorType="mechanic-analyst"
-            title={element.title || "Mechanic Mashup Pitch Analyzer"}
-            description={element.description || "Submit your gamification pitch for Game Master feedback."}
-          />
-        );
-
-      case 'narrativeGenerator':
-        return (
-          <AIGameMasterGenerator
-            generatorType="narrative-generator"
-            title={element.title || "Narrative Wrapper Generator"}
-            description={element.description || "Enter a dry topic and desired theme for an AI narrative hook."}
-          />
-        );
-
-      case 'darkPatternRedesigner':
-        return (
-          <AIGameMasterGenerator
-            generatorType="dark-pattern-redesigner"
-            title={element.title || "Ethical Redesign Consultant"}
-            description={element.description || "Input a manipulative mechanic for an ethical redesign."}
-          />
-        );
-
-      case 'roeDashboard':
-        return <ROEDashboard />;
 
       case 'gamificationConceptMap':
         return <GamificationConceptMap />;
