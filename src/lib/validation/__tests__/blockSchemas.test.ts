@@ -276,11 +276,13 @@ describe('Block Validation Schemas', () => {
             expect(result.success).toBe(true);
         });
 
-        it('rejects prompt shorter than 5 characters', () => {
+        it('rejects word with empty text', () => {
             const invalidBlock = {
                 type: 'wordCloud' as const,
                 content: {
-                    prompt: 'Hi',
+                    words: [
+                        { text: '', value: 10 }
+                    ],
                 },
             };
             const result = wordCloudBlockSchema.safeParse(invalidBlock);

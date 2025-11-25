@@ -4,42 +4,50 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Skeleton } from '@/components/ui/skeleton';
 import api from '@/services/api';
 
-// Hardcode the journey steps
-const journeySteps = [
-  { 
-    id: 'module_1', 
-    title: 'Defined Cognitive Load', 
-    description: "You learned *why* the brain's bottleneck matters and how to reduce extraneous load." 
+// Default journey steps (can be overridden via props)
+const defaultJourneySteps = [
+  {
+    id: 'module_1',
+    title: 'Defined Cognitive Load',
+    description: "You learned *why* the brain's bottleneck matters and how to reduce extraneous load."
   },
-  { 
-    id: 'module_2', 
-    title: 'Explored Motivation (AMP)', 
-    description: "You used the 'AMP' framework to analyze what truly drives student engagement." 
+  {
+    id: 'module_2',
+    title: 'Explored Motivation (AMP)',
+    description: "You used the 'AMP' framework to analyze what truly drives student engagement."
   },
-  { 
-    id: 'module_3', 
-    title: 'Built an AI-Powered Activity', 
-    description: "You used AI to convert a passive lesson into an active learning experience." 
+  {
+    id: 'module_3',
+    title: 'Built an AI-Powered Activity',
+    description: "You used AI to convert a passive lesson into an active learning experience."
   },
-  { 
-    id: 'module_4', 
-    title: "Practiced 'Feedback that Feeds Forward'", 
-    description: "You mastered the 'GPS vs. Stop Sign' concept for effective feedback." 
+  {
+    id: 'module_4',
+    title: "Practiced 'Feedback that Feeds Forward'",
+    description: "You mastered the 'GPS vs. Stop Sign' concept for effective feedback."
   },
-  { 
-    id: 'module_5', 
-    title: 'Completed Your Journey!', 
-    description: "You've finished the course and are ready to apply learning science in your classroom." 
+  {
+    id: 'module_5',
+    title: 'Completed Your Journey!',
+    description: "You've finished the course and are ready to apply learning science in your classroom."
   }
 ];
+
+interface JourneyStep {
+  id: string;
+  title: string;
+  description: string;
+}
 
 interface AIJourneyComponentProps {
   data: {
     title?: string;
+    steps?: JourneyStep[];
   };
 }
 
 export const AIJourneyComponent: React.FC<AIJourneyComponentProps> = ({ data }) => {
+  const journeySteps = data.steps || defaultJourneySteps;
   const [completedModules, setCompletedModules] = useState<number>(0);
   const [stats, setStats] = useState({ aiRequests: 0, reflections: 0, interactions: 0 });
   const [isLoading, setIsLoading] = useState(true);
@@ -49,29 +57,29 @@ export const AIJourneyComponent: React.FC<AIJourneyComponentProps> = ({ data }) 
       try {
         // Fetch progress data
         const courseId = 'learning_science_playbook'; // You can pass this as prop if needed
-        
+
         // Get user's course progress
         const progressResponse = await api.get(`/progress/${courseId}`);
-        
+
         // Count completed modules based on completed lessons
         const progress = progressResponse.data.progress;
         let completedCount = 0;
-        
+
         if (progress && progress.moduleProgress) {
           // Count modules where at least one lesson is completed
-          completedCount = progress.moduleProgress.filter((mp: any) => 
+          completedCount = progress.moduleProgress.filter((mp: any) =>
             mp.completedLessons && mp.completedLessons.length > 0
           ).length;
         }
-        
+
         setCompletedModules(completedCount);
-        
+
         // Simulate stats (in a real implementation, fetch from analytics API)
         // For now, use localStorage to count interactions
         const aiCount = parseInt(localStorage.getItem('ai_interactions_count') || '0');
         const reflectionCount = parseInt(localStorage.getItem('reflection_count') || '0');
         const totalInteractions = parseInt(localStorage.getItem('total_interactions') || '0');
-        
+
         setStats({
           aiRequests: aiCount,
           reflections: reflectionCount,
@@ -87,7 +95,7 @@ export const AIJourneyComponent: React.FC<AIJourneyComponentProps> = ({ data }) 
         setIsLoading(false);
       }
     };
-    
+
     fetchData();
   }, []);
 
@@ -122,12 +130,11 @@ export const AIJourneyComponent: React.FC<AIJourneyComponentProps> = ({ data }) 
           <ol className="relative border-l-2 border-muted ml-4">
             {journeySteps.map((step, index) => {
               const isComplete = index < completedModules || index === journeySteps.length - 1;
-              
+
               return (
                 <li key={step.id} className="mb-10 ml-8">
-                  <span className={`absolute flex items-center justify-center w-10 h-10 rounded-full -left-5 ring-4 ring-background ${
-                    isComplete ? 'bg-green-100 dark:bg-green-900' : 'bg-muted'
-                  }`}>
+                  <span className={`absolute flex items-center justify-center w-10 h-10 rounded-full -left-5 ring-4 ring-background ${isComplete ? 'bg-green-100 dark:bg-green-900' : 'bg-muted'
+                    }`}>
                     {isComplete ? (
                       <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-400" />
                     ) : (

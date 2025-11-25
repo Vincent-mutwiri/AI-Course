@@ -13,19 +13,28 @@ import api from '@/services/api';
 const ASSESSMENT_KEY = 'assessmentPassStatus_LS';
 const ASSESSMENT_SCORE_KEY = 'assessmentScore_LS';
 
+interface Question {
+  id: string;
+  text: string;
+  options: string[];
+  answer: string;
+}
+
 interface FinalAssessmentComponentProps {
   data: {
     title?: string;
     passingScore?: number;
     totalQuestions?: number;
     quizDataKey?: string;
+    questions?: Question[];
   };
 }
 
 export const FinalAssessmentComponent: React.FC<FinalAssessmentComponentProps> = ({ data }) => {
   const { user } = useAuth();
   const passingScore = data.passingScore || 8;
-  const { questions } = learningScienceQuiz;
+  // Use provided questions or fall back to default quiz
+  const questions = data.questions || learningScienceQuiz.questions;
 
   // Check localStorage for previous pass
   const [passStatus, setPassStatus] = useState<boolean | null>(() => {
@@ -160,8 +169,8 @@ export const FinalAssessmentComponent: React.FC<FinalAssessmentComponentProps> =
             {/* Results */}
             <div className="text-center space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
               <div className={`p-8 rounded-lg border-2 ${passStatus
-                  ? 'bg-green-50 dark:bg-green-950/20 border-green-500'
-                  : 'bg-red-50 dark:bg-red-950/20 border-red-500'
+                ? 'bg-green-50 dark:bg-green-950/20 border-green-500'
+                : 'bg-red-50 dark:bg-red-950/20 border-red-500'
                 }`}>
                 <div className="flex justify-center mb-4">
                   {passStatus ? (
@@ -249,8 +258,8 @@ export const FinalAssessmentComponent: React.FC<FinalAssessmentComponentProps> =
                     <div
                       key={question.id}
                       className={`p-4 rounded-lg border-2 ${isCorrect
-                          ? 'bg-green-50 dark:bg-green-950/20 border-green-500'
-                          : 'bg-red-50 dark:bg-red-950/20 border-red-500'
+                        ? 'bg-green-50 dark:bg-green-950/20 border-green-500'
+                        : 'bg-red-50 dark:bg-red-950/20 border-red-500'
                         }`}
                     >
                       <div className="flex items-start gap-2">

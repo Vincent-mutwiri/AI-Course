@@ -42,10 +42,10 @@ export const IdentifyPersonalization = () => {
 
   const handleSelect = (id: number, isPersonalized: boolean) => {
     if (submitted) return;
-    
-    setScenarios(scenarios.map(scenario => 
-      scenario.id === id 
-        ? { ...scenario, selected: isPersonalized } 
+
+    setScenarios(scenarios.map(scenario =>
+      scenario.id === id
+        ? { ...scenario, selected: isPersonalized }
         : scenario
     ));
   };
@@ -61,7 +61,8 @@ export const IdentifyPersonalization = () => {
   };
 
   const calculateScore = (): number => {
-    return scenarios.filter(s => s.isPersonalized === s.selected).length;
+    const correctCount = scenarios.filter(s => s.isPersonalized === s.selected).length;
+    return Math.round((correctCount / scenarios.length) * 100);
   };
 
   return (
@@ -69,20 +70,19 @@ export const IdentifyPersonalization = () => {
       <p className="text-sm text-muted-foreground mb-4">
         For each scenario below, indicate whether it represents an example of AI personalization in education.
       </p>
-      
+
       <div className="space-y-3">
         {scenarios.map((scenario) => (
-          <Card 
+          <Card
             key={scenario.id}
-            className={`cursor-pointer transition-colors ${
-              submitted 
-                ? scenario.isPersonalized 
-                  ? 'border-green-500 bg-green-50 dark:bg-green-900/20' 
-                  : 'border-red-500 bg-red-50 dark:bg-red-900/20'
-                : scenario.selected !== null 
-                  ? 'border-primary' 
-                  : ''
-            }`}
+            className={`cursor-pointer transition-colors ${submitted
+              ? scenario.isPersonalized
+                ? 'border-green-500 bg-green-50 dark:bg-green-900/20'
+                : 'border-red-500 bg-red-50 dark:bg-red-900/20'
+              : scenario.selected !== null
+                ? 'border-primary'
+                : ''
+              }`}
             onClick={() => handleSelect(scenario.id, true)}
           >
             <CardContent className="p-4">
@@ -91,15 +91,15 @@ export const IdentifyPersonalization = () => {
                   <p className="font-medium">{scenario.text}</p>
                   {submitted && (
                     <p className="text-sm mt-1">
-                      {scenario.isPersonalized 
-                        ? '✅ Personalized: AI adapts to individual needs' 
+                      {scenario.isPersonalized
+                        ? '✅ Personalized: AI adapts to individual needs'
                         : '❌ Not personalized: Same experience for everyone'}
                     </p>
                   )}
                 </div>
                 <div className="flex space-x-2">
-                  <Button 
-                    variant={scenario.selected === true ? 'default' : 'outline'} 
+                  <Button
+                    variant={scenario.selected === true ? 'default' : 'outline'}
                     size="sm"
                     onClick={(e) => {
                       e.stopPropagation();
@@ -108,8 +108,8 @@ export const IdentifyPersonalization = () => {
                   >
                     Personalized
                   </Button>
-                  <Button 
-                    variant={scenario.selected === false ? 'default' : 'outline'} 
+                  <Button
+                    variant={scenario.selected === false ? 'default' : 'outline'}
                     size="sm"
                     onClick={(e) => {
                       e.stopPropagation();
@@ -126,7 +126,7 @@ export const IdentifyPersonalization = () => {
       </div>
 
       {!submitted ? (
-        <Button onClick={calculateScore} className="mt-4">
+        <Button onClick={handleSubmit} className="mt-4">
           Check Answers
         </Button>
       ) : (
@@ -135,9 +135,9 @@ export const IdentifyPersonalization = () => {
             Your score: {score}%
           </h4>
           <p className="text-sm text-muted-foreground">
-            {score === 100 
+            {score === 100
               ? 'Perfect! You have a great understanding of AI personalization in education.'
-              : score >= 70 
+              : score >= 70
                 ? 'Good job! Review the incorrect answers to improve your understanding.'
                 : 'Keep practicing! Consider reviewing the module material before trying again.'
             }

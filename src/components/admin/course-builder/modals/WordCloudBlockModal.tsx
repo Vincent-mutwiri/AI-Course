@@ -107,7 +107,7 @@ export function WordCloudBlockModal({ open, onClose, onSave, initialData }: Word
             }, {} as Record<string, string>);
 
         const finalData = {
-            type: 'wordCloud',
+            type: 'wordCloud' as const,
             content: {
                 title: data.content.title || '',
                 description: data.content.description || '',

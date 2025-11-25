@@ -3,7 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-const schoolData = {
+// Default school data (can be overridden via props)
+const defaultSchoolData = {
   attendance: [
     { month: "Sep", rate: 94 },
     { month: "Oct", rate: 92 },
@@ -22,7 +23,16 @@ const schoolData = {
   aiInsight: "Analysis shows a correlation between attendance rates and grade distribution. The dip in January attendance (88%) coincides with lower performance. Consider implementing targeted interventions for students with attendance below 90%. The data suggests that students with consistent attendance (>92%) are 3x more likely to achieve A or B grades."
 };
 
-export const DataDashboard = () => {
+interface DataDashboardProps {
+  data?: {
+    attendance?: Array<{ month: string; rate: number }>;
+    grades?: Array<{ grade: string; count: number }>;
+    aiInsight?: string;
+  };
+}
+
+export const DataDashboard: React.FC<DataDashboardProps> = ({ data }) => {
+  const schoolData = data || defaultSchoolData;
   const [showInsights, setShowInsights] = useState(false);
 
   return (

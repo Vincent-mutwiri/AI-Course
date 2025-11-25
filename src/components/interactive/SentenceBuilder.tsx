@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
-const predictionModel: Record<string, string[]> = {
+// Default prediction model (can be overridden via props)
+const defaultPredictionModel: Record<string, string[]> = {
   "Artificial": ["intelligence", "life", "neural", "systems", "networks"],
   "intelligence": ["is", "can", "will", "helps", "transforms", "enables"],
   "is": ["a", "the", "transforming", "revolutionizing", "changing", "improving"],
@@ -25,24 +26,29 @@ const predictionModel: Record<string, string[]> = {
   "improving": ["education", "learning", "outcomes", "results", "performance", "understanding"]
 };
 
-export const SentenceBuilder = () => {
+interface SentenceBuilderProps {
+  data?: {
+    predictionModel?: Record<string, string[]>;
+  };
+}
+
+export const SentenceBuilder: React.FC<SentenceBuilderProps> = ({ data }) => {
+  const predictionModel = data?.predictionModel || defaultPredictionModel;
   const [sentence, setSentence] = useState<string[]>([]);
   const [predictions, setPredictions] = useState<string[]>([]);
-
-  const model = predictionModel;
 
   const addWord = (word: string) => {
     const newSentence = [...sentence, word];
     setSentence(newSentence);
-    
-    const nextPredictions = model[word] || [];
+
+    const nextPredictions = predictionModel[word] || [];
     const numPredictions = Math.min(3 + newSentence.length, 6);
     setPredictions(nextPredictions.slice(0, numPredictions));
   };
 
   const reset = () => {
     setSentence([]);
-    setPredictions(Object.keys(model).slice(0, 3));
+    setPredictions(Object.keys(predictionModel).slice(0, 3));
   };
 
   if (sentence.length === 0 && predictions.length === 0) {

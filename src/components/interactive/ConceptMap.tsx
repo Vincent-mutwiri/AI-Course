@@ -3,7 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import ReactFlow, { Background, Controls, MiniMap } from 'reactflow';
 import 'reactflow/dist/style.css';
 
-const conceptMapData = {
+// Default concept map data (can be overridden via props)
+const defaultConceptMapData = {
   nodes: [
     { id: "1", type: "input", data: { label: "AI Fundamentals" }, position: { x: 400, y: 0 } },
     { id: "2", data: { label: "Tokens" }, position: { x: 200, y: 100 } },
@@ -49,9 +50,17 @@ const conceptMapData = {
   ]
 };
 
-export const ConceptMap = () => {
-  const onNodesChange = useCallback(() => {}, []);
-  const onEdgesChange = useCallback(() => {}, []);
+interface ConceptMapProps {
+  data?: {
+    nodes?: any[];
+    edges?: any[];
+  };
+}
+
+export const ConceptMap: React.FC<ConceptMapProps> = ({ data }) => {
+  const conceptMapData = data || defaultConceptMapData;
+  const onNodesChange = useCallback(() => { }, []);
+  const onEdgesChange = useCallback(() => { }, []);
 
   return (
     <Card className="mt-4">
