@@ -77,14 +77,14 @@ const EnhancedQuiz: React.FC<EnhancedQuizProps> = ({ quizId, onComplete }) => {
 
   const handleSubmit = useCallback(async () => {
     if (!quiz) return;
-    
+
     const answersArray = Object.entries(answers).map(([questionId, answer]) => ({
       questionId,
       answer
     }));
-    
+
     await submitQuiz(answersArray);
-    
+
     if (onComplete) {
       onComplete({
         score: getScore(),
@@ -125,7 +125,6 @@ const EnhancedQuiz: React.FC<EnhancedQuizProps> = ({ quizId, onComplete }) => {
     const score = getScore();
     const totalPoints = quiz.questions.reduce((sum, q) => sum + q.points, 0);
     const percentage = Math.round((score / totalPoints) * 100);
-    const passed = percentage >= quiz.passingScore;
 
     return (
       <Card>
@@ -134,28 +133,20 @@ const EnhancedQuiz: React.FC<EnhancedQuizProps> = ({ quizId, onComplete }) => {
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="text-center">
-            <div 
-              className={`mx-auto flex h-24 w-24 items-center justify-center rounded-full text-4xl font-bold ${
-                passed ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
-              }`}
+            <div
+              className="mx-auto flex h-24 w-24 items-center justify-center rounded-full text-4xl font-bold bg-green-100 text-green-600"
             >
               {percentage}%
             </div>
             <h3 className="mt-4 text-xl font-semibold">
-              {passed ? 'Congratulations!' : 'Keep Practicing!'}
+              Congratulations!
             </h3>
             <p className="text-muted-foreground mt-2">
               You scored {score} out of {totalPoints} points
             </p>
-            {passed ? (
-              <p className="mt-2 text-green-600 font-medium">
-                You passed the quiz!
-              </p>
-            ) : (
-              <p className="mt-2 text-red-600 font-medium">
-                You need {quiz.passingScore}% to pass. Try again!
-              </p>
-            )}
+            <p className="mt-2 text-green-600 font-medium">
+              You've completed the quiz!
+            </p>
           </div>
 
           <div className="space-y-4">
@@ -165,7 +156,7 @@ const EnhancedQuiz: React.FC<EnhancedQuizProps> = ({ quizId, onComplete }) => {
               const isCorrect = result.answers.find(
                 (a: any) => a.questionId === question.id
               )?.isCorrect;
-              
+
               return (
                 <div key={question.id} className="border rounded-lg p-4">
                   <div className="flex items-start gap-2">
@@ -241,7 +232,7 @@ const EnhancedQuiz: React.FC<EnhancedQuizProps> = ({ quizId, onComplete }) => {
         >
           <ArrowLeft className="mr-2 h-4 w-4" /> Previous
         </Button>
-        
+
         {isLastQuestion() ? (
           <Button onClick={handleSubmit}>
             <Check className="mr-2 h-4 w-4" /> Submit Quiz

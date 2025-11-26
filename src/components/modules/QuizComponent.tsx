@@ -48,7 +48,7 @@ export const QuizComponent = ({ quiz, onComplete }: { quiz: any; onComplete?: (s
     if (onComplete && score > 0) {
       onComplete(Math.round((score / quiz.questions.length) * 100));
     }
-    
+
     return (
       <Card className="p-6 text-center">
         <h3 className="text-2xl font-bold mb-4">Quiz Complete! 🎉</h3>
@@ -58,9 +58,7 @@ export const QuizComponent = ({ quiz, onComplete }: { quiz: any; onComplete?: (s
         <p className="text-muted-foreground mb-6">
           {score === quiz.questions.length
             ? "Perfect! You've mastered this lesson."
-            : score >= quiz.questions.length * 0.7
-            ? "Great job! You have a solid understanding."
-            : "Keep learning! Review the lesson and try again."}
+            : "Great job! You've completed the quiz."}
         </p>
         <Button onClick={handleReset}>Retake Quiz</Button>
       </Card>
@@ -91,7 +89,7 @@ export const QuizComponent = ({ quiz, onComplete }: { quiz: any; onComplete?: (s
               const isCorrect = Array.isArray(question.correct)
                 ? question.correct.includes(idx)
                 : idx === question.correct;
-              
+
               return (
                 <button
                   key={idx}
@@ -109,15 +107,14 @@ export const QuizComponent = ({ quiz, onComplete }: { quiz: any; onComplete?: (s
                     }
                   }}
                   disabled={showExplanation}
-                  className={`w-full text-left p-3 rounded-lg border-2 transition-all ${
-                    isSelected
+                  className={`w-full text-left p-3 rounded-lg border-2 transition-all ${isSelected
                       ? showExplanation
                         ? isCorrect
                           ? "border-green-500 bg-green-50"
                           : "border-red-500 bg-red-50"
                         : "border-blue-500 bg-blue-50"
                       : "border-gray-200 hover:border-gray-300"
-                  } ${showExplanation ? "cursor-default" : "cursor-pointer"}`}
+                    } ${showExplanation ? "cursor-default" : "cursor-pointer"}`}
                 >
                   <div className="flex items-center gap-2">
                     {question.type === "multiple_select" && (
@@ -149,15 +146,14 @@ export const QuizComponent = ({ quiz, onComplete }: { quiz: any; onComplete?: (s
                 key={String(value)}
                 onClick={() => !showExplanation && setSelectedAnswer(value)}
                 disabled={showExplanation}
-                className={`w-full text-left p-3 rounded-lg border-2 transition-all ${
-                  selectedAnswer === value
+                className={`w-full text-left p-3 rounded-lg border-2 transition-all ${selectedAnswer === value
                     ? showExplanation
                       ? value === question.correct
                         ? "border-green-500 bg-green-50"
                         : "border-red-500 bg-red-50"
                       : "border-blue-500 bg-blue-50"
                     : "border-gray-200 hover:border-gray-300"
-                } ${showExplanation ? "cursor-default" : "cursor-pointer"}`}
+                  } ${showExplanation ? "cursor-default" : "cursor-pointer"}`}
               >
                 {value ? "True" : "False"}
               </button>
@@ -172,15 +168,14 @@ export const QuizComponent = ({ quiz, onComplete }: { quiz: any; onComplete?: (s
                 key={idx}
                 onClick={() => !showExplanation && setSelectedAnswer(idx)}
                 disabled={showExplanation}
-                className={`w-full text-left p-3 rounded-lg border-2 transition-all ${
-                  selectedAnswer === idx
+                className={`w-full text-left p-3 rounded-lg border-2 transition-all ${selectedAnswer === idx
                     ? showExplanation
                       ? idx === question.correct
                         ? "border-green-500 bg-green-50"
                         : "border-red-500 bg-red-50"
                       : "border-blue-500 bg-blue-50"
                     : "border-gray-200 hover:border-gray-300"
-                } ${showExplanation ? "cursor-default" : "cursor-pointer"}`}
+                  } ${showExplanation ? "cursor-default" : "cursor-pointer"}`}
               >
                 <span className="text-sm">{option}</span>
               </button>

@@ -21,7 +21,9 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { finalAssessmentBlockSchema, type FinalAssessmentBlock } from '@/lib/validation/blockSchemas';
-import { Plus, Trash2, X, AlertCircle } from 'lucide-react';
+import { Plus, Trash2, X, AlertCircle, Sparkles } from 'lucide-react';
+import { toast } from 'sonner';
+import api from '@/services/api';
 
 interface FinalAssessmentBlockModalProps {
     open: boolean;
@@ -31,6 +33,8 @@ interface FinalAssessmentBlockModalProps {
 }
 
 export function FinalAssessmentBlockModal({ open, onClose, onSave, initialData }: FinalAssessmentBlockModalProps) {
+    const [generatingRubric, setGeneratingRubric] = React.useState<number | null>(null);
+
     const {
         register,
         handleSubmit,
@@ -56,6 +60,43 @@ export function FinalAssessmentBlockModal({ open, onClose, onSave, initialData }
         control,
         name: 'content.questions',
     });
+
+    const generateRubric = async (questionIndex: number) => {
+        const question = watch(`content.questions.${questionIndex}.question`);
+        const maxScore = watch(`content.questions.${questionIndex}.maxScore`) || 10;
+        const questionType = watch(`content.questions.${questionIndex}.type`);
+
+        if (!question) {
+            toast.error('Please enter a question first');
+            return;
+        }
+
+        setGeneratingRubric(questionIndex);
+        try {
+            const response = await api.post('/ai/chat', {
+                message: `Create a detailed grading rubric for the following ${questionType} question. The rubric should help grade student responses on a scale of 0-${maxScore} points.
+
+Question: ${question}
+
+Generate a clear, structured rubric that includes:
+1. Criteria for different score levels (e.g., 0-2, 3-5, 6-8, 9-${maxScore})
+2. What to look for in excellent, good, fair, and poor responses
+3. Key points that should be addressed
+4. Common mistakes to watch for
+
+Format the rubric in a clear, easy-to-read structure.`
+            });
+
+            const rubric = response.data.response;
+            setValue(`content.questions.${questionIndex}.rubric`, rubric);
+            toast.success('Rubric generated successfully!');
+        } catch (error) {
+            console.error('Failed to generate rubric:', error);
+            toast.error('Failed to generate rubric. Please try again.');
+        } finally {
+            setGeneratingRubric(null);
+        }
+    };
 
     const onSubmit = (data: FinalAssessmentBlock) => {
         onSave(data);
@@ -143,7 +184,7 @@ export function FinalAssessmentBlockModal({ open, onClose, onSave, initialData }
                             </p>
                         )}
                         <p id="passingScore-hint" className="text-xs text-muted-foreground">
-                            Minimum percentage required to pass (0-100). Default is 70%
+                            Note: Passing score is no longer enforced. All students who complete the assessment will receive their certificate.
                         </p>
                     </div>
 
@@ -334,21 +375,71 @@ export function FinalAssessmentBlockModal({ open, onClose, onSave, initialData }
                                             </div>
                                         )}
 
-                                        {/* Short Answer / Essay - Sample Answer */}
+                                        {/* Short Answer / Essay - AI Grading */}
                                         {(questionType === 'short-answer' || questionType === 'essay') && (
-                                            <div className="space-y-1">
-                                                <Label htmlFor={`answer-${index}`} className="text-xs font-medium">
-                                                    Sample Answer / Grading Rubric <span className="text-muted-foreground">(Optional)</span>
-                                                </Label>
-                                                <Textarea
-                                                    id={`answer-${index}`}
-                                                    placeholder="Provide a sample answer or grading criteria to help with manual grading..."
-                                                    rows={questionType === 'essay' ? 4 : 2}
-                                                    {...register(`content.questions.${index}.correctAnswer`)}
-                                                />
-                                                <p className="text-xs text-muted-foreground">
-                                                    This reference will help instructors grade student responses consistently
-                                                </p>
+                                            <div className="space-y-3">
+                                                {/* Max Score */}
+                                                <div className="space-y-1">
+                                                    <Label htmlFor={`maxScore-${index}`} className="text-xs font-medium">
+                                                        Maximum Score <span className="text-destructive">*</span>
+                                                    </Label>
+                                                    <Input
+                                                        id={`maxScore-${index}`}
+                                                        type="number"
+                                                        min="1"
+                                                        max="100"
+                                                        placeholder="10"
+                                                        {...register(`content.questions.${index}.maxScore`, { valueAsNumber: true })}
+                                                    />
+                                                    <p className="text-xs text-muted-foreground">
+                                                        Points available for this question (used for AI grading)
+                                                    </p>
+                                                </div>
+
+                                                {/* AI Rubric Generation */}
+                                                <div className="space-y-1">
+                                                    <div className="flex items-center justify-between">
+                                                        <Label htmlFor={`rubric-${index}`} className="text-xs font-medium">
+                                                            Grading Rubric <span className="text-muted-foreground">(AI-Powered)</span>
+                                                        </Label>
+                                                        <Button
+                                                            type="button"
+                                                            variant="outline"
+                                                            size="sm"
+                                                            onClick={() => generateRubric(index)}
+                                                            disabled={generatingRubric === index}
+                                                            className="h-7"
+                                                        >
+                                                            <Sparkles className="h-3 w-3 mr-1" />
+                                                            {generatingRubric === index ? 'Generating...' : 'Generate with AI'}
+                                                        </Button>
+                                                    </div>
+                                                    <Textarea
+                                                        id={`rubric-${index}`}
+                                                        placeholder="Click 'Generate with AI' to create a grading rubric, or write your own..."
+                                                        rows={questionType === 'essay' ? 6 : 4}
+                                                        {...register(`content.questions.${index}.rubric`)}
+                                                    />
+                                                    <p className="text-xs text-muted-foreground">
+                                                        This rubric will be used by AI to automatically grade student responses and provide feedback
+                                                    </p>
+                                                </div>
+
+                                                {/* Sample Answer (Optional) */}
+                                                <div className="space-y-1">
+                                                    <Label htmlFor={`answer-${index}`} className="text-xs font-medium">
+                                                        Sample Answer <span className="text-muted-foreground">(Optional)</span>
+                                                    </Label>
+                                                    <Textarea
+                                                        id={`answer-${index}`}
+                                                        placeholder="Provide an example of a good answer..."
+                                                        rows={questionType === 'essay' ? 4 : 2}
+                                                        {...register(`content.questions.${index}.correctAnswer`)}
+                                                    />
+                                                    <p className="text-xs text-muted-foreground">
+                                                        Optional reference answer to help AI understand expected responses
+                                                    </p>
+                                                </div>
                                             </div>
                                         )}
                                     </div>

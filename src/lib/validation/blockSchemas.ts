@@ -345,6 +345,8 @@ export const finalAssessmentBlockSchema = z.object({
                 ).optional(),
                 correctAnswer: z.string().optional(),
                 explanation: z.string().optional(),
+                maxScore: z.number().min(1).max(100).optional(),
+                rubric: z.string().optional(),
             })
         ).optional(),
         passingScore: z.number()
