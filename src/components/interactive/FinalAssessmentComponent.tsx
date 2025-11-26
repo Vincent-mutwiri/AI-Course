@@ -184,9 +184,8 @@ Provide your response in the following JSON format:
       setAiGradingResults(gradingResults);
       setScore(newScore);
 
-      // Calculate percentage based on total points
-      const percentage = totalPoints > 0 ? (earnedPoints / totalPoints) * 100 : 0;
-      const didPass = true; // Everyone passes - no minimum score required
+      // Everyone passes - no minimum score required
+      const didPass = true;
 
       setPassStatus(didPass);
       setIsSubmitted(true);
