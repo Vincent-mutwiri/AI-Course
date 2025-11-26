@@ -5,6 +5,9 @@ export type BlockType =
   | 'text' | 'video' | 'image' | 'code' | 'list' | 'divider'
   | 'reflection' | 'poll' | 'wordCloud' | 'aiGenerator'
   | 'choiceComparison' | 'certificateGenerator' | 'finalAssessment'
+  | 'playerTypeSimulator' | 'rewardScheduleDesigner' | 'flowChannelEvaluator'
+  | 'pitchAnalysisGenerator' | 'narrativeGenerator' | 'darkPatternRedesigner'
+  | 'roeDashboard' | 'designFixer' | 'journeyTimeline' | 'simulation'
   | 'aiJourney' | 'buildABot' | 'conceptMap' | 'dataDashboard'
   | 'ethicalDilemmaSolver' | 'gamificationConceptMap' | 'identifyPersonalization'
   | 'playerTypeAnalyzer' | 'presentationCoach' | 'sentenceBuilder' | 'visualTokens';
@@ -129,6 +132,9 @@ const blockSchema = new Schema<IBlock>({
       'text', 'video', 'image', 'code', 'list', 'divider',
       'reflection', 'poll', 'wordCloud', 'aiGenerator',
       'choiceComparison', 'certificateGenerator', 'finalAssessment',
+      'playerTypeSimulator', 'rewardScheduleDesigner', 'flowChannelEvaluator',
+      'pitchAnalysisGenerator', 'narrativeGenerator', 'darkPatternRedesigner',
+      'roeDashboard', 'designFixer', 'journeyTimeline', 'simulation',
       'aiJourney', 'buildABot', 'conceptMap', 'dataDashboard',
       'ethicalDilemmaSolver', 'gamificationConceptMap', 'identifyPersonalization',
       'playerTypeAnalyzer', 'presentationCoach', 'sentenceBuilder', 'visualTokens'
@@ -154,6 +160,10 @@ const blockSchema = new Schema<IBlock>({
     words: [{
       text: { type: String },
       value: { type: Number }
+    }],
+    choices: [{
+      label: { type: String },
+      description: { type: String }
     }],
     mappings: { type: Schema.Types.Mixed },
     config: { type: Schema.Types.Mixed },

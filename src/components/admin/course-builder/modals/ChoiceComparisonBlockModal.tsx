@@ -1,5 +1,5 @@
-import React from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
     Dialog,
@@ -24,42 +24,110 @@ interface ChoiceComparisonBlockModalProps {
     initialData?: Partial<ChoiceComparisonBlock>;
 }
 
+interface ChoiceEntry {
+    label: string;
+    description: string;
+}
+
 export function ChoiceComparisonBlockModal({ open, onClose, onSave, initialData }: ChoiceComparisonBlockModalProps) {
+    const [choices, setChoices] = useState<ChoiceEntry[]>([
+        { label: '', description: '' },
+        { label: '', description: '' },
+    ]);
+
+    // Reset choices when modal opens or initialData changes
+    React.useEffect(() => {
+        if (open) {
+            console.log('[ChoiceComparisonModal] Modal opened with initialData:', initialData);
+
+            const initialChoices: ChoiceEntry[] = initialData?.content?.choices || [
+                { label: '', description: '' },
+                { label: '', description: '' },
+            ];
+
+            console.log('[ChoiceComparisonModal] Setting initial choices:', initialChoices);
+            setChoices(initialChoices);
+        }
+    }, [open, initialData]);
+
     const {
         register,
         handleSubmit,
-        control,
+        reset,
         formState: { errors, isSubmitting },
     } = useForm<ChoiceComparisonBlock>({
-        resolver: zodResolver(choiceComparisonBlockSchema),
         defaultValues: {
             type: 'choiceComparison',
             content: {
-                question: initialData?.content?.question || '',
-                title: initialData?.content?.title || '',
-                choices: initialData?.content?.choices || [
-                    { label: '', description: '' },
-                    { label: '', description: '' },
-                ],
-                config: initialData?.content?.config || {},
+                question: '',
+                title: '',
             },
         },
     });
 
-    const { fields, append, remove } = useFieldArray({
-        control,
-        name: 'content.choices',
-    });
+    // Reset form when modal opens with initialData
+    React.useEffect(() => {
+        if (open) {
+            reset({
+                type: 'choiceComparison',
+                content: {
+                    question: initialData?.content?.question || '',
+                    title: initialData?.content?.title || '',
+                },
+            });
+        }
+    }, [open, initialData, reset]);
 
-    const onSubmit = (data: ChoiceComparisonBlock) => {
-        onSave(data);
+    const addChoice = () => {
+        if (choices.length < 6) {
+            setChoices([...choices, { label: '', description: '' }]);
+        }
+    };
+
+    const removeChoice = (index: number) => {
+        if (choices.length > 2) {
+            setChoices(choices.filter((_, i) => i !== index));
+        }
+    };
+
+    const updateChoice = (index: number, field: keyof ChoiceEntry, value: string) => {
+        const newChoices = [...choices];
+        newChoices[index] = { ...newChoices[index], [field]: value };
+        setChoices(newChoices);
+    };
+
+    const onSubmit = (data: any) => {
+        const choicesArray = choices
+            .filter(c => c.label.trim())
+            .map(c => ({
+                label: c.label.trim(),
+                description: c.description.trim(),
+            }));
+
+        const finalData = {
+            type: 'choiceComparison' as const,
+            content: {
+                title: data.content.title || '',
+                question: data.content.question || '',
+                choices: choicesArray,
+                config: {},
+            },
+        };
+
+        console.log('onSubmit - finalData:', JSON.stringify(finalData, null, 2));
+        onSave(finalData);
         onClose();
     };
 
-    const addChoice = () => {
-        if (fields.length < 6) {
-            append({ label: '', description: '' });
-        }
+    const handleSaveClick = () => {
+        console.log('handleSaveClick - choices state:', choices);
+        const formData = {
+            content: {
+                title: (document.getElementById('title') as HTMLInputElement)?.value || '',
+                question: (document.getElementById('question') as HTMLTextAreaElement)?.value || '',
+            }
+        };
+        onSubmit(formData);
     };
 
     return (
@@ -74,7 +142,7 @@ export function ChoiceComparisonBlockModal({ open, onClose, onSave, initialData 
                     </DialogDescription>
                 </DialogHeader>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+                <form onSubmit={(e) => e.preventDefault()} className="space-y-5">
                     {/* Title */}
                     <div className="space-y-2">
                         <Label htmlFor="title" className="text-sm font-medium">
@@ -139,17 +207,17 @@ export function ChoiceComparisonBlockModal({ open, onClose, onSave, initialData 
                                 </Tooltip>
                             </TooltipProvider>
                         </div>
-                        <div className="space-y-3">
-                            {fields.map((field, index) => (
-                                <div key={field.id} className="p-3 border rounded-lg space-y-2 bg-muted/30">
+                        <div className="space-y-2 max-h-96 overflow-y-auto border rounded-lg p-3">
+                            {choices.map((choice, index) => (
+                                <div key={index} className="p-3 border rounded-lg space-y-2 bg-muted/30">
                                     <div className="flex items-center justify-between">
                                         <span className="text-sm font-semibold">Choice {index + 1}</span>
-                                        {fields.length > 2 && (
+                                        {choices.length > 2 && (
                                             <Button
                                                 type="button"
                                                 variant="ghost"
                                                 size="sm"
-                                                onClick={() => remove(index)}
+                                                onClick={() => removeChoice(index)}
                                                 title="Remove choice"
                                                 aria-label={`Remove choice ${index + 1}`}
                                             >
@@ -164,15 +232,10 @@ export function ChoiceComparisonBlockModal({ open, onClose, onSave, initialData 
                                         <Input
                                             id={`choice-label-${index}`}
                                             placeholder="e.g., Gamification, Project-Based Learning"
-                                            {...register(`content.choices.${index}.label`)}
+                                            value={choice.label}
+                                            onChange={(e) => updateChoice(index, 'label', e.target.value)}
                                             aria-required="true"
                                         />
-                                        {errors.content?.choices?.[index]?.label && (
-                                            <p className="text-xs text-destructive flex items-center gap-1" role="alert">
-                                                <AlertCircle className="w-3 h-3" />
-                                                {errors.content.choices[index]?.label?.message}
-                                            </p>
-                                        )}
                                     </div>
                                     <div className="space-y-1">
                                         <Label htmlFor={`choice-desc-${index}`} className="text-xs">
@@ -182,28 +245,17 @@ export function ChoiceComparisonBlockModal({ open, onClose, onSave, initialData 
                                             id={`choice-desc-${index}`}
                                             placeholder="Provide additional context about this choice..."
                                             rows={2}
-                                            {...register(`content.choices.${index}.description`)}
+                                            value={choice.description}
+                                            onChange={(e) => updateChoice(index, 'description', e.target.value)}
                                         />
-                                        {errors.content?.choices?.[index]?.description && (
-                                            <p className="text-xs text-destructive flex items-center gap-1" role="alert">
-                                                <AlertCircle className="w-3 h-3" />
-                                                {errors.content.choices[index]?.description?.message}
-                                            </p>
-                                        )}
                                     </div>
                                 </div>
                             ))}
                         </div>
-                        {errors.content?.choices && typeof errors.content.choices === 'object' && 'message' in errors.content.choices && (
-                            <p className="text-sm text-destructive flex items-center gap-1" role="alert">
-                                <AlertCircle className="w-3 h-3" />
-                                {errors.content.choices.message}
-                            </p>
-                        )}
                         <p className="text-xs text-muted-foreground">
-                            Minimum 2 choices required, maximum 6 choices allowed
+                            Minimum 2 choices required, maximum 6 choices allowed. Add at least one choice with a label.
                         </p>
-                        {fields.length < 6 && (
+                        {choices.length < 6 && (
                             <Button
                                 type="button"
                                 variant="outline"
@@ -213,7 +265,7 @@ export function ChoiceComparisonBlockModal({ open, onClose, onSave, initialData 
                                 aria-label="Add another choice"
                             >
                                 <Plus className="h-4 w-4 mr-2" />
-                                Add Choice {fields.length >= 6 && '(Maximum reached)'}
+                                Add Choice {choices.length >= 6 && '(Maximum reached)'}
                             </Button>
                         )}
                     </div>
@@ -233,7 +285,8 @@ export function ChoiceComparisonBlockModal({ open, onClose, onSave, initialData 
                             Cancel
                         </Button>
                         <Button
-                            type="submit"
+                            type="button"
+                            onClick={handleSaveClick}
                             disabled={isSubmitting}
                             aria-label={isSubmitting ? 'Saving choice comparison' : 'Save choice comparison'}
                         >

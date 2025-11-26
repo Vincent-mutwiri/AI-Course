@@ -24,8 +24,8 @@ Successfully removed 9 deprecated interactive block types from the Admin Course 
 - ✅ `src/components/interactive/ROEDashboard.tsx`
 
 ### 2. Type Definitions Updated (Task 25.2)
-- ✅ Updated `BlockType` enum in `server/src/models/Course.ts`
-- ✅ Updated `blockSchema` enum array in Mongoose schema
+- ✅ Updated `BlockType` enum in `server/src/models/Course.ts` (TypeScript type only)
+- ✅ Updated `blockSchema` enum array in Mongoose schema (kept deprecated types for backward compatibility with existing courses)
 - ✅ Updated `BlockType` in `src/hooks/useBlockModal.ts`
 - ✅ Removed deprecated schemas from `src/lib/validation/blockSchemas.ts`:
   - Removed `designFixerBlockSchema`
@@ -110,9 +110,17 @@ Total: 6 basic blocks + 18 interactive blocks = 24 block types
 - ✅ 13.6: Display warning for deprecated blocks in existing courses
 - ✅ 13.7: System handles deprecated types without errors
 
+## Backward Compatibility Strategy
+The deprecated block types are:
+- **Removed from frontend** - Cannot be added to new courses (removed from BlockLibrary)
+- **Kept in Mongoose schema** - Existing courses with deprecated blocks can still be loaded from database
+- **Display warnings** - InteractiveElementRouter shows deprecation warning instead of rendering the component
+- **Graceful degradation** - No database migration required; existing courses continue to work
+
 ## Testing Notes
 - Build completes successfully with no errors
 - All TypeScript diagnostics pass
 - Deprecated blocks will show amber warning in student view
 - Admins can delete deprecated blocks using standard delete operation
 - New courses cannot add deprecated block types
+- Existing courses with deprecated blocks load without validation errors
