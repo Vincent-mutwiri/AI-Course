@@ -115,6 +115,7 @@ export interface ICourse extends Document {
   title: string;
   description: string;
   instructor: string;
+  instructorImage?: string;
   thumbnail?: string;
   category: string;
   level: "beginner" | "intermediate" | "advanced";
@@ -250,6 +251,7 @@ const courseSchema = new Schema<ICourse>(
     title: { type: String, required: true },
     description: { type: String, required: true },
     instructor: { type: String, required: true },
+    instructorImage: { type: String },
     thumbnail: { type: String },
     category: { type: String, required: true },
     level: { type: String, enum: ["beginner", "intermediate", "advanced"], required: true },

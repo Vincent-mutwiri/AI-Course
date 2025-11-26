@@ -6,8 +6,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Users, BookOpen, GraduationCap, TrendingUp, Activity, Award, Zap, Edit } from "lucide-react";
+import { Users, BookOpen, GraduationCap, TrendingUp, Activity, Award, Zap, Edit, Upload, X, Trash2 } from "lucide-react";
 import { ProfileWidget } from "@/components/admin/ProfileWidget";
+import { toast } from "sonner";
 
 export default function AdminPage() {
   const navigate = useNavigate();
@@ -17,6 +18,10 @@ export default function AdminPage() {
   const [showCourseForm, setShowCourseForm] = useState(false);
   const [showQuizForm, setShowQuizForm] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [thumbnailUrl, setThumbnailUrl] = useState("");
+  const [instructorImageUrl, setInstructorImageUrl] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [deletingCourseId, setDeletingCourseId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchData();
@@ -43,6 +48,70 @@ export default function AdminPage() {
     }
   };
 
+  const handleThumbnailUpload = async (file: File) => {
+    if (!file) {
+      console.log('No file provided to handleThumbnailUpload');
+      return;
+    }
+
+    console.log('Uploading thumbnail:', file.name, file.size, file.type);
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      console.log('FormData created, sending to /admin/upload');
+      const response = await api.post('/admin/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      console.log('Upload response:', response.data);
+      const url = response.data.url;
+      setThumbnailUrl(url);
+      toast.success('Thumbnail uploaded successfully');
+    } catch (error: any) {
+      console.error('Failed to upload thumbnail:', error);
+      const errorMessage = error.response?.data?.message || error.message || 'Unknown error';
+      toast.error(`Failed to upload thumbnail: ${errorMessage}`);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleInstructorImageUpload = async (file: File) => {
+    if (!file) {
+      console.log('No file provided to handleInstructorImageUpload');
+      return;
+    }
+
+    console.log('Uploading instructor image:', file.name, file.size, file.type);
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      console.log('FormData created, sending to /admin/upload');
+      const response = await api.post('/admin/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      console.log('Upload response:', response.data);
+      const url = response.data.url;
+      setInstructorImageUrl(url);
+      toast.success('Instructor image uploaded successfully');
+    } catch (error: any) {
+      console.error('Failed to upload instructor image:', error);
+      const errorMessage = error.response?.data?.message || error.message || 'Unknown error';
+      toast.error(`Failed to upload instructor image: ${errorMessage}`);
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleCreateCourse = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -52,17 +121,39 @@ export default function AdminPage() {
         title: formData.get("title"),
         description: formData.get("description"),
         instructor: formData.get("instructor"),
-        instructorImage: formData.get("instructorImage"),
-        thumbnail: formData.get("thumbnail"),
+        instructorImage: instructorImageUrl || formData.get("instructorImage"),
+        thumbnail: thumbnailUrl || formData.get("thumbnail"),
         category: formData.get("category"),
         level: formData.get("level"),
         isPublished: true,
         modules: [],
       });
       setShowCourseForm(false);
+      setThumbnailUrl("");
+      setInstructorImageUrl("");
+      toast.success('Course created successfully');
       fetchData();
     } catch (error) {
       console.error("Failed to create course", error);
+      toast.error('Failed to create course');
+    }
+  };
+
+  const handleDeleteCourse = async (courseId: string, courseTitle: string) => {
+    if (!confirm(`Are you sure you want to delete "${courseTitle}"? This action cannot be undone.`)) {
+      return;
+    }
+
+    setDeletingCourseId(courseId);
+    try {
+      await adminAPI.deleteCourse(courseId);
+      toast.success('Course deleted successfully');
+      fetchData();
+    } catch (error: any) {
+      console.error("Failed to delete course", error);
+      toast.error('Failed to delete course');
+    } finally {
+      setDeletingCourseId(null);
     }
   };
 
@@ -231,12 +322,85 @@ export default function AdminPage() {
                   <Input id="instructor" name="instructor" required />
                 </div>
                 <div>
-                  <Label htmlFor="instructorImage">Instructor Image URL</Label>
-                  <Input id="instructorImage" name="instructorImage" placeholder="https://..." />
+                  <Label>Instructor Profile Image</Label>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                        onChange={(e) => {
+                          console.log('Instructor image file input changed', e.target.files);
+                          if (e.target.files && e.target.files.length > 0) {
+                            const file = e.target.files[0];
+                            console.log('Selected instructor image file:', file);
+                            handleInstructorImageUpload(file);
+                          } else {
+                            console.log('No files selected for instructor image');
+                          }
+                        }}
+                        disabled={uploading}
+                        className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 disabled:opacity-50"
+                      />
+                      {instructorImageUrl && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => setInstructorImageUrl("")}
+                          title="Remove instructor image"
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                    {instructorImageUrl && (
+                      <div className="border rounded p-2 bg-muted/30">
+                        <img src={instructorImageUrl} alt="Instructor preview" className="h-24 w-24 object-cover rounded-full mx-auto" />
+                      </div>
+                    )}
+                    <p className="text-xs text-muted-foreground">
+                      Upload instructor profile image (JPEG, PNG, GIF, or WebP, max 5MB)
+                    </p>
+                  </div>
+                  <Input id="instructorImage" name="instructorImage" type="hidden" value={instructorImageUrl} />
                 </div>
                 <div>
-                  <Label htmlFor="thumbnail">Course Image URL</Label>
-                  <Input id="thumbnail" name="thumbnail" placeholder="https://..." />
+                  <Label>Course Thumbnail Image</Label>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                        onChange={(e) => {
+                          if (e.target.files && e.target.files[0]) {
+                            handleThumbnailUpload(e.target.files[0]);
+                          }
+                        }}
+                        disabled={uploading}
+                        className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 disabled:opacity-50"
+                      />
+                      {thumbnailUrl && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => setThumbnailUrl("")}
+                          title="Remove thumbnail"
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                    {thumbnailUrl && (
+                      <div className="border rounded p-2 bg-muted/30">
+                        <img src={thumbnailUrl} alt="Course thumbnail preview" className="h-32 w-full object-cover rounded" />
+                      </div>
+                    )}
+                    <p className="text-xs text-muted-foreground">
+                      Upload a course thumbnail (JPEG, PNG, GIF, or WebP, max 5MB)
+                    </p>
+                  </div>
+                  <Input id="thumbnail" name="thumbnail" type="hidden" value={thumbnailUrl} />
                 </div>
                 <div>
                   <Label htmlFor="category">Category</Label>
@@ -267,15 +431,27 @@ export default function AdminPage() {
                     <p className="text-sm font-medium">{course.title}</p>
                     <p className="text-xs text-muted-foreground capitalize">{course.level}</p>
                   </div>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => navigate(`/admin/courses/${course._id}/builder`)}
-                    className="gap-2"
-                  >
-                    <Edit className="h-4 w-4" />
-                    Edit Course
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => navigate(`/admin/courses/${course._id}/builder`)}
+                      className="gap-2"
+                    >
+                      <Edit className="h-4 w-4" />
+                      Edit
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => handleDeleteCourse(course._id, course.title)}
+                      disabled={deletingCourseId === course._id}
+                      className="gap-2"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      {deletingCourseId === course._id ? 'Deleting...' : 'Delete'}
+                    </Button>
+                  </div>
                 </div>
               ))}
               {courses.length > 5 && (

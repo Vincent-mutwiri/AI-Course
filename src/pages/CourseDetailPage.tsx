@@ -15,6 +15,7 @@ interface Course {
   title: string;
   description: string;
   instructor: string;
+  instructorImage?: string;
   category: string;
   level: string;
   totalDuration: number;
@@ -48,7 +49,7 @@ export default function CourseDetailPage() {
       try {
         const { course } = await courseAPI.getById(id!);
         setCourse(course);
-        
+
         if (user) {
           try {
             const { progress } = await progressAPI.get(id!);
@@ -132,7 +133,7 @@ export default function CourseDetailPage() {
       </div>
     );
   }
-  
+
   if (!course) {
     return (
       <div className="max-w-6xl mx-auto p-6">
@@ -163,7 +164,7 @@ export default function CourseDetailPage() {
           <Badge className="mb-4 bg-white/20 text-white border-white/30">{course.category}</Badge>
           <h1 className="text-4xl font-bold mb-3">{course.title}</h1>
           <p className="text-xl text-blue-100 mb-6">{course.description}</p>
-          
+
           <div className="flex flex-wrap gap-6 mb-6 text-blue-100">
             <div className="flex items-center gap-2">
               <Clock className="h-5 w-5" />
@@ -204,14 +205,14 @@ export default function CourseDetailPage() {
             </div>
           ) : user ? (
             <div className="space-y-3">
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 onClick={() => {
                   // Navigate to first module - auto-enrollment will happen there
                   if (course.modules && course.modules.length > 0) {
                     navigate(`/course/${id}/module/${course.modules[0]._id}`);
                   }
-                }} 
+                }}
                 className="bg-white text-blue-600 hover:bg-blue-50 w-full"
               >
                 Start Learning
@@ -239,7 +240,7 @@ export default function CourseDetailPage() {
 
         <div className="grid gap-4">
           {course.modules?.map((module, index) => (
-            <Card 
+            <Card
               key={module._id}
               className="group hover:shadow-lg transition-all cursor-pointer border-2 hover:border-blue-500"
               onClick={() => navigate(`/course/${id}/module/${module._id}`)}
@@ -254,7 +255,7 @@ export default function CourseDetailPage() {
                       {module.title}
                     </h3>
                     <p className="text-muted-foreground mb-4">{module.description}</p>
-                    
+
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <span className="flex items-center gap-1">
                         <BookOpen className="h-4 w-4" />
@@ -299,7 +300,29 @@ export default function CourseDetailPage() {
           <CardTitle>Instructor</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-lg font-medium">{course.instructor}</p>
+          <div className="flex items-center gap-4">
+            {course.instructorImage ? (
+              <img
+                src={course.instructorImage}
+                alt={course.instructor}
+                className="h-16 w-16 rounded-full object-cover border-2 border-primary/20"
+                onError={(e) => {
+                  // Fallback to initials if image fails to load
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+            ) : (
+              <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/20">
+                <span className="text-xl font-semibold text-primary">
+                  {course.instructor.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
+                </span>
+              </div>
+            )}
+            <div>
+              <p className="text-lg font-medium">{course.instructor}</p>
+              <p className="text-sm text-muted-foreground">Course Instructor</p>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>
