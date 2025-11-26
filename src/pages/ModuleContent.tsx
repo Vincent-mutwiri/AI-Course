@@ -321,6 +321,7 @@ const ModuleContent = () => {
                 <BlockRenderer
                   blocks={lesson.blocks}
                   userName={user?.name || 'Learner'}
+                  courseTitle={course.title}
                   courseId={courseId}
                   moduleId={moduleId}
                   lessonIndex={currentLesson}

@@ -52,6 +52,8 @@ export default function AdminPage() {
         title: formData.get("title"),
         description: formData.get("description"),
         instructor: formData.get("instructor"),
+        instructorImage: formData.get("instructorImage"),
+        thumbnail: formData.get("thumbnail"),
         category: formData.get("category"),
         level: formData.get("level"),
         isPublished: true,
@@ -227,6 +229,14 @@ export default function AdminPage() {
                 <div>
                   <Label htmlFor="instructor">Instructor</Label>
                   <Input id="instructor" name="instructor" required />
+                </div>
+                <div>
+                  <Label htmlFor="instructorImage">Instructor Image URL</Label>
+                  <Input id="instructorImage" name="instructorImage" placeholder="https://..." />
+                </div>
+                <div>
+                  <Label htmlFor="thumbnail">Course Image URL</Label>
+                  <Input id="thumbnail" name="thumbnail" placeholder="https://..." />
                 </div>
                 <div>
                   <Label htmlFor="category">Category</Label>

@@ -63,12 +63,13 @@ interface Block {
 interface BlockRendererProps {
     blocks: Block[];
     userName?: string;
+    courseTitle?: string;
     courseId?: string;
     moduleId?: string;
     lessonIndex?: number;
 }
 
-export const BlockRenderer = ({ blocks, userName, courseId, moduleId, lessonIndex }: BlockRendererProps) => {
+export const BlockRenderer = ({ blocks, userName, courseTitle, courseId, moduleId, lessonIndex }: BlockRendererProps) => {
     const renderBlock = (block: Block) => {
         const { type, content } = block;
 
@@ -200,7 +201,7 @@ export const BlockRenderer = ({ blocks, userName, courseId, moduleId, lessonInde
                     ...content,
                     config: content.config,
                 };
-                return <InteractiveElementRouter element={interactiveElement} userName={userName} />;
+                return <InteractiveElementRouter element={interactiveElement} userName={userName} courseTitle={courseTitle} />;
 
             default:
                 console.warn('Unknown block type:', type);

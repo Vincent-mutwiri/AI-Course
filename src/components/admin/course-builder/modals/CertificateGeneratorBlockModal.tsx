@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -14,7 +14,9 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { certificateGeneratorBlockSchema, type CertificateGeneratorBlock } from '@/lib/validation/blockSchemas';
-import { AlertCircle, Award } from 'lucide-react';
+import { AlertCircle, Award, X } from 'lucide-react';
+import { toast } from 'sonner';
+import api from '@/services/api';
 
 interface CertificateGeneratorBlockModalProps {
     open: boolean;
@@ -24,6 +26,14 @@ interface CertificateGeneratorBlockModalProps {
 }
 
 export function CertificateGeneratorBlockModal({ open, onClose, onSave, initialData }: CertificateGeneratorBlockModalProps) {
+    const [logoUrl, setLogoUrl] = useState(initialData?.content?.config?.logoUrl || '');
+    const [backgroundUrl, setBackgroundUrl] = useState(initialData?.content?.config?.backgroundUrl || '');
+    const [signatureUrl, setSignatureUrl] = useState(initialData?.content?.config?.signatureUrl || '');
+    const [uploading, setUploading] = useState(false);
+    const logoInputRef = React.useRef<HTMLInputElement>(null);
+    const bgInputRef = React.useRef<HTMLInputElement>(null);
+    const sigInputRef = React.useRef<HTMLInputElement>(null);
+
     const {
         register,
         handleSubmit,
@@ -41,8 +51,57 @@ export function CertificateGeneratorBlockModal({ open, onClose, onSave, initialD
         },
     });
 
+    const handleFileUpload = async (file: File, type: 'logo' | 'background' | 'signature') => {
+        if (!file || file.size === 0) {
+            console.log('No file selected or file is empty');
+            return;
+        }
+
+        console.log(`Uploading ${type}:`, file.name, file.size, file.type);
+        setUploading(true);
+
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            console.log('Sending upload request to /admin/upload');
+            const response = await api.post('/admin/upload', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            console.log('Upload response:', response.data);
+            const url = response.data.url;
+
+            if (type === 'logo') setLogoUrl(url);
+            else if (type === 'background') setBackgroundUrl(url);
+            else setSignatureUrl(url);
+
+            toast.success(`${type.charAt(0).toUpperCase() + type.slice(1)} uploaded successfully`);
+        } catch (error: any) {
+            console.error(`Failed to upload ${type}:`, error);
+            const errorMessage = error.response?.data?.message || error.message || 'Unknown error';
+            toast.error(`Failed to upload ${type}: ${errorMessage}`);
+        } finally {
+            setUploading(false);
+        }
+    };
+
     const onSubmit = (data: CertificateGeneratorBlock) => {
-        onSave(data);
+        const finalData = {
+            ...data,
+            content: {
+                ...data.content,
+                config: {
+                    ...data.content.config,
+                    logoUrl,
+                    backgroundUrl,
+                    signatureUrl,
+                },
+            },
+        };
+        onSave(finalData);
         onClose();
     };
 
@@ -129,10 +188,136 @@ export function CertificateGeneratorBlockModal({ open, onClose, onSave, initialD
                         </p>
                     </div>
 
-                    <div className="text-xs text-muted-foreground bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded p-3">
-                        <strong>💡 Tip:</strong> The certificate will automatically include the student's name,
-                        course title, completion date, and a unique certificate ID. You only need to configure
-                        the display title and instructions.
+                    {/* Logo Upload */}
+                    <div className="space-y-2">
+                        <Label className="text-sm font-medium">Certificate Logo <span className="text-muted-foreground text-xs">(Optional)</span></Label>
+                        <div className="flex items-center gap-2">
+                            <div className="flex-1">
+                                <input
+                                    ref={logoInputRef}
+                                    type="file"
+                                    accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                                    onChange={(e) => {
+                                        console.log('Logo file input changed', e.target.files);
+                                        if (!e.target.files || e.target.files.length === 0) {
+                                            console.log('No files selected');
+                                            return;
+                                        }
+                                        const file = e.target.files[0];
+                                        console.log('Selected logo file:', file);
+                                        handleFileUpload(file, 'logo');
+                                    }}
+                                    disabled={uploading}
+                                    className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 disabled:opacity-50"
+                                />
+                            </div>
+                            {logoUrl && (
+                                <Button type="button" variant="ghost" size="icon" onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setLogoUrl('');
+                                    if (logoInputRef.current) logoInputRef.current.value = '';
+                                }} title="Remove logo">
+                                    <X className="h-4 w-4" />
+                                </Button>
+                            )}
+                        </div>
+                        {logoUrl && (
+                            <div className="border rounded p-2 bg-muted/30">
+                                <img src={logoUrl} alt="Logo preview" className="h-16 object-contain mx-auto" />
+                            </div>
+                        )}
+                        <p className="text-xs text-muted-foreground">
+                            Upload a logo image (JPEG, PNG, GIF, or WebP, max 5MB)
+                        </p>
+                    </div>
+
+                    {/* Background Upload */}
+                    <div className="space-y-2">
+                        <Label className="text-sm font-medium">Background Image <span className="text-muted-foreground text-xs">(Optional)</span></Label>
+                        <div className="flex items-center gap-2">
+                            <div className="flex-1">
+                                <input
+                                    ref={bgInputRef}
+                                    type="file"
+                                    accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                                    onChange={(e) => {
+                                        console.log('Background file input changed', e.target.files);
+                                        if (!e.target.files || e.target.files.length === 0) {
+                                            console.log('No files selected');
+                                            return;
+                                        }
+                                        const file = e.target.files[0];
+                                        console.log('Selected background file:', file);
+                                        handleFileUpload(file, 'background');
+                                    }}
+                                    disabled={uploading}
+                                    className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 disabled:opacity-50"
+                                />
+                            </div>
+                            {backgroundUrl && (
+                                <Button type="button" variant="ghost" size="icon" onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setBackgroundUrl('');
+                                    if (bgInputRef.current) bgInputRef.current.value = '';
+                                }} title="Remove background">
+                                    <X className="h-4 w-4" />
+                                </Button>
+                            )}
+                        </div>
+                        {backgroundUrl && (
+                            <div className="border rounded p-2 bg-muted/30">
+                                <img src={backgroundUrl} alt="Background preview" className="h-24 w-full object-cover rounded" />
+                            </div>
+                        )}
+                        <p className="text-xs text-muted-foreground">
+                            Upload a background image (JPEG, PNG, GIF, or WebP, max 5MB)
+                        </p>
+                    </div>
+
+                    {/* Signature Upload */}
+                    <div className="space-y-2">
+                        <Label className="text-sm font-medium">Instructor Signature <span className="text-muted-foreground text-xs">(Optional)</span></Label>
+                        <div className="flex items-center gap-2">
+                            <div className="flex-1">
+                                <input
+                                    ref={sigInputRef}
+                                    type="file"
+                                    accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                                    onChange={(e) => {
+                                        console.log('Signature file input changed', e.target.files);
+                                        if (!e.target.files || e.target.files.length === 0) {
+                                            console.log('No files selected');
+                                            return;
+                                        }
+                                        const file = e.target.files[0];
+                                        console.log('Selected signature file:', file);
+                                        handleFileUpload(file, 'signature');
+                                    }}
+                                    disabled={uploading}
+                                    className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 disabled:opacity-50"
+                                />
+                            </div>
+                            {signatureUrl && (
+                                <Button type="button" variant="ghost" size="icon" onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setSignatureUrl('');
+                                    if (sigInputRef.current) sigInputRef.current.value = '';
+                                }} title="Remove signature">
+                                    <X className="h-4 w-4" />
+                                </Button>
+                            )}
+                        </div>
+                        {signatureUrl && (
+                            <div className="border rounded p-2 bg-muted/30">
+                                <img src={signatureUrl} alt="Signature preview" className="h-16 object-contain mx-auto" />
+                            </div>
+                        )}
+                        <p className="text-xs text-muted-foreground">
+                            Upload a signature image (JPEG, PNG, GIF, or WebP, max 5MB)
+                        </p>
                     </div>
 
                     <DialogFooter>

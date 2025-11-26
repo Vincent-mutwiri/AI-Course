@@ -17,12 +17,15 @@ console.log('[S3 Config] Initialized with region:', AWS_REGION, 'bucket:', BUCKE
 
 export const uploadToS3 = async (file: Express.Multer.File, folder: string) => {
   const key = `${folder}/${Date.now()}-${file.originalname}`;
-  
+
   const command = new PutObjectCommand({
     Bucket: BUCKET_NAME,
     Key: key,
     Body: file.buffer,
     ContentType: file.mimetype,
+    CacheControl: 'max-age=31536000',
+    // Note: ACL is deprecated in favor of bucket policies, but kept for compatibility
+    // Make sure your S3 bucket allows public read access or has proper CORS configuration
   });
 
   await s3Client.send(command);
@@ -31,7 +34,7 @@ export const uploadToS3 = async (file: Express.Multer.File, folder: string) => {
 
 export const deleteFromS3 = async (fileUrl: string) => {
   const key = fileUrl.split(".amazonaws.com/")[1];
-  
+
   const command = new DeleteObjectCommand({
     Bucket: BUCKET_NAME,
     Key: key,
@@ -42,7 +45,7 @@ export const deleteFromS3 = async (fileUrl: string) => {
 
 export const getSignedUrlForUpload = async (fileName: string, fileType: string, folder: string) => {
   const key = `${folder}/${Date.now()}-${fileName}`;
-  
+
   const command = new PutObjectCommand({
     Bucket: BUCKET_NAME,
     Key: key,
@@ -51,7 +54,7 @@ export const getSignedUrlForUpload = async (fileName: string, fileType: string, 
 
   const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
   const fileUrl = `https://${BUCKET_NAME}.s3.${AWS_REGION}.amazonaws.com/${key}`;
-  
+
   return { signedUrl, fileUrl };
 };
 

@@ -36,6 +36,7 @@ interface InteractiveElementProps {
     [key: string]: any;
   };
   userName?: string;
+  courseTitle?: string;
 }
 
 // Deprecated block types that are no longer supported
@@ -72,7 +73,7 @@ const DeprecatedBlockWarning = ({ blockType }: { blockType: string }) => (
   </div>
 );
 
-export const InteractiveElementRouter = ({ element, userName }: InteractiveElementProps) => {
+export const InteractiveElementRouter = ({ element, userName, courseTitle }: InteractiveElementProps) => {
   const renderElement = () => {
     const elementType = element.type?.trim();
 
@@ -169,9 +170,14 @@ export const InteractiveElementRouter = ({ element, userName }: InteractiveEleme
         return <GamificationConceptMap />;
 
       case 'certificateGenerator':
+        const certData = (element as any).content || element;
         return (
           <Suspense fallback={<CardSkeleton />}>
-            <CertificateGenerator userName={userName} />
+            <CertificateGenerator
+              userName={userName}
+              courseTitle={courseTitle || element.courseTitle || certData.certificateTitle}
+              config={certData.config}
+            />
           </Suspense>
         );
 
