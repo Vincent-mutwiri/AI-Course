@@ -337,8 +337,14 @@ export const finalAssessmentBlockSchema = z.object({
                     .min(1, 'Question is required')
                     .max(500, 'Question must not exceed 500 characters'),
                 type: z.enum(['multiple-choice', 'short-answer', 'essay']).optional(),
-                options: z.array(z.string()).optional(),
+                options: z.array(
+                    z.object({
+                        text: z.string(),
+                        feedback: z.string().optional(),
+                    })
+                ).optional(),
                 correctAnswer: z.string().optional(),
+                explanation: z.string().optional(),
             })
         ).optional(),
         passingScore: z.number()

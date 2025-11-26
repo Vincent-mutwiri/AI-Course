@@ -151,9 +151,10 @@ export const InteractiveElementRouter = ({ element, userName, courseTitle }: Int
         }
 
       case 'finalAssessment':
+        const assessmentData = (element as any).content || element;
         return (
           <Suspense fallback={<CardSkeleton />}>
-            <FinalAssessmentComponent data={element as any} />
+            <FinalAssessmentComponent data={assessmentData} />
           </Suspense>
         );
 

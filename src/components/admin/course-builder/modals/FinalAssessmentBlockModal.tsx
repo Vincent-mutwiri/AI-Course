@@ -209,7 +209,12 @@ export function FinalAssessmentBlockModal({ open, onClose, onSave, initialData }
                                                         setValue(`content.questions.${index}.options`, []);
                                                         setValue(`content.questions.${index}.correctAnswer`, '');
                                                     } else {
-                                                        setValue(`content.questions.${index}.options`, ['', '', '', '']);
+                                                        setValue(`content.questions.${index}.options`, [
+                                                            { text: '', feedback: '' },
+                                                            { text: '', feedback: '' },
+                                                            { text: '', feedback: '' },
+                                                            { text: '', feedback: '' }
+                                                        ] as any);
                                                     }
                                                 }}
                                             >
@@ -231,68 +236,95 @@ export function FinalAssessmentBlockModal({ open, onClose, onSave, initialData }
 
                                         {/* Multiple Choice Options */}
                                         {questionType === 'multiple-choice' && (
-                                            <div className="space-y-2">
+                                            <div className="space-y-3">
                                                 <Label className="text-xs font-medium">
                                                     Answer Options <span className="text-destructive">*</span>
                                                 </Label>
                                                 <p className="text-xs text-muted-foreground">
-                                                    Check the box next to the correct answer
+                                                    Select the radio button next to the correct answer. Add feedback to explain why each option is right or wrong.
                                                 </p>
-                                                <div className="space-y-2">
-                                                    {options.map((_, optionIndex) => (
-                                                        <div key={optionIndex} className="flex items-center gap-2">
-                                                            <Checkbox
-                                                                checked={watch(`content.questions.${index}.correctAnswer`) === options[optionIndex]}
-                                                                onCheckedChange={(checked) => {
-                                                                    if (checked) {
-                                                                        setValue(`content.questions.${index}.correctAnswer`, options[optionIndex]);
-                                                                    }
-                                                                }}
-                                                                title="Mark as correct answer"
-                                                            />
-                                                            <Input
-                                                                placeholder={`Option ${optionIndex + 1}`}
-                                                                value={options[optionIndex] || ''}
-                                                                onChange={(e) => {
-                                                                    const newOptions = [...options];
-                                                                    const oldValue = newOptions[optionIndex];
-                                                                    newOptions[optionIndex] = e.target.value;
-                                                                    setValue(`content.questions.${index}.options`, newOptions);
+                                                <div className="space-y-3">
+                                                    {options.map((option: any, optionIndex) => {
+                                                        const optionText = typeof option === 'string' ? option : option?.text || '';
+                                                        const optionFeedback = typeof option === 'object' ? option?.feedback || '' : '';
+                                                        const isCorrect = watch(`content.questions.${index}.correctAnswer`) === optionText;
 
-                                                                    // Update correct answer if this option was marked as correct
-                                                                    if (watch(`content.questions.${index}.correctAnswer`) === oldValue) {
-                                                                        setValue(`content.questions.${index}.correctAnswer`, e.target.value);
-                                                                    }
-                                                                }}
-                                                                className="flex-1"
-                                                            />
-                                                            {options.length > 2 && (
-                                                                <Button
-                                                                    type="button"
-                                                                    variant="ghost"
-                                                                    size="sm"
-                                                                    onClick={() => {
-                                                                        const newOptions = options.filter((_, i) => i !== optionIndex);
-                                                                        setValue(`content.questions.${index}.options`, newOptions);
-                                                                        // Clear correct answer if removed option was correct
-                                                                        if (watch(`content.questions.${index}.correctAnswer`) === options[optionIndex]) {
-                                                                            setValue(`content.questions.${index}.correctAnswer`, '');
-                                                                        }
-                                                                    }}
-                                                                    title="Remove option"
-                                                                >
-                                                                    <X className="h-4 w-4" />
-                                                                </Button>
-                                                            )}
-                                                        </div>
-                                                    ))}
+                                                        return (
+                                                            <div key={optionIndex} className="p-3 border rounded-lg space-y-2 bg-muted/20">
+                                                                <div className="flex items-start gap-2">
+                                                                    <input
+                                                                        type="radio"
+                                                                        name={`question-${index}-correct`}
+                                                                        checked={isCorrect}
+                                                                        onChange={() => {
+                                                                            setValue(`content.questions.${index}.correctAnswer`, optionText);
+                                                                        }}
+                                                                        className="mt-3"
+                                                                        title="Mark as correct answer"
+                                                                    />
+                                                                    <div className="flex-1 space-y-2">
+                                                                        <Input
+                                                                            placeholder={`Option ${optionIndex + 1}`}
+                                                                            value={optionText}
+                                                                            onChange={(e) => {
+                                                                                const newOptions = [...options];
+                                                                                const oldText = optionText;
+                                                                                newOptions[optionIndex] = {
+                                                                                    text: e.target.value,
+                                                                                    feedback: optionFeedback
+                                                                                };
+                                                                                setValue(`content.questions.${index}.options`, newOptions);
+
+                                                                                // Update correct answer if this option was marked as correct
+                                                                                if (watch(`content.questions.${index}.correctAnswer`) === oldText) {
+                                                                                    setValue(`content.questions.${index}.correctAnswer`, e.target.value);
+                                                                                }
+                                                                            }}
+                                                                        />
+                                                                        <Textarea
+                                                                            placeholder="Feedback for this option (optional)"
+                                                                            value={optionFeedback}
+                                                                            onChange={(e) => {
+                                                                                const newOptions = [...options];
+                                                                                newOptions[optionIndex] = {
+                                                                                    text: optionText,
+                                                                                    feedback: e.target.value
+                                                                                };
+                                                                                setValue(`content.questions.${index}.options`, newOptions);
+                                                                            }}
+                                                                            rows={2}
+                                                                            className="text-xs"
+                                                                        />
+                                                                    </div>
+                                                                    {options.length > 2 && (
+                                                                        <Button
+                                                                            type="button"
+                                                                            variant="ghost"
+                                                                            size="sm"
+                                                                            onClick={() => {
+                                                                                const newOptions = options.filter((_: any, i: number) => i !== optionIndex);
+                                                                                setValue(`content.questions.${index}.options`, newOptions);
+                                                                                // Clear correct answer if removed option was correct
+                                                                                if (watch(`content.questions.${index}.correctAnswer`) === optionText) {
+                                                                                    setValue(`content.questions.${index}.correctAnswer`, '');
+                                                                                }
+                                                                            }}
+                                                                            title="Remove option"
+                                                                        >
+                                                                            <X className="h-4 w-4" />
+                                                                        </Button>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        );
+                                                    })}
                                                 </div>
                                                 <Button
                                                     type="button"
                                                     variant="outline"
                                                     size="sm"
                                                     onClick={() => {
-                                                        setValue(`content.questions.${index}.options`, [...options, '']);
+                                                        setValue(`content.questions.${index}.options`, [...options, { text: '', feedback: '' }]);
                                                     }}
                                                     className="w-full"
                                                 >
@@ -330,9 +362,14 @@ export function FinalAssessmentBlockModal({ open, onClose, onSave, initialData }
                             onClick={() => append({
                                 question: '',
                                 type: 'multiple-choice',
-                                options: ['', '', '', ''],
+                                options: [
+                                    { text: '', feedback: '' },
+                                    { text: '', feedback: '' },
+                                    { text: '', feedback: '' },
+                                    { text: '', feedback: '' }
+                                ],
                                 correctAnswer: ''
-                            })}
+                            } as any)}
                             className="w-full"
                             aria-label="Add another question"
                         >
