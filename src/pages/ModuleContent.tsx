@@ -352,6 +352,7 @@ const ModuleContent = () => {
                           key={`interactive-${moduleId}-${currentLesson}-${idx}`}
                           element={element}
                           userName={user?.name || 'Learner'}
+                          courseId={courseId}
                         />
                       ))}
                     </div>

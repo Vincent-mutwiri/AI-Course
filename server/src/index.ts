@@ -20,6 +20,7 @@ import analyticsRoutes from "./routes/analytics";
 import mediaRoutes from "./routes/media";
 import profileRoutes from "./routes/profile";
 import simulationsRoutes from "./routes/simulations";
+import pollRoutes from "./routes/pollRoutes";
 
 const app = express();
 
@@ -71,6 +72,7 @@ app.use("/api/analytics", analyticsRoutes);
 app.use("/api/media", mediaRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/simulations", simulationsRoutes);
+app.use("/api/polls", pollRoutes);
 
 connectDB()
   .then(() => {

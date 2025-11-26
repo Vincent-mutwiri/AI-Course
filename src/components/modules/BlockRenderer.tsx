@@ -201,7 +201,7 @@ export const BlockRenderer = ({ blocks, userName, courseTitle, courseId, moduleI
                     ...content,
                     config: content.config,
                 };
-                return <InteractiveElementRouter element={interactiveElement} userName={userName} courseTitle={courseTitle} />;
+                return <InteractiveElementRouter element={interactiveElement} userName={userName} courseTitle={courseTitle} courseId={courseId} />;
 
             default:
                 console.warn('Unknown block type:', type);

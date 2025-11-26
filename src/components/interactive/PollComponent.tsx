@@ -1,7 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle2, BarChart3 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { useParams } from "react-router-dom";
+import api from "@/services/api";
+import { toast } from "sonner";
 
 interface PollOption {
   id?: string;
@@ -22,11 +26,17 @@ interface PollComponentProps {
   options?: PollOption[];
   allowMultiple?: boolean;
   showResults?: boolean;
+  pollId?: string; // Unique identifier for this poll block
+  courseId?: string; // Course ID passed from parent
 }
 
 export const PollComponent: React.FC<PollComponentProps> = (props) => {
   // Support both nested pollData and flat props for flexibility
   const pollData = props.pollData || props;
+  const { user } = useAuth();
+  const paramsFromUrl = useParams<{ courseId: string }>();
+  // Use courseId from props first, then fall back to URL params
+  const courseId = props.courseId || paramsFromUrl.courseId;
 
   const question = pollData?.question || "Poll Question";
   const title = pollData?.title;
@@ -34,46 +44,76 @@ export const PollComponent: React.FC<PollComponentProps> = (props) => {
   const allowMultiple = pollData?.allowMultiple || false;
   const showResults = pollData?.showResults !== false; // Default to true
 
+  // Generate a stable pollId based on question content if not provided
+  // Use useMemo to ensure it doesn't change between renders
+  const pollId = useMemo(() => {
+    if (props.pollId) return props.pollId;
+
+    // Create a simple hash from question and first option
+    const hashString = `${question}_${options[0]?.text || options[0]?.id || ''}`;
+
+    // Simple hash function to create a shorter, stable ID
+    let hash = 0;
+    for (let i = 0; i < hashString.length; i++) {
+      const char = hashString.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32bit integer
+    }
+
+    return `poll_${Math.abs(hash)}`;
+  }, [props.pollId, question, options]);
+
+  console.log('PollComponent props:', { pollId: props.pollId, generatedPollId: pollId, courseId: props.courseId, question });
+
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [votes, setVotes] = useState<Record<string, number>>({});
+  const [loading, setLoading] = useState(true);
 
-  // Generate unique poll ID for localStorage using question and first option
-  const pollId = `poll_${question.substring(0, 30)}_${options[0]?.text?.substring(0, 20) || 'default'}`.replace(/\s+/g, '_');
-
-  // Load saved response and votes from localStorage
+  // Load user's previous response and poll results from database
   useEffect(() => {
-    // Initialize votes first
-    initializeVotes();
+    const loadPollData = async () => {
+      console.log('Loading poll data:', { user: !!user, courseId, pollId });
 
-    const savedResponse = localStorage.getItem(pollId);
-    if (savedResponse) {
-      try {
-        const { selectedIds: saved, isSubmitted: submitted } = JSON.parse(savedResponse);
-        if (saved && saved.length > 0 && submitted) {
-          setSelectedIds(saved);
-          setIsSubmitted(true);
-
-          // Load saved votes
-          const savedVotes = localStorage.getItem(`${pollId}_votes`);
-          if (savedVotes) {
-            setVotes(JSON.parse(savedVotes));
-          }
-        }
-      } catch (error) {
-        console.error('Error loading saved poll response:', error);
+      if (!user || !courseId || !pollId) {
+        console.warn('Missing required data for poll:', { user: !!user, courseId, pollId });
+        setLoading(false);
+        return;
       }
-    }
-  }, [pollId]);
 
-  const initializeVotes = () => {
-    const initialVotes: Record<string, number> = {};
-    options.forEach((option, index) => {
-      const optionId = option.id || `option-${index}`;
-      initialVotes[optionId] = option.votes || 0;
-    });
-    setVotes(initialVotes);
-  };
+      try {
+        // Load user's response
+        console.log('Fetching user response:', `/polls/response/${courseId}/${pollId}`);
+        const responseRes = await api.get(`/polls/response/${courseId}/${pollId}`);
+        console.log('User response:', responseRes.data);
+
+        if (responseRes.data.hasResponded) {
+          setSelectedIds(responseRes.data.selectedOptions);
+          setIsSubmitted(true);
+        }
+
+        // Load poll results
+        console.log('Fetching poll results:', `/polls/results/${courseId}/${pollId}`);
+        const resultsRes = await api.get(`/polls/results/${courseId}/${pollId}`);
+        console.log('Poll results:', resultsRes.data);
+        setVotes(resultsRes.data.voteCounts || {});
+      } catch (error: any) {
+        console.error('Error loading poll data:', error);
+        console.error('Error response:', error.response?.data);
+        // Initialize empty votes if error
+        const initialVotes: Record<string, number> = {};
+        options.forEach((option, index) => {
+          const optionId = option.id || `option-${index}`;
+          initialVotes[optionId] = 0;
+        });
+        setVotes(initialVotes);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadPollData();
+  }, [user, courseId, pollId, options]);
 
   const handleSelect = (optionId: string) => {
     if (isSubmitted) return;
@@ -91,26 +131,48 @@ export const PollComponent: React.FC<PollComponentProps> = (props) => {
     }
   };
 
-  const handleSubmit = () => {
-    if (selectedIds.length === 0) return;
+  const handleSubmit = async () => {
+    if (selectedIds.length === 0) {
+      toast.error('Please select at least one option');
+      return;
+    }
 
-    setIsSubmitted(true);
+    if (!user) {
+      toast.error('You must be logged in to vote');
+      return;
+    }
 
-    // Update vote counts
-    const newVotes = { ...votes };
-    selectedIds.forEach(id => {
-      newVotes[id] = (newVotes[id] || 0) + 1;
-    });
-    setVotes(newVotes);
+    if (!courseId) {
+      toast.error('Course ID not found');
+      return;
+    }
 
-    // Save to localStorage
-    localStorage.setItem(pollId, JSON.stringify({
-      selectedIds,
-      isSubmitted: true,
-      timestamp: new Date().toISOString()
-    }));
+    console.log('Submitting poll:', { courseId, pollId, selectedOptions: selectedIds });
 
-    localStorage.setItem(`${pollId}_votes`, JSON.stringify(newVotes));
+    try {
+      // Submit to database
+      const response = await api.post('/polls/submit', {
+        courseId,
+        pollId,
+        selectedOptions: selectedIds,
+      });
+
+      console.log('Poll submitted successfully:', response.data);
+      setIsSubmitted(true);
+
+      // Reload results to get updated vote counts
+      const resultsRes = await api.get(`/polls/results/${courseId}/${pollId}`);
+      console.log('Results after submission:', resultsRes.data);
+      console.log('Vote counts:', resultsRes.data.voteCounts);
+      setVotes(resultsRes.data.voteCounts || {});
+      console.log('Votes state updated:', resultsRes.data.voteCounts);
+
+      toast.success('Your vote has been recorded!');
+    } catch (error: any) {
+      console.error('Error submitting poll:', error);
+      console.error('Error response:', error.response?.data);
+      toast.error(error.response?.data?.message || 'Failed to submit your vote. Please try again.');
+    }
   };
 
   const getTotalVotes = () => {
@@ -124,6 +186,21 @@ export const PollComponent: React.FC<PollComponentProps> = (props) => {
   };
 
   const isSelected = (optionId: string) => selectedIds.includes(optionId);
+
+  // Show loading state
+  if (loading) {
+    return (
+      <Card className="w-full max-w-2xl mx-auto">
+        <CardHeader>
+          {title && <CardTitle className="text-2xl mb-2">{title}</CardTitle>}
+          <CardTitle className={title ? "text-lg" : "text-xl"}>{question}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground">Loading poll...</p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   // If no options provided, show a message
   if (options.length === 0) {

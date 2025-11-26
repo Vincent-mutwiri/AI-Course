@@ -37,6 +37,7 @@ interface InteractiveElementProps {
   };
   userName?: string;
   courseTitle?: string;
+  courseId?: string;
 }
 
 // Deprecated block types that are no longer supported
@@ -73,7 +74,7 @@ const DeprecatedBlockWarning = ({ blockType }: { blockType: string }) => (
   </div>
 );
 
-export const InteractiveElementRouter = ({ element, userName, courseTitle }: InteractiveElementProps) => {
+export const InteractiveElementRouter = ({ element, userName, courseTitle, courseId }: InteractiveElementProps) => {
   const renderElement = () => {
     const elementType = element.type?.trim();
 
@@ -84,7 +85,7 @@ export const InteractiveElementRouter = ({ element, userName, courseTitle }: Int
 
     switch (elementType) {
       case 'poll':
-        return <PollComponent pollData={(element as any).content || element} />;
+        return <PollComponent pollData={(element as any).content || element} pollId={element._id || element.id} courseId={courseId} />;
 
       case 'reflection':
         return <ReflectionComponent question={(element as any).content?.question || element.question || element.prompt || "Reflect on this lesson"} {...((element as any).content || element)} />;
