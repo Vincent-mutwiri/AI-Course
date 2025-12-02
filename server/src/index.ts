@@ -75,8 +75,10 @@ app.use("/api/simulations", simulationsRoutes);
 app.use("/api/polls", pollRoutes);
 
 import reflectionRoutes from "./routes/reflection";
+import pagesRoutes from "./routes/pages";
 
 app.use("/api/reflections", reflectionRoutes);
+app.use("/api/pages", pagesRoutes);
 
 connectDB()
   .then(() => {
