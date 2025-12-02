@@ -77,7 +77,7 @@
   - Insert uploaded file URL into block content on success
   - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5_
 
-- [ ] 8. Add unsaved changes warning
+- [x] 8. Add unsaved changes warning
   - Track hasUnsavedChanges state in PageEditorContainer
   - Add beforeunload event listener to warn on page close
   - Show confirmation dialog when clicking back/cancel with unsaved changes

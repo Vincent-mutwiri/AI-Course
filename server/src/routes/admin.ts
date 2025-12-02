@@ -180,21 +180,28 @@ router.post("/pages", async (req: AuthRequest, res: Response) => {
   try {
     const page = await Page.create(req.body);
     res.status(201).json({ page });
-  } catch (error) {
+  } catch (error: any) {
     console.error("[Admin] Error creating page:", error);
-    res.status(500).json({ message: "Server error", error: error instanceof Error ? error.message : String(error) });
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ message: "Validation Error", error: error.message });
+    }
+    res.status(500).json({ message: "Server error", error: error.message || String(error) });
   }
 });
 
 router.put("/pages/:id", async (req: AuthRequest, res: Response) => {
   try {
-    const page = await Page.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const page = await Page.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
     if (!page) {
       return res.status(404).json({ message: "Page not found" });
     }
     res.json({ page });
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
+  } catch (error: any) {
+    console.error("[Admin] Error updating page:", error);
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ message: "Validation Error", error: error.message });
+    }
+    res.status(500).json({ message: "Server error", error: error.message || String(error) });
   }
 });
 
@@ -203,6 +210,7 @@ router.delete("/pages/:id", async (req: AuthRequest, res: Response) => {
     await Page.findByIdAndDelete(req.params.id);
     res.json({ message: "Page deleted" });
   } catch (error) {
+    console.error("[Admin] Error deleting page:", error);
     res.status(500).json({ message: "Server error" });
   }
 });
@@ -243,9 +251,9 @@ router.get("/pages/validate-slug", async (req: AuthRequest, res: Response) => {
     const isUnique = !existingPage;
 
     res.json({ isUnique });
-  } catch (error) {
+  } catch (error: any) {
     console.error("[Admin] Error validating slug:", error);
-    res.status(500).json({ message: "Server error", error: error instanceof Error ? error.message : String(error) });
+    res.status(500).json({ message: "Server error", error: error.message || String(error) });
   }
 });
 

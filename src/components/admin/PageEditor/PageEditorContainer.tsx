@@ -9,6 +9,7 @@ import BlockEditorPanel from './BlockEditorPanel';
 import AutoSaveIndicator, { SaveState } from './AutoSaveIndicator';
 import PagePreview from './PagePreview';
 import ErrorNotification from '@/components/common/ErrorNotification';
+import NavigationGuard from '@/components/common/NavigationGuard';
 import { debounce } from '@/utils/debounce';
 import { cachePageData, getCachedPageData, clearCachedPageData, hasCachedPageData } from '@/utils/localStorageCache';
 import './BlockEditor.css';
@@ -174,7 +175,8 @@ const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = f
             });
 
             if (!response.ok) {
-                throw new Error('Failed to save page');
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error || errorData.message || 'Failed to save page');
             }
 
             const data = await response.json();
@@ -196,6 +198,11 @@ const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = f
         } catch (error) {
             console.error('Error saving page:', error);
             setSaveState('error');
+            setSaveError(error instanceof Error ? error.message : 'Failed to save page');
+
+            if (isManualSave) {
+                toast.error(error instanceof Error ? error.message : 'Failed to save page');
+            }
 
             // Check if it's a network error
             const isNetworkError = !navigator.onLine || error instanceof TypeError;
@@ -492,11 +499,26 @@ const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = f
         setIsPreviewMode(prev => !prev);
     }, []);
 
-    // Navigation guard for unsaved changes
-    useEffect(() => {
-        // Set global flag for NavigationGuard component
-        (window as any).__hasUnsavedChanges = isDirty;
+    // Handle back navigation
+    const handleBack = useCallback(() => {
+        if (isDirty) {
+            const confirmLeave = window.confirm(
+                'You have unsaved changes. Are you sure you want to leave?'
+            );
+            if (!confirmLeave) {
+                return;
+            }
+        }
+        navigate('/admin/pages');
+    }, [isDirty, navigate]);
 
+    // Handle cancel (same as back)
+    const handleCancel = useCallback(() => {
+        handleBack();
+    }, [handleBack]);
+
+    // Navigation guard for unsaved changes (browser close/refresh)
+    useEffect(() => {
         const handleBeforeUnload = (e: BeforeUnloadEvent) => {
             if (isDirty) {
                 e.preventDefault();
@@ -508,7 +530,6 @@ const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = f
 
         return () => {
             window.removeEventListener('beforeunload', handleBeforeUnload);
-            (window as any).__hasUnsavedChanges = false;
         };
     }, [isDirty]);
 
@@ -532,6 +553,8 @@ const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = f
 
     return (
         <div className="page-editor-container">
+            <NavigationGuard when={isDirty} />
+
             {networkError && (
                 <ErrorNotification
                     message={networkError}
@@ -541,12 +564,21 @@ const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = f
             )}
 
             <div className="page-editor-header">
-                <h1>{isNewPage ? 'Create New Page' : 'Edit Page'}</h1>
-                {!isOnline && (
-                    <div className="offline-indicator">
-                        📡 Offline Mode
-                    </div>
-                )}
+                <div className="page-editor-header-left">
+                    <button
+                        onClick={handleBack}
+                        className="btn-back"
+                        title="Back to Pages"
+                    >
+                        ← Back
+                    </button>
+                    <h1>{isNewPage ? 'Create New Page' : 'Edit Page'}</h1>
+                    {!isOnline && (
+                        <div className="offline-indicator">
+                            📡 Offline Mode
+                        </div>
+                    )}
+                </div>
                 <div className="page-editor-actions">
                     <AutoSaveIndicator
                         saveState={saveState}
@@ -560,6 +592,12 @@ const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = f
                         className="btn-preview"
                     >
                         {isPreviewMode ? 'Exit Preview' : 'Preview'}
+                    </button>
+                    <button
+                        onClick={handleCancel}
+                        className="btn-cancel"
+                    >
+                        Cancel
                     </button>
                     <button
                         onClick={handleManualSave}

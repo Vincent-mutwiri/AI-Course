@@ -371,10 +371,52 @@
     border-bottom: 1px solid #dee2e6;
 }
 
+.page-editor-header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
 .page-editor-header h1 {
     margin: 0;
     font-size: 1.5rem;
     color: #212529;
+}
+
+.btn-back {
+    padding: 0.5rem 1rem;
+    background: #f8f9fa;
+    color: #495057;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-back:hover {
+    background: #e9ecef;
+    border-color: #adb5bd;
+}
+
+.btn-cancel {
+    padding: 0.5rem 1rem;
+    background: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-cancel:hover {
+    background: #5a6268;
 }
 
 .page-editor-actions {
