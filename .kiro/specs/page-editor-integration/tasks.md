@@ -42,7 +42,7 @@
   - Wrap component in ErrorBoundary
   - _Requirements: 1.1, 1.2, 1.3, 4.1, 4.2, 4.4, 5.1, 5.2, 6.6_
 
-- [ ] 4. Update PageBuilder component for navigation
+- [x] 4. Update PageBuilder component for navigation
   - Update "Create Page" button to navigate to /admin/pages/new instead of opening dialog
   - Update edit button in table to navigate to /admin/pages/:id/edit
   - Remove the Dialog component and form for creating/editing pages
