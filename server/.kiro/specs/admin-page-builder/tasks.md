@@ -165,21 +165,21 @@
     - Handle upload errors (file size, type validation)
     - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5_
 
-- [ ] 8. Create auto-save functionality
-  - [ ] 8.1 Implement debounced save in PageEditorContainer
+- [x] 8. Create auto-save functionality
+  - [x] 8.1 Implement debounced save in PageEditorContainer
     - Trigger save 30 seconds after last change
     - Cancel pending save if new changes occur
     - Track save state (idle, saving, saved, error)
     - _Requirements: 10.1_
   
-  - [ ] 8.2 Create AutoSaveIndicator component
+  - [x] 8.2 Create AutoSaveIndicator component
     - Display "Saving..." during save operation
     - Display "Saved at HH:MM" after successful save
     - Display error message if save fails
     - Implement retry logic for failed saves (max 3 attempts with 10-second delay)
     - _Requirements: 10.2, 10.3_
   
-  - [ ] 8.3 Implement unsaved changes warning
+  - [x] 8.3 Implement unsaved changes warning
     - Track dirty state (has unsaved changes)
     - Show browser confirmation dialog on navigation/close
     - Clear dirty state after successful save

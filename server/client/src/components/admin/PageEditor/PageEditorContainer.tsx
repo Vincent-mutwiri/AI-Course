@@ -5,14 +5,13 @@ import PageMetadataForm from './PageMetadataForm';
 import BlockPalette from './BlockPalette';
 import BlockCanvas from './BlockCanvas';
 import BlockEditorPanel from './BlockEditorPanel';
+import AutoSaveIndicator, { SaveState } from './AutoSaveIndicator';
 import { debounce } from '../../../utils/debounce';
 import './BlockEditor.css';
 
 interface PageEditorContainerProps {
     isNewPage?: boolean;
 }
-
-type SaveState = 'idle' | 'saving' | 'saved' | 'error';
 
 const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = false }) => {
     const { id } = useParams<{ id: string }>();
@@ -385,20 +384,13 @@ const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = f
             <div className="page-editor-header">
                 <h1>{isNewPage ? 'Create New Page' : 'Edit Page'}</h1>
                 <div className="page-editor-actions">
-                    <div className="auto-save-indicator">
-                        {saveState === 'saving' && <span className="saving">Saving...</span>}
-                        {saveState === 'saved' && lastSavedAt && (
-                            <span className="saved">
-                                Saved at {lastSavedAt.toLocaleTimeString()}
-                            </span>
-                        )}
-                        {saveState === 'error' && (
-                            <span className="error">
-                                {saveError || 'Error saving'}
-                                {retryCountRef.current > 0 && ` (Retry ${retryCountRef.current}/${maxRetries})`}
-                            </span>
-                        )}
-                    </div>
+                    <AutoSaveIndicator
+                        saveState={saveState}
+                        lastSavedAt={lastSavedAt}
+                        saveError={saveError}
+                        retryCount={retryCountRef.current}
+                        maxRetries={maxRetries}
+                    />
                     <button
                         onClick={handleManualSave}
                         disabled={!isDirty || saveState === 'saving'}
