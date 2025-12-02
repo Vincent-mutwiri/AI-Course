@@ -156,8 +156,8 @@
     - Reuse existing Course Builder interactive block editor logic
     - _Requirements: 3.1, 3.2, 2.2, 2.3_
 
-- [ ] 7. Implement media upload functionality
-  - [ ] 7.1 Integrate existing upload service in block editors
+- [x] 7. Implement media upload functionality
+  - [x] 7.1 Integrate existing upload service in block editors
     - Reuse /api/admin/upload endpoint from Course Builder
     - Add file selection dialog with type filtering
     - Display upload progress indicator

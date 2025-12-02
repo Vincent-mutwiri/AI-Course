@@ -34,9 +34,9 @@ const ImageBlockEditor: React.FC<ImageBlockEditorProps> = ({ block, onChange }) 
         }
 
         // Validate file type
-        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
         if (!validTypes.includes(file.type)) {
-            alert('Invalid file type. Please upload JPEG, PNG, GIF, or WebP images.');
+            alert('Invalid file type. Please upload JPEG, PNG, or GIF images.');
             return;
         }
 
@@ -63,12 +63,15 @@ const ImageBlockEditor: React.FC<ImageBlockEditorProps> = ({ block, onChange }) 
                     setUploading(false);
                     setUploadProgress(0);
                 } else {
-                    throw new Error('Upload failed');
+                    const errorResponse = JSON.parse(xhr.responseText);
+                    alert(errorResponse.message || 'Upload failed. Please try again.');
+                    setUploading(false);
+                    setUploadProgress(0);
                 }
             });
 
             xhr.addEventListener('error', () => {
-                alert('Upload failed. Please try again.');
+                alert('Upload failed. Please check your connection and try again.');
                 setUploading(false);
                 setUploadProgress(0);
             });
@@ -91,7 +94,7 @@ const ImageBlockEditor: React.FC<ImageBlockEditorProps> = ({ block, onChange }) 
                 <input
                     type="file"
                     id="imageUpload"
-                    accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                    accept="image/jpeg,image/jpg,image/png,image/gif"
                     onChange={handleFileUpload}
                     disabled={uploading}
                     className="form-control"

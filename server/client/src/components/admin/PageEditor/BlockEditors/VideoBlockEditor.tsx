@@ -34,9 +34,9 @@ const VideoBlockEditor: React.FC<VideoBlockEditorProps> = ({ block, onChange }) 
         }
 
         // Validate file type
-        const validTypes = ['video/mp4', 'video/webm', 'video/ogg'];
+        const validTypes = ['video/mp4', 'video/webm'];
         if (!validTypes.includes(file.type)) {
-            alert('Invalid file type. Please upload MP4, WebM, or OGG video files.');
+            alert('Invalid file type. Please upload MP4 or WebM video files.');
             return;
         }
 
@@ -67,12 +67,15 @@ const VideoBlockEditor: React.FC<VideoBlockEditorProps> = ({ block, onChange }) 
                     setUploading(false);
                     setUploadProgress(0);
                 } else {
-                    throw new Error('Upload failed');
+                    const errorResponse = JSON.parse(xhr.responseText);
+                    alert(errorResponse.message || 'Upload failed. Please try again.');
+                    setUploading(false);
+                    setUploadProgress(0);
                 }
             });
 
             xhr.addEventListener('error', () => {
-                alert('Upload failed. Please try again.');
+                alert('Upload failed. Please check your connection and try again.');
                 setUploading(false);
                 setUploadProgress(0);
             });
@@ -154,7 +157,7 @@ const VideoBlockEditor: React.FC<VideoBlockEditorProps> = ({ block, onChange }) 
                     <input
                         type="file"
                         id="videoUpload"
-                        accept="video/mp4,video/webm,video/ogg"
+                        accept="video/mp4,video/webm"
                         onChange={handleFileUpload}
                         disabled={uploading}
                         className="form-control"
