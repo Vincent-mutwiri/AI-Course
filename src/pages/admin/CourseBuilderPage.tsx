@@ -738,6 +738,59 @@ export default function CourseBuilderPage() {
                         }}
                         onAddModule={handleAddModule}
                         onAddLesson={handleAddLesson}
+                        onDeleteModule={async (moduleId) => {
+                            if (!confirm("Are you sure you want to delete this module? All lessons within it will be deleted.")) return;
+                            try {
+                                await api.delete(`/admin/courses/${id}/modules/${moduleId}`);
+                                setCourse((prev) => {
+                                    if (!prev) return null;
+                                    return {
+                                        ...prev,
+                                        modules: prev.modules.filter((m) => m._id !== moduleId),
+                                    };
+                                });
+                                toast.success("Module deleted successfully");
+                                // If current module is deleted, reset selection
+                                if (currentModuleId === moduleId) {
+                                    setCurrentModuleId(null);
+                                    setCurrentLessonId(null);
+                                    setBlocks([]);
+                                }
+                            } catch (error) {
+                                console.error("Failed to delete module:", error);
+                                toast.error("Failed to delete module");
+                            }
+                        }}
+                        onDeleteLesson={async (moduleId, lessonId) => {
+                            if (!confirm("Are you sure you want to delete this lesson?")) return;
+                            try {
+                                await api.delete(`/admin/courses/${id}/modules/${moduleId}/lessons/${lessonId}`);
+                                setCourse((prev) => {
+                                    if (!prev) return null;
+                                    return {
+                                        ...prev,
+                                        modules: prev.modules.map((m) => {
+                                            if (m._id === moduleId) {
+                                                return {
+                                                    ...m,
+                                                    lessons: m.lessons.filter((l) => l._id !== lessonId),
+                                                };
+                                            }
+                                            return m;
+                                        }),
+                                    };
+                                });
+                                toast.success("Lesson deleted successfully");
+                                // If current lesson is deleted, reset selection
+                                if (currentLessonId === lessonId) {
+                                    setCurrentLessonId(null);
+                                    setBlocks([]);
+                                }
+                            } catch (error) {
+                                console.error("Failed to delete lesson:", error);
+                                toast.error("Failed to delete lesson");
+                            }
+                        }}
                     />
                 </div>
 

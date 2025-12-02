@@ -173,6 +173,7 @@ export const InteractiveElementRouter = ({ element, userName, courseTitle, cours
 
       case 'certificateGenerator':
         const certData = (element as any).content || element;
+        console.log('CertificateGenerator props:', { userName, courseTitle, elementCourseTitle: element.courseTitle, certTitle: certData.certificateTitle });
         return (
           <Suspense fallback={<CardSkeleton />}>
             <CertificateGenerator

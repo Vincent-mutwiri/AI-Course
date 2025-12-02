@@ -6,8 +6,8 @@
   - Update vite.config.ts to add proxy configuration for /api routes to localhost:3000
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 9.1, 9.2, 9.3, 9.4_
 
-- [ ] 2. Copy page editor components to main React app
-  - [ ] 2.1 Copy main page editor components
+- [x] 2. Copy page editor components to main React app
+  - [x] 2.1 Copy main page editor components
     - Copy PageEditorContainer.tsx from server/client/src/components/admin/PageEditor/ to src/components/admin/PageEditor/
     - Copy BlockCanvas.tsx, BlockPalette.tsx, BlockEditorPanel.tsx, BlockRenderer.tsx, BlockToolbar.tsx
     - Copy SortableBlockItem.tsx, AutoSaveIndicator.tsx, PageMetadataForm.tsx, PagePreview.tsx
@@ -15,14 +15,14 @@
     - Copy index.ts
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5_
 
-  - [ ] 2.2 Copy block editor components
+  - [x] 2.2 Copy block editor components
     - Copy entire BlockEditors directory from server/client/src/components/admin/PageEditor/BlockEditors/ to src/components/admin/PageEditor/BlockEditors/
     - Ensure all block editor files are copied: TextBlockEditor.tsx, VideoBlockEditor.tsx, ImageBlockEditor.tsx, CodeBlockEditor.tsx, ListBlockEditor.tsx, DividerBlockEditor.tsx
     - Copy interactive block editors: InteractiveBlockEditor.tsx, PollBlockEditor.tsx, ReflectionBlockEditor.tsx, WordCloudBlockEditor.tsx, AIGeneratorBlockEditor.tsx
     - Copy BlockEditors.css and index.ts
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5_
 
-  - [ ] 2.3 Update import paths in copied components
+  - [x] 2.3 Update import paths in copied components
     - Update all import statements to use @/ alias for src directory
     - Fix imports for UI components from @/components/ui
     - Fix imports for services from @/services

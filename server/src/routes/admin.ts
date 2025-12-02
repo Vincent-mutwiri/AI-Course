@@ -796,7 +796,6 @@ router.put("/courses/:courseId/modules/:moduleId", async (req: AuthRequest, res:
 // Update lesson
 router.put("/courses/:courseId/modules/:moduleId/lessons/:lessonId", async (req: AuthRequest, res: Response) => {
   try {
-    const { courseId, moduleId, lessonId } = req.params;
     const { title, duration } = req.body;
 
     const course = await Course.findById(courseId);
@@ -829,6 +828,75 @@ router.put("/courses/:courseId/modules/:moduleId/lessons/:lessonId", async (req:
     });
   } catch (error) {
     console.error("[Admin] Error updating lesson:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Delete module
+router.delete("/courses/:courseId/modules/:moduleId", async (req: AuthRequest, res: Response) => {
+  try {
+    const { courseId, moduleId } = req.params;
+
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+
+    const moduleIndex = course.modules.findIndex((m: any) => m._id.toString() === moduleId);
+    if (moduleIndex === -1) {
+      return res.status(404).json({ message: "Module not found" });
+    }
+
+    // Remove module
+    course.modules.splice(moduleIndex, 1);
+
+    // Reorder remaining modules
+    course.modules.forEach((module: any, index: number) => {
+      module.order = index;
+    });
+
+    await course.save();
+
+    res.json({ message: "Module deleted successfully" });
+  } catch (error) {
+    console.error("[Admin] Error deleting module:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Delete lesson
+router.delete("/courses/:courseId/modules/:moduleId/lessons/:lessonId", async (req: AuthRequest, res: Response) => {
+  try {
+    const { courseId, moduleId, lessonId } = req.params;
+
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+
+    const module = course.modules.find((m: any) => m._id.toString() === moduleId);
+    if (!module) {
+      return res.status(404).json({ message: "Module not found" });
+    }
+
+    const lessonIndex = module.lessons.findIndex((l: any) => l._id.toString() === lessonId);
+    if (lessonIndex === -1) {
+      return res.status(404).json({ message: "Lesson not found" });
+    }
+
+    // Remove lesson
+    module.lessons.splice(lessonIndex, 1);
+
+    // Reorder remaining lessons
+    module.lessons.forEach((lesson: any, index: number) => {
+      lesson.order = index;
+    });
+
+    await course.save();
+
+    res.json({ message: "Lesson deleted successfully" });
+  } catch (error) {
+    console.error("[Admin] Error deleting lesson:", error);
     res.status(500).json({ message: "Server error" });
   }
 });
