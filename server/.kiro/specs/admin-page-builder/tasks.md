@@ -88,14 +88,14 @@
     - Drag handle for reordering
     - _Requirements: 5.1, 5.2_
 
-- [ ] 5. Implement block editor components for content blocks
-  - [ ] 5.1 Create TextBlockEditor component with rich text editing
+- [-] 5. Implement block editor components for content blocks
+  - [x] 5.1 Create TextBlockEditor component with rich text editing
     - Integrate rich text editor (TinyMCE, Quill, or similar)
     - Support formatting: bold, italic, headings, links, lists
     - Update block content.text on change
     - _Requirements: 3.1, 3.2, 3.3_
   
-  - [ ] 5.2 Create VideoBlockEditor component
+  - [x] 5.2 Create VideoBlockEditor component
     - Input field for videoUrl
     - Dropdown for videoSource (upload/embed)
     - Dropdown for videoProvider (youtube/vimeo/s3)
@@ -103,26 +103,26 @@
     - Video preview
     - _Requirements: 3.1, 3.2, 3.4_
   
-  - [ ] 5.3 Create ImageBlockEditor component
+  - [x] 5.3 Create ImageBlockEditor component
     - Input field for imageUrl
     - Upload button for image files
     - Input fields for caption and altText
     - Image preview with responsive sizing
     - _Requirements: 3.1, 3.2, 3.5, 8.1, 8.2, 8.3_
   
-  - [ ] 5.4 Create CodeBlockEditor component
+  - [x] 5.4 Create CodeBlockEditor component
     - Textarea for code input with monospace font
     - Dropdown for language selection
     - Syntax highlighting preview
     - _Requirements: 3.1, 3.2_
   
-  - [ ] 5.5 Create ListBlockEditor component
+  - [x] 5.5 Create ListBlockEditor component
     - Input fields for list items (add/remove/reorder)
     - Dropdown for listType (bullet/numbered/checkbox)
     - Checkbox for checked state (if checkbox type)
     - _Requirements: 3.1, 3.2_
   
-  - [ ] 5.6 Create DividerBlockEditor component
+  - [x] 5.6 Create DividerBlockEditor component
     - No input fields needed (divider has no configurable content)
     - Display visual representation of divider
     - _Requirements: 3.1, 3.2_
