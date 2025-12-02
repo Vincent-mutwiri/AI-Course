@@ -34,6 +34,10 @@ export interface IBlockContent {
     title?: string;
     description?: string;
     meta?: Record<string, any>;
+    generatorType?: string;
+    badSlideUrl?: string;
+    goodSlideUrl?: string;
+    explanation?: string;
 }
 
 export interface IBlock {

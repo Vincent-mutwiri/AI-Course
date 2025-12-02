@@ -63,7 +63,8 @@ export const FinalAssessmentComponent: React.FC<FinalAssessmentComponentProps> =
       options: q.options || [],
       optionsArray: (q.options || []).map(opt => typeof opt === 'string' ? opt : (opt as QuestionOption).text),
       answer: q.correctAnswer || q.answer || '',
-      explanation: q.explanation || ''
+      explanation: q.explanation || '',
+      maxScore: q.maxScore
     }));
   };
 
@@ -153,7 +154,7 @@ Provide your response in the following JSON format:
 
       for (const q of questions) {
         const rawQuestion = rawQuestions.find((rq, idx) => (rq.id || `q-${idx}`) === q.id);
-        
+
         if (q.type === 'multiple-choice' || !q.type) {
           // Multiple choice - simple correct/incorrect
           totalPoints += 1;
@@ -167,8 +168,8 @@ Provide your response in the following JSON format:
           if (studentAnswer) {
             const questionWithRubric = {
               ...q,
-              rubric: rawQuestion?.rubric,
-              maxScore: rawQuestion?.maxScore || 10
+              rubric: (rawQuestion as any)?.rubric,
+              maxScore: (rawQuestion as any)?.maxScore || 10
             };
             const result = await gradeWithAI(questionWithRubric, studentAnswer);
             gradingResults[q.id] = result;
@@ -176,7 +177,7 @@ Provide your response in the following JSON format:
             totalPoints += result.maxScore;
           } else {
             // No answer
-            totalPoints += rawQuestion?.maxScore || 10;
+            totalPoints += (rawQuestion as any)?.maxScore || 10;
           }
         }
       }

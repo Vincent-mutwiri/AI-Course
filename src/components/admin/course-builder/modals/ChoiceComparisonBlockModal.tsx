@@ -26,13 +26,13 @@ interface ChoiceComparisonBlockModalProps {
 
 interface ChoiceEntry {
     label: string;
-    description: string;
+    description?: string;
 }
 
 export function ChoiceComparisonBlockModal({ open, onClose, onSave, initialData }: ChoiceComparisonBlockModalProps) {
     const [choices, setChoices] = useState<ChoiceEntry[]>([
-        { label: '', description: '' },
-        { label: '', description: '' },
+        { label: '' },
+        { label: '' },
     ]);
 
     // Reset choices when modal opens or initialData changes
@@ -41,8 +41,8 @@ export function ChoiceComparisonBlockModal({ open, onClose, onSave, initialData 
             console.log('[ChoiceComparisonModal] Modal opened with initialData:', initialData);
 
             const initialChoices: ChoiceEntry[] = initialData?.content?.choices || [
-                { label: '', description: '' },
-                { label: '', description: '' },
+                { label: '' },
+                { label: '' },
             ];
 
             console.log('[ChoiceComparisonModal] Setting initial choices:', initialChoices);
@@ -101,7 +101,7 @@ export function ChoiceComparisonBlockModal({ open, onClose, onSave, initialData 
             .filter(c => c.label.trim())
             .map(c => ({
                 label: c.label.trim(),
-                description: c.description.trim(),
+                description: c.description?.trim() || '',
             }));
 
         const finalData = {
