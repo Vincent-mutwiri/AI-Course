@@ -6,6 +6,7 @@ import BlockPalette from './BlockPalette';
 import BlockCanvas from './BlockCanvas';
 import BlockEditorPanel from './BlockEditorPanel';
 import AutoSaveIndicator, { SaveState } from './AutoSaveIndicator';
+import PagePreview from './PagePreview';
 import { debounce } from '../../../utils/debounce';
 import './BlockEditor.css';
 
@@ -26,6 +27,7 @@ const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = f
     const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
     const [isDirty, setIsDirty] = useState<boolean>(false);
     const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
+    const [isPreviewMode, setIsPreviewMode] = useState<boolean>(false);
 
     // Refs for auto-save
     const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -341,6 +343,11 @@ const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = f
         }
     }, [page, blocks, savePage]);
 
+    // Toggle preview mode
+    const handleTogglePreview = useCallback(() => {
+        setIsPreviewMode(prev => !prev);
+    }, []);
+
     // Navigation guard for unsaved changes
     useEffect(() => {
         // Set global flag for NavigationGuard component
@@ -392,6 +399,12 @@ const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = f
                         maxRetries={maxRetries}
                     />
                     <button
+                        onClick={handleTogglePreview}
+                        className="btn-preview"
+                    >
+                        {isPreviewMode ? 'Exit Preview' : 'Preview'}
+                    </button>
+                    <button
                         onClick={handleManualSave}
                         disabled={!isDirty || saveState === 'saving'}
                         className="btn-save"
@@ -427,6 +440,13 @@ const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = f
                     />
                 </div>
             </div>
+
+            <PagePreview
+                page={page}
+                blocks={blocks}
+                isPreviewMode={isPreviewMode}
+                onTogglePreview={handleTogglePreview}
+            />
         </div>
     );
 };

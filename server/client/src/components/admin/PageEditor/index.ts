@@ -6,3 +6,5 @@ export { default as BlockToolbar } from './BlockToolbar';
 export { default as SortableBlockItem } from './SortableBlockItem';
 export { default as BlockEditorPanel } from './BlockEditorPanel';
 export { default as AutoSaveIndicator } from './AutoSaveIndicator';
+export { default as PagePreview } from './PagePreview';
+export { default as BlockRenderer } from './BlockRenderer';
