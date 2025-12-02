@@ -43,21 +43,21 @@
     - Return boolean indicating uniqueness
     - _Requirements: 7.2_
 
-- [ ] 3. Create page editor UI container and routing
-  - [ ] 3.1 Create PageEditorContainer component with data fetching and state management
+- [x] 3. Create page editor UI container and routing
+  - [x] 3.1 Create PageEditorContainer component with data fetching and state management
     - Fetch page data on mount (or initialize empty page for new pages)
     - Manage blocks state array
     - Implement auto-save logic with 30-second debounce
     - Handle save success/error states
     - _Requirements: 1.1, 10.1, 10.2_
   
-  - [ ] 3.2 Add routing for page editor in admin section
+  - [x] 3.2 Add routing for page editor in admin section
     - Add route for /admin/pages/new (create new page)
     - Add route for /admin/pages/:id/edit (edit existing page)
     - Implement navigation guards for unsaved changes
     - _Requirements: 1.1, 10.4_
   
-  - [ ] 3.3 Create PageMetadataForm component for title, slug, type, and publish status
+  - [x] 3.3 Create PageMetadataForm component for title, slug, type, and publish status
     - Input fields for title, slug, type dropdown, isPublished checkbox
     - Auto-generate slug from title if not manually set
     - Validate slug uniqueness on blur
