@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { IPage, IBlock, BlockType } from '../../../types/page';
 import PageMetadataForm from './PageMetadataForm';
 import BlockPalette from './BlockPalette';
@@ -35,7 +36,7 @@ const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = f
     const [isOnline, setIsOnline] = useState<boolean>(navigator.onLine);
 
     // Refs for auto-save
-    const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const retryCountRef = useRef<number>(0);
     const maxRetries = 3;
 
@@ -133,11 +134,15 @@ const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = f
     }, [id, isNewPage]);
 
     // Save page function
-    const savePage = useCallback(async (pageData: Partial<IPage>, blocksData: IBlock[]) => {
+    const savePage = useCallback(async (pageData: Partial<IPage>, blocksData: IBlock[], isManualSave: boolean = false) => {
         // Validate metadata before saving
         if (!isMetadataValid) {
-            setSaveError('Please fix validation errors before saving');
+            const errorMsg = 'Please fix validation errors before saving';
+            setSaveError(errorMsg);
             setSaveState('error');
+            if (isManualSave) {
+                toast.error(errorMsg);
+            }
             return;
         }
 
@@ -179,6 +184,11 @@ const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = f
             setIsDirty(false);
             retryCountRef.current = 0;
 
+            // Show success toast notification
+            if (isManualSave) {
+                toast.success('Page saved successfully');
+            }
+
             // If this was a new page, navigate to edit mode
             if (isNewPage && data.page._id) {
                 navigate(`/admin/pages/${data.page._id}/edit`, { replace: true });
@@ -191,33 +201,69 @@ const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = f
             const isNetworkError = !navigator.onLine || error instanceof TypeError;
 
             if (isNetworkError) {
-                setSaveError('Network error. Changes saved locally.');
+                const errorMsg = 'Network error. Changes saved locally.';
+                setSaveError(errorMsg);
                 setNetworkError('Unable to reach server. Your changes are saved locally and will sync when connection is restored.');
+
+                // Show error toast with retry option
+                toast.error(errorMsg, {
+                    action: {
+                        label: 'Retry',
+                        onClick: () => savePage(pageData, blocksData, true)
+                    }
+                });
 
                 // Cache the data locally
                 if (page?._id) {
                     cachePageData(page._id, pageData, blocksData);
                 }
             } else {
-                setSaveError('Failed to save page');
+                const errorMsg = 'Failed to save page';
+                setSaveError(errorMsg);
                 setNetworkError('Failed to save page. Please try again.');
+
+                // Show error toast with retry option
+                toast.error(errorMsg, {
+                    action: {
+                        label: 'Retry',
+                        onClick: () => savePage(pageData, blocksData, true)
+                    }
+                });
             }
 
-            // Retry logic for transient failures
+            // Retry logic for transient failures (up to 3 attempts)
             if (retryCountRef.current < maxRetries && !isNetworkError) {
                 retryCountRef.current++;
+
+                // Show retry notification
+                toast.info(`Retrying save (${retryCountRef.current}/${maxRetries})...`, {
+                    duration: 2000
+                });
+
                 setTimeout(() => {
-                    savePage(pageData, blocksData);
-                }, 10000); // Retry after 10 seconds
+                    savePage(pageData, blocksData, false);
+                }, 2000); // Retry after 2 seconds
+            } else if (retryCountRef.current >= maxRetries) {
+                // Max retries reached
+                toast.error('Failed to save after multiple attempts. Please try again manually.', {
+                    duration: 6000,
+                    action: {
+                        label: 'Retry Now',
+                        onClick: () => {
+                            retryCountRef.current = 0;
+                            savePage(pageData, blocksData, true);
+                        }
+                    }
+                });
             }
         }
-    }, [isNewPage, page, navigate, isMetadataValid]);
+    }, [isNewPage, page, navigate, isMetadataValid, maxRetries]);
 
-    // Debounced auto-save (30 seconds)
+    // Debounced auto-save (2 seconds)
     const debouncedSave = useCallback(
         debounce((pageData: Partial<IPage>, blocksData: IBlock[]) => {
-            savePage(pageData, blocksData);
-        }, 30000),
+            savePage(pageData, blocksData, false);
+        }, 2000),
         [savePage]
     );
 
@@ -435,7 +481,9 @@ const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = f
             if (saveTimeoutRef.current) {
                 clearTimeout(saveTimeoutRef.current);
             }
-            savePage(page, blocks);
+            // Reset retry count for manual saves
+            retryCountRef.current = 0;
+            savePage(page, blocks, true);
         }
     }, [page, blocks, savePage]);
 

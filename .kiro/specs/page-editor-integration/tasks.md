@@ -58,7 +58,7 @@
   - Test navigation between routes
   - _Requirements: 6.1, 6.2, 6.3, 6.4_
 
-- [ ] 6. Integrate auto-save functionality
+- [x] 6. Integrate auto-save functionality
   - Verify PageEditorContainer has auto-save logic with 2-second debounce
   - Ensure auto-save calls the correct API endpoint (PUT /api/admin/pages/:id)
   - Add AutoSaveIndicator component to display save status

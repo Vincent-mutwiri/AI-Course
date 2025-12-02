@@ -165,7 +165,8 @@ router.post("/pages", async (req: AuthRequest, res: Response) => {
     const page = await Page.create(req.body);
     res.status(201).json({ page });
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    console.error("[Admin] Error creating page:", error);
+    res.status(500).json({ message: "Server error", error: error instanceof Error ? error.message : String(error) });
   }
 });
 
@@ -228,7 +229,7 @@ router.get("/pages/validate-slug", async (req: AuthRequest, res: Response) => {
     res.json({ isUnique });
   } catch (error) {
     console.error("[Admin] Error validating slug:", error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error", error: error instanceof Error ? error.message : String(error) });
   }
 });
 
