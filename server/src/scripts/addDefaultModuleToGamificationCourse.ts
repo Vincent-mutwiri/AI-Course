@@ -47,8 +47,8 @@ async function addDefaultModule() {
 
         await course.save();
         console.log('✅ Successfully added default module and lesson');
-        console.log(`Module ID: ${course.modules[0]._id}`);
-        console.log(`Lesson ID: ${course.modules[0].lessons[0]._id}`);
+        console.log(`Module ID: ${(course.modules[0] as any)._id}`);
+        console.log(`Lesson ID: ${(course.modules[0].lessons[0] as any)._id}`);
 
     } catch (error) {
         console.error('Error:', error);

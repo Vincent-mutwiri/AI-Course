@@ -170,8 +170,8 @@ router.get("/courses/stats", async (req: AuthRequest, res: Response) => {
   }
 });
 
-// Page Management Routes
-router.get("/pages", async (req: AuthRequest, res: Response) => {
+// Page Management Routes - DISABLED (no Page model implementation)
+/* router.get("/pages", async (req: AuthRequest, res: Response) => {
   try {
     const pages = await Page.find().sort({ createdAt: -1 });
     res.json({ pages });
@@ -432,7 +432,7 @@ router.delete("/pages/:id/blocks/:blockId", async (req: AuthRequest, res: Respon
     console.error("[Admin] Error deleting page block:", error);
     res.status(500).json({ message: "Server error" });
   }
-});
+}); */
 
 // Course Builder API Routes
 
@@ -831,6 +831,7 @@ router.put("/courses/:courseId/modules/:moduleId", async (req: AuthRequest, res:
 // Update lesson
 router.put("/courses/:courseId/modules/:moduleId/lessons/:lessonId", async (req: AuthRequest, res: Response) => {
   try {
+    const { courseId, moduleId, lessonId } = req.params;
     const { title, duration } = req.body;
 
     const course = await Course.findById(courseId);
