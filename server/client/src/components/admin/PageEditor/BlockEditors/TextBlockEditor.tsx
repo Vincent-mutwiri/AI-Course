@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { IBlock } from '../../../../types/page';
+import './BlockEditors.css';
 
 interface TextBlockEditorProps {
     block: IBlock;

@@ -88,7 +88,7 @@
     - Drag handle for reordering
     - _Requirements: 5.1, 5.2_
 
-- [-] 5. Implement block editor components for content blocks
+- [x] 5. Implement block editor components for content blocks
   - [x] 5.1 Create TextBlockEditor component with rich text editing
     - Integrate rich text editor (TinyMCE, Quill, or similar)
     - Support formatting: bold, italic, headings, links, lists

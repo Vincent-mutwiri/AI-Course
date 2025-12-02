@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { IBlock } from '../../../../types/page';
+import './BlockEditors.css';
 
 interface VideoBlockEditorProps {
     block: IBlock;

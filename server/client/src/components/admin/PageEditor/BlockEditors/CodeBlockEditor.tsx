@@ -1,5 +1,6 @@
 import React from 'react';
 import { IBlock } from '../../../../types/page';
+import './BlockEditors.css';
 
 interface CodeBlockEditorProps {
     block: IBlock;

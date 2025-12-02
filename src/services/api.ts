@@ -29,13 +29,13 @@ api.interceptors.response.use(
       message: error.response?.data?.message || error.message,
       data: error.response?.data
     });
-    
+
     if (error.response?.status === 401) {
       const currentPath = window.location.pathname;
       // List of public pages that should not trigger auto-redirect
       const publicPages = ['/login', '/signup', '/courses', '/forgot-password', '/', '/help'];
       const isPublicPage = publicPages.some(page => currentPath === page || currentPath.startsWith('/course/'));
-      
+
       if (!isPublicPage) {
         console.log('[API] Unauthorized - redirecting to login');
         removeToken();
@@ -258,6 +258,29 @@ export const mediaAPI = {
 export const profileAPI = {
   getProfile: async () => {
     const { data } = await api.get("/profile");
+    return data;
+  },
+};
+
+export const pageEditorApi = {
+  getPage: async (id: string) => {
+    const { data } = await api.get(`/admin/pages/${id}`);
+    return data;
+  },
+  createPage: async (pageData: any) => {
+    const { data } = await api.post("/admin/pages", pageData);
+    return data;
+  },
+  updatePage: async (id: string, pageData: any) => {
+    const { data } = await api.put(`/admin/pages/${id}`, pageData);
+    return data;
+  },
+  uploadFile: async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const { data } = await api.post("/admin/upload", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
     return data;
   },
 };

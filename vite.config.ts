@@ -18,6 +18,16 @@ export default defineConfig({
   build: {
     chunkSizeWarningLimit: 1000
   },
+  server: {
+    port: 5173,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        secure: false
+      }
+    }
+  },
   test: {
     globals: true,
     environment: 'jsdom',

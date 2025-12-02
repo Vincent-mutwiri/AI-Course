@@ -35,11 +35,28 @@ export default function PageBuilder() {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
+
+        // Construct the content object expected by the backend
+        const textContent = formData.get("content") as string;
+        const content = {
+            version: '1.0',
+            blocks: [
+                {
+                    id: crypto.randomUUID(),
+                    type: 'text',
+                    order: 0,
+                    content: {
+                        text: textContent
+                    }
+                }
+            ]
+        };
+
         const data = {
             title: formData.get("title"),
             slug: formData.get("slug"),
             type: formData.get("type"),
-            content: formData.get("content"), // Simple text content for now
+            content: content,
             isPublished: formData.get("isPublished") === "on",
         };
 
@@ -80,6 +97,19 @@ export default function PageBuilder() {
     const openNew = () => {
         setEditingPage(null);
         setShowDialog(true);
+    };
+
+    // Helper to extract text content from page object
+    const getPageContent = (page: any) => {
+        if (!page?.content) return "";
+        // Handle legacy string content
+        if (typeof page.content === 'string') return page.content;
+        // Handle block structure
+        if (page.content.blocks && Array.isArray(page.content.blocks)) {
+            const textBlock = page.content.blocks.find((b: any) => b.type === 'text');
+            return textBlock?.content?.text || "";
+        }
+        return "";
     };
 
     if (loading) return <div>Loading...</div>;
@@ -167,7 +197,7 @@ export default function PageBuilder() {
                             <Textarea
                                 id="content"
                                 name="content"
-                                defaultValue={editingPage?.content}
+                                defaultValue={getPageContent(editingPage)}
                                 required
                                 className="min-h-[200px]"
                                 placeholder="# Markdown or HTML content"
