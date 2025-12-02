@@ -144,7 +144,10 @@ export const InteractiveElementRouter = ({ element, userName, courseTitle, cours
           case 'certificate':
             return (
               <Suspense fallback={<CardSkeleton />}>
-                <CertificateGenerator />
+                <CertificateGenerator
+                  userName={userName}
+                  courseTitle={courseTitle}
+                />
               </Suspense>
             );
           default:

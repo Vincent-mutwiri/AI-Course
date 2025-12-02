@@ -56,6 +56,8 @@ export const CertificateGenerator = ({ userName: propUserName, courseTitle, conf
       const loadImage = (src: string): Promise<HTMLImageElement> => {
         return new Promise((resolve, reject) => {
           const img = new Image();
+          // Append timestamp to avoid caching issues with CORS
+          const corsSrc = src + (src.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
 
           // Try without crossOrigin first (for same-origin images)
           const tryLoad = (useCors: boolean) => {
@@ -71,12 +73,12 @@ export const CertificateGenerator = ({ userName: propUserName, courseTitle, conf
                 const img2 = new Image();
                 img2.onload = () => resolve(img2);
                 img2.onerror = () => reject(new Error(`Failed to load image: ${src}`));
-                img2.src = src;
+                img2.src = src; // Fallback to original src without cache buster if needed, though usually we want the buster
               } else {
                 reject(new Error(`Failed to load image: ${src}`));
               }
             };
-            img.src = src;
+            img.src = useCors ? corsSrc : src;
           };
 
           // Start with CORS enabled
@@ -184,9 +186,15 @@ export const CertificateGenerator = ({ userName: propUserName, courseTitle, conf
           toast.success('Certificate downloaded successfully!');
         }
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error generating certificate:', error);
-      toast.error('Failed to generate certificate');
+
+      if (error.name === 'SecurityError' || error.message?.includes('Tainted')) {
+        toast.error('Security Error: S3 CORS configuration missing. Please update your bucket permissions.');
+      } else {
+        toast.error('Failed to generate certificate');
+      }
+
       setGenerating(false);
     }
   };
