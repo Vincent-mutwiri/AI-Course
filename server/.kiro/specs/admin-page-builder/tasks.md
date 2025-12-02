@@ -256,8 +256,8 @@
     - Store changes locally if connection lost
     - _Requirements: 10.3_
 
-- [ ] 13. Add comprehensive testing
-  - [ ] 13.1 Write unit tests for backend API routes
+- [-] 13. Add comprehensive testing
+  - [x] 13.1 Write unit tests for backend API routes
     - Test page block CRUD operations
     - Test validation logic
     - Test error conditions

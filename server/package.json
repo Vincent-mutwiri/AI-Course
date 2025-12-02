@@ -5,6 +5,9 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc --skipLibCheck",
     "start": "node dist/index.js",
+    "test": "jest --runInBand",
+    "test:watch": "jest --watch --runInBand",
+    "test:coverage": "jest --coverage --runInBand",
     "seed": "tsx src/seed.ts",
     "seed:profile": "tsx src/seed/seed-profile.ts",
     "seed:gamification": "tsx src/scripts/seedGamificationModules.ts",
@@ -35,6 +38,12 @@
     "uuid": "^13.0.0"
   },
   "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/supertest": "^6.0.3",
+    "jest": "^30.2.0",
+    "mongodb-memory-server": "^10.3.0",
+    "supertest": "^7.1.4",
+    "ts-jest": "^29.4.6",
     "tsx": "^4.20.6"
   }
 }
