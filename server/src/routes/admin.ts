@@ -190,6 +190,215 @@ router.delete("/pages/:id", async (req: AuthRequest, res: Response) => {
   }
 });
 
+// Page Block Management Routes
+
+// Get page for editing (with blocks)
+router.get("/pages/:id/edit", async (req: AuthRequest, res: Response) => {
+  try {
+    const page = await Page.findById(req.params.id);
+
+    if (!page) {
+      return res.status(404).json({ message: "Page not found" });
+    }
+
+    res.json({ page });
+  } catch (error) {
+    console.error("[Admin] Error fetching page for edit:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Validate slug uniqueness
+router.get("/pages/validate-slug", async (req: AuthRequest, res: Response) => {
+  try {
+    const { slug, excludeId } = req.query;
+
+    if (!slug) {
+      return res.status(400).json({ message: "Slug is required" });
+    }
+
+    const query: any = { slug };
+    if (excludeId) {
+      query._id = { $ne: excludeId };
+    }
+
+    const existingPage = await Page.findOne(query);
+    const isUnique = !existingPage;
+
+    res.json({ isUnique });
+  } catch (error) {
+    console.error("[Admin] Error validating slug:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Save page blocks
+router.put("/pages/:id/blocks", async (req: AuthRequest, res: Response) => {
+  try {
+    const { blocks } = req.body;
+
+    // Validate blocks array
+    if (!Array.isArray(blocks)) {
+      return res.status(400).json({ message: "Blocks must be an array" });
+    }
+
+    // Validate each block has required fields
+    for (const block of blocks) {
+      if (!block.id || !block.type || block.order === undefined) {
+        return res.status(400).json({
+          message: "Each block must have id, type, and order fields"
+        });
+      }
+    }
+
+    const page = await Page.findById(req.params.id);
+    if (!page) {
+      return res.status(404).json({ message: "Page not found" });
+    }
+
+    // Update page content with new blocks
+    page.content.blocks = blocks;
+    await page.save();
+
+    res.json({ page });
+  } catch (error) {
+    console.error("[Admin] Error saving page blocks:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Reorder page blocks
+router.patch("/pages/:id/blocks/reorder", async (req: AuthRequest, res: Response) => {
+  try {
+    const { blockIds } = req.body;
+
+    // Validate blockIds array
+    if (!Array.isArray(blockIds)) {
+      return res.status(400).json({ message: "blockIds must be an array" });
+    }
+
+    const page = await Page.findById(req.params.id);
+    if (!page) {
+      return res.status(404).json({ message: "Page not found" });
+    }
+
+    if (!page.content.blocks || page.content.blocks.length === 0) {
+      return res.status(400).json({ message: "Page has no blocks to reorder" });
+    }
+
+    // Validate all blockIds exist
+    const existingBlockIds = page.content.blocks.map((b: any) => b.id);
+    const allIdsValid = blockIds.every((id: string) => existingBlockIds.includes(id));
+
+    if (!allIdsValid || blockIds.length !== existingBlockIds.length) {
+      return res.status(400).json({ message: "Invalid blockIds provided" });
+    }
+
+    // Reorder blocks based on blockIds array
+    const reorderedBlocks = blockIds.map((id: string, index: number) => {
+      const block = page.content.blocks.find((b: any) => b.id === id);
+      return {
+        ...block.toObject(),
+        order: index
+      };
+    });
+
+    page.content.blocks = reorderedBlocks;
+    await page.save();
+
+    res.json({ blocks: page.content.blocks });
+  } catch (error) {
+    console.error("[Admin] Error reordering page blocks:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Duplicate page block
+router.post("/pages/:id/blocks/:blockId/duplicate", async (req: AuthRequest, res: Response) => {
+  try {
+    const { id, blockId } = req.params;
+
+    const page = await Page.findById(id);
+    if (!page) {
+      return res.status(404).json({ message: "Page not found" });
+    }
+
+    if (!page.content.blocks || page.content.blocks.length === 0) {
+      return res.status(404).json({ message: "Page has no blocks" });
+    }
+
+    // Find the block to duplicate
+    const blockIndex = page.content.blocks.findIndex((b: any) => b.id === blockId);
+    if (blockIndex === -1) {
+      return res.status(404).json({ message: "Block not found" });
+    }
+
+    const originalBlock = page.content.blocks[blockIndex];
+
+    // Create duplicated block with new unique ID
+    const duplicatedBlock = {
+      ...originalBlock.toObject(),
+      id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+
+    // Insert duplicated block after original
+    page.content.blocks.splice(blockIndex + 1, 0, duplicatedBlock as any);
+
+    // Update order for all blocks after insertion
+    page.content.blocks = page.content.blocks.map((block: any, index: number) => ({
+      ...block,
+      order: index
+    }));
+
+    await page.save();
+
+    res.json({ block: duplicatedBlock });
+  } catch (error) {
+    console.error("[Admin] Error duplicating page block:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Delete page block
+router.delete("/pages/:id/blocks/:blockId", async (req: AuthRequest, res: Response) => {
+  try {
+    const { id, blockId } = req.params;
+
+    const page = await Page.findById(id);
+    if (!page) {
+      return res.status(404).json({ message: "Page not found" });
+    }
+
+    if (!page.content.blocks || page.content.blocks.length === 0) {
+      return res.status(404).json({ message: "Page has no blocks" });
+    }
+
+    // Find the block to delete
+    const blockIndex = page.content.blocks.findIndex((b: any) => b.id === blockId);
+    if (blockIndex === -1) {
+      return res.status(404).json({ message: "Block not found" });
+    }
+
+    // Remove block from blocks array
+    page.content.blocks.splice(blockIndex, 1);
+
+    // Update order values for remaining blocks
+    page.content.blocks = page.content.blocks.map((block: any, index: number) => ({
+      ...block,
+      order: index
+    }));
+
+    await page.save();
+
+    res.json({ message: "Block deleted successfully" });
+  } catch (error) {
+    console.error("[Admin] Error deleting page block:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 // Course Builder API Routes
 
 // Get course for editing in builder

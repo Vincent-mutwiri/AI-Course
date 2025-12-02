@@ -6,38 +6,38 @@
   - Export IBlock interface from Course model for reuse in Page model
   - _Requirements: 1.3, 2.5_
 
-- [ ] 2. Implement backend API routes for page block management
-  - [ ] 2.1 Create GET /api/admin/pages/:id/edit endpoint to fetch page with blocks for editing
+- [x] 2. Implement backend API routes for page block management
+  - [x] 2.1 Create GET /api/admin/pages/:id/edit endpoint to fetch page with blocks for editing
     - Return page data with blocks array
     - Include error handling for page not found
     - _Requirements: 1.1_
   
-  - [ ] 2.2 Create PUT /api/admin/pages/:id/blocks endpoint to save page blocks
+  - [x] 2.2 Create PUT /api/admin/pages/:id/blocks endpoint to save page blocks
     - Validate blocks array structure (id, type, order required)
     - Update page content with new blocks
     - Return updated page data
     - _Requirements: 1.3, 1.4_
   
-  - [ ] 2.3 Create PATCH /api/admin/pages/:id/blocks/reorder endpoint for drag-and-drop reordering
+  - [x] 2.3 Create PATCH /api/admin/pages/:id/blocks/reorder endpoint for drag-and-drop reordering
     - Accept array of block IDs in new order
     - Update order property of all blocks
     - Validate all block IDs exist
     - _Requirements: 4.1, 4.2, 4.4_
   
-  - [ ] 2.4 Create POST /api/admin/pages/:id/blocks/:blockId/duplicate endpoint
+  - [x] 2.4 Create POST /api/admin/pages/:id/blocks/:blockId/duplicate endpoint
     - Find block by ID
     - Create duplicate with new unique ID
     - Insert after original block
     - Update order values for subsequent blocks
     - _Requirements: 5.1, 5.3_
   
-  - [ ] 2.5 Create DELETE /api/admin/pages/:id/blocks/:blockId endpoint
+  - [x] 2.5 Create DELETE /api/admin/pages/:id/blocks/:blockId endpoint
     - Remove block from blocks array
     - Update order values for remaining blocks
     - Handle deletion of last block
     - _Requirements: 5.2, 5.4_
   
-  - [ ] 2.6 Create GET /api/admin/pages/validate-slug endpoint for slug uniqueness validation
+  - [x] 2.6 Create GET /api/admin/pages/validate-slug endpoint for slug uniqueness validation
     - Check if slug exists in database
     - Exclude current page ID from check (for edits)
     - Return boolean indicating uniqueness
