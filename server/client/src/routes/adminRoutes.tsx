@@ -1,6 +1,7 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import PageEditorContainer from '../components/admin/PageEditor/PageEditorContainer';
+import { PagesListContainer } from '../components/admin/PagesList';
 import NavigationGuard from '../components/common/NavigationGuard';
 
 /**
@@ -10,6 +11,12 @@ import NavigationGuard from '../components/common/NavigationGuard';
 const AdminPageRoutes: React.FC = () => {
     return (
         <Routes>
+            {/* Pages list */}
+            <Route
+                path="/admin/pages"
+                element={<PagesListContainer />}
+            />
+
             {/* Create new page */}
             <Route
                 path="/admin/pages/new"
@@ -28,12 +35,6 @@ const AdminPageRoutes: React.FC = () => {
                         <PageEditorContainer isNewPage={false} />
                     </NavigationGuard>
                 }
-            />
-
-            {/* Redirect /admin/pages to pages list (to be implemented in task 11) */}
-            <Route
-                path="/admin/pages"
-                element={<div>Pages List - To be implemented in task 11</div>}
             />
 
             {/* Catch-all redirect */}

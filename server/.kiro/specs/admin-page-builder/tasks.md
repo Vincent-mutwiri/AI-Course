@@ -216,21 +216,21 @@
     - Return 404 for non-existent or unpublished pages (unless admin)
     - _Requirements: 7.3, 7.4_
 
-- [ ] 11. Build pages management list interface
-  - [ ] 11.1 Create PagesListContainer component
+- [x] 11. Build pages management list interface
+  - [x] 11.1 Create PagesListContainer component
     - Fetch all pages from /api/admin/pages
     - Display table with columns: title, slug, type, isPublished, updatedAt
     - Implement sorting by updatedAt (descending by default)
     - Handle click on row to navigate to editor
     - _Requirements: 9.1, 9.2, 9.5_
   
-  - [ ] 11.2 Add filter and search functionality
+  - [x] 11.2 Add filter and search functionality
     - Filter dropdown for published/unpublished/all
     - Search input for title and slug
     - Update table based on filters
     - _Requirements: 9.3, 9.4_
   
-  - [ ] 11.3 Add create new page button
+  - [x] 11.3 Add create new page button
     - Button to navigate to /admin/pages/new
     - Display prominently at top of list
     - _Requirements: 1.1_
