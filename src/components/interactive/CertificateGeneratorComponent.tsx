@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { Download, FileText, AlertCircle } from 'lucide-react';
+import { Download, FileText, AlertCircle, Award } from 'lucide-react';
 import { toast } from 'sonner';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 interface CertificateGeneratorComponentProps {
   userName: string;
@@ -14,6 +16,7 @@ export const CertificateGeneratorComponent: React.FC<CertificateGeneratorCompone
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>('');
+  const certificateRef = useRef<HTMLDivElement>(null);
 
   const generatePdf = async () => {
     // Validation to prevent generation without userName
@@ -28,22 +31,27 @@ export const CertificateGeneratorComponent: React.FC<CertificateGeneratorCompone
     setIsLoading(true);
 
     try {
-      // Simple text certificate generation
-      const completionDate = new Date().toLocaleDateString();
-      const certificateText = `Certificate of Completion\n\nThis certifies that\n\n${userName}\n\nhas successfully completed\n\n${courseTitle}\n\nCompletion Date: ${completionDate}\n\nInstructor: Vincent Mutwiri`;
-      
-      const blob = new Blob([certificateText], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `Certificate-${userName.replace(/\s+/g, '_')}.txt`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
+      if (!certificateRef.current) {
+        throw new Error('Certificate element not found');
+      }
+
+      const canvas = await html2canvas(certificateRef.current, {
+        scale: 2,
+        logging: false,
+        useCORS: true
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'px',
+        format: [canvas.width, canvas.height]
+      });
+
+      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+      pdf.save(`Certificate-${userName.replace(/\s+/g, '_')}.pdf`);
 
       toast.success('Certificate downloaded successfully!');
-
 
     } catch (error) {
       console.error('Error generating certificate:', error);
@@ -56,14 +64,60 @@ export const CertificateGeneratorComponent: React.FC<CertificateGeneratorCompone
   };
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      <div className="p-6 border-2 border-dashed border-primary/50 rounded-lg bg-primary/5 max-w-md">
-        <div className="flex items-center justify-center mb-3">
-          <FileText className="h-12 w-12 text-primary" />
+    <div className="flex flex-col items-center gap-6 w-full">
+      {/* Hidden Certificate Template for PDF Generation */}
+      <div className="absolute left-[-9999px] top-[-9999px]">
+        <div
+          ref={certificateRef}
+          className="w-[800px] h-[600px] bg-white p-10 border-[20px] border-double border-primary/20 relative flex flex-col items-center justify-center text-center"
+          style={{ fontFamily: 'serif' }}
+        >
+          <div className="absolute top-0 left-0 w-full h-full border-[2px] border-primary/10 m-4 pointer-events-none" />
+
+          <Award className="w-24 h-24 text-primary mb-6" />
+
+          <h1 className="text-5xl font-bold text-primary mb-4 uppercase tracking-widest">
+            Certificate of Completion
+          </h1>
+
+          <p className="text-xl text-muted-foreground mb-8 italic">
+            This certifies that
+          </p>
+
+          <h2 className="text-4xl font-bold text-foreground mb-8 border-b-2 border-primary/20 pb-2 px-10 min-w-[400px]">
+            {userName}
+          </h2>
+
+          <p className="text-xl text-muted-foreground mb-4">
+            has successfully completed the course
+          </p>
+
+          <h3 className="text-3xl font-bold text-primary mb-12">
+            {courseTitle}
+          </h3>
+
+          <div className="flex justify-between w-full px-20 mt-8">
+            <div className="flex flex-col items-center">
+              <div className="w-40 border-b border-black mb-2"></div>
+              <p className="text-sm text-muted-foreground">Date</p>
+              <p className="font-medium">{new Date().toLocaleDateString()}</p>
+            </div>
+            <div className="flex flex-col items-center">
+              <div className="w-40 border-b border-black mb-2"></div>
+              <p className="text-sm text-muted-foreground">Instructor</p>
+              <p className="font-medium">Vincent Mutwiri</p>
+            </div>
+          </div>
         </div>
-        <h4 className="text-center font-semibold mb-2">🎉 Congratulations!</h4>
-        <p className="text-sm text-center text-muted-foreground mb-4">
-          You've completed the course! Download your personalized certificate. Share it with colleagues, add it to your portfolio, or display it proudly!
+      </div>
+
+      <div className="p-8 border-2 border-dashed border-primary/50 rounded-lg bg-primary/5 max-w-md w-full">
+        <div className="flex items-center justify-center mb-4">
+          <Award className="h-16 w-16 text-primary animate-pulse" />
+        </div>
+        <h4 className="text-center text-xl font-bold mb-2">🎉 Congratulations!</h4>
+        <p className="text-center text-muted-foreground mb-6">
+          You've completed the course! Download your official certificate of completion.
         </p>
 
         {/* Display error message for missing required fields */}
@@ -77,19 +131,20 @@ export const CertificateGeneratorComponent: React.FC<CertificateGeneratorCompone
         <Button
           onClick={generatePdf}
           disabled={isLoading || !userName}
-          className="w-full"
+          className="w-full h-12 text-lg"
           size="lg"
         >
           {isLoading ? (
             <>Generating...</>
           ) : (
             <>
-              <Download className="w-4 h-4 mr-2" />
-              Download Certificate
+              <Download className="w-5 h-5 mr-2" />
+              Download PDF Certificate
             </>
           )}
         </Button>
       </div>
+
       <p className="text-xs text-muted-foreground text-center max-w-md">
         💡 Tip: Share your achievement on LinkedIn or with your school administration to showcase your professional development!
       </p>

@@ -7,6 +7,8 @@ import Course from "../models/Course";
 import Quiz from "../models/Quiz";
 import User from "../models/User";
 import Enrollment from "../models/Enrollment";
+import Page from "../models/Page";
+import Progress from "../models/Progress";
 
 const router = Router();
 
@@ -97,6 +99,92 @@ router.get("/users", async (req: AuthRequest, res: Response) => {
   try {
     const users = await User.find().select("-password").sort({ createdAt: -1 });
     res.json({ users });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+router.patch("/users/:id/role", async (req: AuthRequest, res: Response) => {
+  try {
+    const { role } = req.body;
+    if (!["user", "admin"].includes(role)) {
+      return res.status(400).json({ message: "Invalid role" });
+    }
+    const user = await User.findByIdAndUpdate(req.params.id, { role }, { new: true });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.json({ user });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+router.get("/users/:id/progress", async (req: AuthRequest, res: Response) => {
+  try {
+    const progress = await Progress.find({ userId: req.params.id });
+    const enrollments = await Enrollment.find({ userId: req.params.id }).populate("courseId", "title");
+    res.json({ progress, enrollments });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+router.get("/courses/stats", async (req: AuthRequest, res: Response) => {
+  try {
+    const courses = await Course.find().select("title category isPublished enrolledCount");
+    const stats = await Promise.all(courses.map(async (course) => {
+      const enrollments = await Enrollment.find({ courseId: course._id });
+      const avgCompletion = enrollments.length > 0
+        ? enrollments.reduce((acc, curr) => acc + curr.progressPercentage, 0) / enrollments.length
+        : 0;
+      return {
+        ...course.toObject(),
+        enrolledCount: enrollments.length, // Ensure accurate count
+        avgCompletion: Math.round(avgCompletion),
+      };
+    }));
+    res.json({ stats });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Page Management Routes
+router.get("/pages", async (req: AuthRequest, res: Response) => {
+  try {
+    const pages = await Page.find().sort({ createdAt: -1 });
+    res.json({ pages });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+router.post("/pages", async (req: AuthRequest, res: Response) => {
+  try {
+    const page = await Page.create(req.body);
+    res.status(201).json({ page });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+router.put("/pages/:id", async (req: AuthRequest, res: Response) => {
+  try {
+    const page = await Page.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!page) {
+      return res.status(404).json({ message: "Page not found" });
+    }
+    res.json({ page });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+router.delete("/pages/:id", async (req: AuthRequest, res: Response) => {
+  try {
+    await Page.findByIdAndDelete(req.params.id);
+    res.json({ message: "Page deleted" });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }

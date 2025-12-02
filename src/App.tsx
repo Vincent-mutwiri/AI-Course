@@ -14,6 +14,11 @@ import AIAssistantPage from "./pages/AIAssistantPage";
 import QuizDemoPage from "./pages/QuizDemoPage";
 import AdminPage from "./pages/AdminPage";
 import CourseBuilderPage from "./pages/admin/CourseBuilderPage";
+import { AdminLayout } from "./components/layouts/AdminLayout";
+import AdminDashboard from "./pages/admin/Dashboard";
+import UserManagement from "./pages/admin/UserManagement";
+import CourseAnalytics from "./pages/admin/CourseAnalytics";
+import PageBuilder from "./pages/admin/PageBuilder";
 import ProtectedRoute from "./components/shared/ProtectedRoute";
 import AdminRoute from "./components/shared/AdminRoute";
 import ModuleContent from "./pages/ModuleContent";
@@ -83,24 +88,13 @@ function App() {
           <Route path="/demo/quiz" element={<QuizDemoPage />} />
           <Route path="/quiz-demo" element={<QuizDemoPage />} />
           <Route path="/help" element={<HelpPage />} />
-          <Route
-            path="/admin"
-            element={
-              <AdminRoute>
-                <AdminPage />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/admin/courses/:id/builder"
-            element={
-              <AdminRoute>
-                <ErrorBoundary>
-                  <CourseBuilderPage />
-                </ErrorBoundary>
-              </AdminRoute>
-            }
-          />
+          <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="users" element={<UserManagement />} />
+            <Route path="courses" element={<CourseAnalytics />} />
+            <Route path="pages" element={<PageBuilder />} />
+            <Route path="courses/:id/builder" element={<ErrorBoundary><CourseBuilderPage /></ErrorBoundary>} />
+          </Route>
         </Route>
       </Routes>
     </>

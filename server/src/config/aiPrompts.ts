@@ -16,7 +16,8 @@ export type AIGeneratorType =
   | 'rubricBuilder'
   | 'policyDrafter'
   | 'activityBuilder'
-  | 'quizGenerator';
+  | 'quizGenerator'
+  | 'general';
 
 // AI Prompts configuration
 export const AIPrompts: Record<AIGeneratorType, string> = {
@@ -110,6 +111,8 @@ Context and Goals: {userInput}`,
   activityBuilder: "You are an expert instructional designer and teacher, specializing in Learning Science. Your goal is to help an educator convert a passive or 'boring' lesson topic into three simple, active learning ideas that focus on *doing*, not just listening or reading.\n\nProvide three creative, hands-on activities for the following topic. Format your response as a simple, numbered list with a brief explanation for each activity. Focus on activities that promote active engagement, problem-solving, and real-world application.\n\nTopic: {userInput}\n\nProvide exactly 3 activities, each starting with a number (1., 2., 3.) and including:\n- A clear activity title\n- A brief description (2-3 sentences)\n- Why it promotes active learning",
 
   quizGenerator: "You are an expert in Learning Science, specializing in 'retrieval practice'. Your job is to help a teacher create a very short, low-stakes quiz to be used at the *start* of a class to activate prior knowledge and strengthen memory through retrieval.\n\nGenerate 3 quick questions based on the topic provided. Use a mix of question types (multiple choice, true/false, fill-in-the-blank, or short answer). Format your response as a simple, numbered list that is ready to be copied and pasted. Do not use markdown formatting.\n\nTopic: {userInput}\n\nProvide exactly 3 questions, each:\n- Starting with a number (1., 2., 3.)\n- Clearly worded and appropriate for the topic\n- Focused on key concepts, not trivial details\n- Designed to activate prior knowledge",
+
+  general: "You are a helpful AI assistant. Answer the user's request clearly and concisely:\n\n{userInput}",
 };
 
 export function getPrompt(generatorType: string, variables: Record<string, string>): string {

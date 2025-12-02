@@ -74,6 +74,10 @@ app.use("/api/profile", profileRoutes);
 app.use("/api/simulations", simulationsRoutes);
 app.use("/api/polls", pollRoutes);
 
+import reflectionRoutes from "./routes/reflection";
+
+app.use("/api/reflections", reflectionRoutes);
+
 connectDB()
   .then(() => {
     app.listen(PORT, () => {
