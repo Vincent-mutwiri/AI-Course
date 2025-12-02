@@ -127,30 +127,30 @@
     - Display visual representation of divider
     - _Requirements: 3.1, 3.2_
 
-- [ ] 6. Implement block editor components for interactive blocks
-  - [ ] 6.1 Create ReflectionBlockEditor component
+- [x] 6. Implement block editor components for interactive blocks
+  - [x] 6.1 Create ReflectionBlockEditor component
     - Input field for question
     - Input field for prompt
     - Input field for minLength
     - _Requirements: 3.1, 3.2, 2.2_
   
-  - [ ] 6.2 Create PollBlockEditor component
+  - [x] 6.2 Create PollBlockEditor component
     - Input field for question
     - Dynamic list of options (add/remove)
     - _Requirements: 3.1, 3.2, 2.2_
   
-  - [ ] 6.3 Create WordCloudBlockEditor component
+  - [x] 6.3 Create WordCloudBlockEditor component
     - Input field for question
     - Configuration for word list (if pre-populated)
     - _Requirements: 3.1, 3.2, 2.2_
   
-  - [ ] 6.4 Create AIGeneratorBlockEditor component
+  - [x] 6.4 Create AIGeneratorBlockEditor component
     - Input field for prompt
     - Dropdown for generatorType
     - Configuration options based on generator type
     - _Requirements: 3.1, 3.2, 2.2_
   
-  - [ ] 6.5 Create generic InteractiveBlockEditor component for remaining interactive blocks
+  - [x] 6.5 Create generic InteractiveBlockEditor component for remaining interactive blocks
     - Dynamically render input fields based on block type
     - Support common fields: question, prompt, config, options, title, description
     - Reuse existing Course Builder interactive block editor logic

@@ -4,6 +4,7 @@ import { IPage, IBlock, BlockType } from '../../../types/page';
 import PageMetadataForm from './PageMetadataForm';
 import BlockPalette from './BlockPalette';
 import BlockCanvas from './BlockCanvas';
+import BlockEditorPanel from './BlockEditorPanel';
 import { debounce } from '../../../utils/debounce';
 import './BlockEditor.css';
 
@@ -166,6 +167,18 @@ const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = f
     // Handle blocks changes
     const handleBlocksChange = useCallback((newBlocks: IBlock[]) => {
         setBlocks(newBlocks);
+        setIsDirty(true);
+    }, []);
+
+    // Handle block content change
+    const handleBlockContentChange = useCallback((blockId: string, content: Partial<IBlock['content']>) => {
+        setBlocks(prevBlocks =>
+            prevBlocks.map(block =>
+                block.id === blockId
+                    ? { ...block, content: { ...block.content, ...content }, updatedAt: new Date() }
+                    : block
+            )
+        );
         setIsDirty(true);
     }, []);
 
@@ -414,6 +427,11 @@ const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = f
                         onDeleteBlock={handleDeleteBlock}
                         onBlockSelect={setSelectedBlockId}
                         selectedBlockId={selectedBlockId}
+                    />
+                    <BlockEditorPanel
+                        block={blocks.find(b => b.id === selectedBlockId) || null}
+                        onBlockChange={handleBlockContentChange}
+                        onClose={() => setSelectedBlockId(null)}
                     />
                 </div>
             </div>

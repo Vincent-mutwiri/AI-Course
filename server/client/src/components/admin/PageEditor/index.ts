@@ -4,3 +4,4 @@ export { default as BlockPalette } from './BlockPalette';
 export { default as BlockCanvas } from './BlockCanvas';
 export { default as BlockToolbar } from './BlockToolbar';
 export { default as SortableBlockItem } from './SortableBlockItem';
+export { default as BlockEditorPanel } from './BlockEditorPanel';
