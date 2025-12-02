@@ -883,6 +883,7 @@ export default function CourseBuilderPage() {
                 courseId={id}
                 moduleId={currentModuleId || undefined}
                 lessonIndex={currentLessonIndex}
+                courseTitle={course?.title}
             />
 
             {/* Block Configuration Modals */}

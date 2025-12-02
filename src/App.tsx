@@ -19,6 +19,7 @@ import AdminDashboard from "./pages/admin/Dashboard";
 import UserManagement from "./pages/admin/UserManagement";
 import CourseAnalytics from "./pages/admin/CourseAnalytics";
 import PageBuilder from "./pages/admin/PageBuilder";
+import PageEditorPage from "./pages/admin/PageEditorPage";
 import ProtectedRoute from "./components/shared/ProtectedRoute";
 import AdminRoute from "./components/shared/AdminRoute";
 import ModuleContent from "./pages/ModuleContent";
@@ -93,6 +94,8 @@ function App() {
             <Route path="users" element={<UserManagement />} />
             <Route path="courses" element={<CourseAnalytics />} />
             <Route path="pages" element={<PageBuilder />} />
+            <Route path="pages/new" element={<ErrorBoundary><PageEditorPage /></ErrorBoundary>} />
+            <Route path="pages/:id/edit" element={<ErrorBoundary><PageEditorPage /></ErrorBoundary>} />
             <Route path="courses/:id/builder" element={<ErrorBoundary><CourseBuilderPage /></ErrorBoundary>} />
           </Route>
         </Route>

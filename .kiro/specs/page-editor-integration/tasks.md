@@ -50,7 +50,7 @@
   - Ensure page list refreshes when navigating back from editor
   - _Requirements: 1.5, 4.1, 4.2, 4.5_
 
-- [ ] 5. Update routing configuration
+- [x] 5. Update routing configuration
   - Add route /admin/pages/new with PageEditorPage component in App.tsx
   - Add route /admin/pages/:id/edit with PageEditorPage component
   - Ensure both routes are protected by AdminRoute

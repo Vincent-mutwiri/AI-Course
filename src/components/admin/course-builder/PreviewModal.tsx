@@ -28,6 +28,7 @@ interface PreviewModalProps {
     courseId?: string;
     moduleId?: string;
     lessonIndex?: number;
+    courseTitle?: string;
 }
 
 export default function PreviewModal({
@@ -37,6 +38,7 @@ export default function PreviewModal({
     courseId,
     moduleId,
     lessonIndex,
+    courseTitle,
 }: PreviewModalProps) {
     const { user } = useAuth();
 
@@ -80,6 +82,7 @@ export default function PreviewModal({
                             courseId={courseId}
                             moduleId={moduleId}
                             lessonIndex={lessonIndex}
+                            courseTitle={courseTitle}
                         />
                     ) : (
                         <div className="flex items-center justify-center h-64 border-2 border-dashed border-muted-foreground/25 rounded-lg">
