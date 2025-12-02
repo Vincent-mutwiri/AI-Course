@@ -9,8 +9,24 @@ import User from "../models/User";
 import Enrollment from "../models/Enrollment";
 import Page from "../models/Page";
 import Progress from "../models/Progress";
+import fs from 'fs';
+import path from 'path';
 
 const router = Router();
+
+const logError = (context: string, error: any) => {
+  const logPath = path.join(__dirname, '../../server_errors.log');
+  const timestamp = new Date().toISOString();
+  const errorMessage = error instanceof Error ? error.message : String(error);
+  const stack = error instanceof Error ? error.stack : '';
+  const logEntry = `[${timestamp}] ${context}: ${errorMessage}\n${stack}\n\n`;
+
+  try {
+    fs.appendFileSync(logPath, logEntry);
+  } catch (err) {
+    console.error('Failed to write to error log:', err);
+  }
+};
 
 router.use(authenticate);
 router.use(requireAdmin);

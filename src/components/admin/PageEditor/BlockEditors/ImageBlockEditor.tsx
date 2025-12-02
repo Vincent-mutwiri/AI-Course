@@ -35,9 +35,9 @@ const ImageBlockEditor: React.FC<ImageBlockEditorProps> = ({ block, onChange }) 
         }
 
         // Validate file type
-        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
         if (!validTypes.includes(file.type)) {
-            alert('Invalid file type. Please upload JPEG, PNG, or GIF images.');
+            alert('Invalid file type. Please upload JPEG, PNG, GIF, or WebP images.');
             return;
         }
 
@@ -95,7 +95,7 @@ const ImageBlockEditor: React.FC<ImageBlockEditorProps> = ({ block, onChange }) 
                 <input
                     type="file"
                     id="imageUpload"
-                    accept="image/jpeg,image/jpg,image/png,image/gif"
+                    accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
                     onChange={handleFileUpload}
                     disabled={uploading}
                     className="form-control"

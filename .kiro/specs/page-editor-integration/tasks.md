@@ -67,7 +67,7 @@
   - Add retry logic for failed auto-saves (up to 3 attempts)
   - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5_
 
-- [ ] 7. Implement file upload integration
+- [x] 7. Implement file upload integration
   - Verify VideoBlockEditor and ImageBlockEditor use the upload API
   - Update upload handlers to call /api/admin/upload endpoint
   - Add file type validation (images: jpg, png, gif, webp; videos: mp4, webm)
