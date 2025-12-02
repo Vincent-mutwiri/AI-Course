@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useLocation, useBlocker } from 'react-router-dom';
-import './NavigationGuard.css';
+import React, { useEffect, useRef } from 'react';
+import { useLocation, UNSAFE_NavigationContext } from 'react-router-dom';
 
 interface NavigationGuardProps {
     when: boolean;
@@ -10,65 +9,60 @@ interface NavigationGuardProps {
 /**
  * NavigationGuard component that warns users about unsaved changes
  * when attempting to navigate away from the page editor
+ * 
+ * Note: This uses UNSAFE_NavigationContext as a workaround for BrowserRouter
+ * which doesn't support the newer useBlocker hook.
  */
 const NavigationGuard: React.FC<NavigationGuardProps> = ({
     when,
     message = 'You have unsaved changes. Are you sure you want to leave?'
 }) => {
-    const navigate = useNavigate();
     const location = useLocation();
-    const [showWarning, setShowWarning] = useState(false);
-    const [nextLocation, setNextLocation] = useState<string | null>(null);
-
-    // Use React Router's useBlocker hook to intercept navigation
-    const blocker = useBlocker(
-        ({ currentLocation, nextLocation }) =>
-            when && currentLocation.pathname !== nextLocation.pathname
-    );
+    const { navigator } = React.useContext(UNSAFE_NavigationContext);
+    const unblockRef = useRef<(() => void) | null>(null);
 
     useEffect(() => {
-        if (blocker.state === 'blocked') {
-            setShowWarning(true);
+        if (!when) {
+            return;
         }
-    }, [blocker.state]);
 
-    const confirmNavigation = () => {
-        setShowWarning(false);
-        setNextLocation(null);
-        if (blocker.state === 'blocked') {
-            blocker.proceed();
-        }
-    };
+        // Store the original push and replace methods
+        const originalPush = navigator.push;
+        const originalReplace = navigator.replace;
 
-    const cancelNavigation = () => {
-        setShowWarning(false);
-        setNextLocation(null);
-        if (blocker.state === 'blocked') {
-            blocker.reset();
-        }
-    };
+        // Override push method
+        navigator.push = (...args: Parameters<typeof originalPush>) => {
+            const confirmLeave = window.confirm(message);
+            if (confirmLeave) {
+                originalPush(...args);
+            }
+        };
 
-    return (
-        <>
-            {showWarning && (
-                <div className="navigation-warning-modal">
-                    <div className="modal-overlay" onClick={cancelNavigation}></div>
-                    <div className="modal-content">
-                        <h2>Unsaved Changes</h2>
-                        <p>{message}</p>
-                        <div className="modal-actions">
-                            <button onClick={cancelNavigation} className="btn-cancel">
-                                Stay on Page
-                            </button>
-                            <button onClick={confirmNavigation} className="btn-confirm">
-                                Leave Without Saving
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-        </>
-    );
+        // Override replace method
+        navigator.replace = (...args: Parameters<typeof originalReplace>) => {
+            const confirmLeave = window.confirm(message);
+            if (confirmLeave) {
+                originalReplace(...args);
+            }
+        };
+
+        // Store cleanup function
+        unblockRef.current = () => {
+            navigator.push = originalPush;
+            navigator.replace = originalReplace;
+        };
+
+        // Cleanup on unmount or when 'when' changes
+        return () => {
+            if (unblockRef.current) {
+                unblockRef.current();
+                unblockRef.current = null;
+            }
+        };
+    }, [when, message, navigator, location]);
+
+    // This component doesn't render anything
+    return null;
 };
 
 export default NavigationGuard;

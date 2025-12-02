@@ -136,6 +136,14 @@ const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = f
 
     // Save page function
     const savePage = useCallback(async (pageData: Partial<IPage>, blocksData: IBlock[], isManualSave: boolean = false) => {
+        // Don't save if title or slug is empty
+        if (!pageData.title?.trim() || !pageData.slug?.trim()) {
+            if (isManualSave) {
+                toast.error('Please enter a title and slug before saving');
+            }
+            return;
+        }
+
         // Validate metadata before saving
         if (!isMetadataValid) {
             const errorMsg = 'Please fix validation errors before saving';
@@ -276,7 +284,8 @@ const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = f
 
     // Trigger auto-save when page or blocks change
     useEffect(() => {
-        if (!loading && page && isDirty) {
+        // Only auto-save if page has valid title and slug
+        if (!loading && page && isDirty && page.title?.trim() && page.slug?.trim()) {
             debouncedSave(page, blocks);
         }
     }, [page, blocks, isDirty, loading, debouncedSave]);

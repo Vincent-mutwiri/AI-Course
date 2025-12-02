@@ -28,6 +28,10 @@ const logError = (context: string, error: any) => {
   }
 };
 
+router.get("/ping", (req, res) => {
+  res.send("pong");
+});
+
 router.use(authenticate);
 router.use(requireAdmin);
 
@@ -185,6 +189,9 @@ router.post("/pages", async (req: AuthRequest, res: Response) => {
     if (error.name === 'ValidationError') {
       return res.status(400).json({ message: "Validation Error", error: error.message });
     }
+    if (error.code === 11000) {
+      return res.status(400).json({ message: "Duplicate Error", error: "A page with this slug already exists." });
+    }
     res.status(500).json({ message: "Server error", error: error.message || String(error) });
   }
 });
@@ -200,6 +207,9 @@ router.put("/pages/:id", async (req: AuthRequest, res: Response) => {
     console.error("[Admin] Error updating page:", error);
     if (error.name === 'ValidationError') {
       return res.status(400).json({ message: "Validation Error", error: error.message });
+    }
+    if (error.code === 11000) {
+      return res.status(400).json({ message: "Duplicate Error", error: "A page with this slug already exists." });
     }
     res.status(500).json({ message: "Server error", error: error.message || String(error) });
   }
