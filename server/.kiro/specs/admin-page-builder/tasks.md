@@ -64,8 +64,8 @@
     - Display validation errors inline
     - _Requirements: 7.1, 7.2, 7.5, 1.5_
 
-- [ ] 4. Build block palette and canvas components
-  - [ ] 4.1 Create BlockPalette component displaying available block types
+- [x] 4. Build block palette and canvas components
+  - [x] 4.1 Create BlockPalette component displaying available block types
     - Categorize blocks (Content, Interactive, Advanced)
     - Display block type icons and names
     - Implement search/filter functionality
@@ -73,7 +73,7 @@
     - Support drag-and-drop to add block at specific position
     - _Requirements: 1.1, 1.2, 2.1, 2.2_
   
-  - [ ] 4.2 Create BlockCanvas component for main editing area
+  - [x] 4.2 Create BlockCanvas component for main editing area
     - Render blocks array in order
     - Implement drag-and-drop reordering using react-beautiful-dnd or @dnd-kit
     - Display empty state when no blocks exist
@@ -81,7 +81,7 @@
     - Call reorder API when blocks are rearranged
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5_
   
-  - [ ] 4.3 Create BlockToolbar component with duplicate and delete actions
+  - [x] 4.3 Create BlockToolbar component with duplicate and delete actions
     - Display toolbar on block hover or selection
     - Duplicate button calls duplicate API
     - Delete button calls delete API with confirmation

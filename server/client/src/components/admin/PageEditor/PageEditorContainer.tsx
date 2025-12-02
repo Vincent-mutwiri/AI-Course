@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { IPage, IBlock } from '../../../types/page';
+import { IPage, IBlock, BlockType } from '../../../types/page';
 import PageMetadataForm from './PageMetadataForm';
+import BlockPalette from './BlockPalette';
+import BlockCanvas from './BlockCanvas';
 import { debounce } from '../../../utils/debounce';
+import './BlockEditor.css';
 
 interface PageEditorContainerProps {
     isNewPage?: boolean;
@@ -22,6 +25,7 @@ const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = f
     const [saveError, setSaveError] = useState<string | null>(null);
     const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
     const [isDirty, setIsDirty] = useState<boolean>(false);
+    const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
 
     // Refs for auto-save
     const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -165,6 +169,155 @@ const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = f
         setIsDirty(true);
     }, []);
 
+    // Add new block
+    const handleAddBlock = useCallback((blockType: BlockType) => {
+        const newBlock: IBlock = {
+            id: `block-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            type: blockType,
+            order: blocks.length,
+            content: {},
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        };
+
+        const newBlocks = [...blocks, newBlock];
+        setBlocks(newBlocks);
+        setIsDirty(true);
+        setSelectedBlockId(newBlock.id);
+    }, [blocks]);
+
+    // Reorder blocks
+    const handleReorderBlocks = useCallback(async (blockIds: string[]) => {
+        if (!page?._id) return;
+
+        try {
+            const response = await fetch(`/api/admin/pages/${page._id}/blocks/reorder`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({ blockIds })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to reorder blocks');
+            }
+
+            const data = await response.json();
+            setBlocks(data.blocks);
+        } catch (error) {
+            console.error('Error reordering blocks:', error);
+            throw error;
+        }
+    }, [page]);
+
+    // Duplicate block
+    const handleDuplicateBlock = useCallback(async (blockId: string) => {
+        if (!page?._id) {
+            // For new pages, duplicate locally
+            const blockIndex = blocks.findIndex(b => b.id === blockId);
+            if (blockIndex === -1) return;
+
+            const originalBlock = blocks[blockIndex];
+            const duplicatedBlock: IBlock = {
+                ...originalBlock,
+                id: `block-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                order: originalBlock.order + 1,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            };
+
+            const newBlocks = [
+                ...blocks.slice(0, blockIndex + 1),
+                duplicatedBlock,
+                ...blocks.slice(blockIndex + 1).map(b => ({ ...b, order: b.order + 1 }))
+            ];
+
+            setBlocks(newBlocks);
+            setIsDirty(true);
+            setSelectedBlockId(duplicatedBlock.id);
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/admin/pages/${page._id}/blocks/${blockId}/duplicate`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to duplicate block');
+            }
+
+            const data = await response.json();
+
+            // Refresh blocks from server
+            const pageResponse = await fetch(`/api/admin/pages/${page._id}/edit`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+
+            if (pageResponse.ok) {
+                const pageData = await pageResponse.json();
+                setBlocks(pageData.page.content.blocks || []);
+                setSelectedBlockId(data.block.id);
+            }
+        } catch (error) {
+            console.error('Error duplicating block:', error);
+        }
+    }, [page, blocks]);
+
+    // Delete block
+    const handleDeleteBlock = useCallback(async (blockId: string) => {
+        if (!page?._id) {
+            // For new pages, delete locally
+            const newBlocks = blocks
+                .filter(b => b.id !== blockId)
+                .map((b, index) => ({ ...b, order: index }));
+
+            setBlocks(newBlocks);
+            setIsDirty(true);
+            if (selectedBlockId === blockId) {
+                setSelectedBlockId(null);
+            }
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/admin/pages/${page._id}/blocks/${blockId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to delete block');
+            }
+
+            // Refresh blocks from server
+            const pageResponse = await fetch(`/api/admin/pages/${page._id}/edit`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+
+            if (pageResponse.ok) {
+                const pageData = await pageResponse.json();
+                setBlocks(pageData.page.content.blocks || []);
+                if (selectedBlockId === blockId) {
+                    setSelectedBlockId(null);
+                }
+            }
+        } catch (error) {
+            console.error('Error deleting block:', error);
+        }
+    }, [page, blocks, selectedBlockId]);
+
     // Manual save
     const handleManualSave = useCallback(() => {
         if (page) {
@@ -249,11 +402,19 @@ const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = f
                     onChange={handlePageChange}
                 />
 
-                {/* Block Palette and Canvas will be added in subsequent tasks */}
                 <div className="blocks-section">
-                    <p className="placeholder-text">
-                        Block Palette and Canvas components will be implemented in the next tasks
-                    </p>
+                    <BlockPalette
+                        onAddBlock={handleAddBlock}
+                    />
+                    <BlockCanvas
+                        blocks={blocks}
+                        onBlocksChange={handleBlocksChange}
+                        onReorderBlocks={handleReorderBlocks}
+                        onDuplicateBlock={handleDuplicateBlock}
+                        onDeleteBlock={handleDeleteBlock}
+                        onBlockSelect={setSelectedBlockId}
+                        selectedBlockId={selectedBlockId}
+                    />
                 </div>
             </div>
         </div>
