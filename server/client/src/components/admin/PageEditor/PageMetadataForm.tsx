@@ -5,6 +5,7 @@ import { debounce } from '../../../utils/debounce';
 interface PageMetadataFormProps {
     page: IPage;
     onChange: (updates: Partial<IPage>) => void;
+    onValidationChange?: (isValid: boolean) => void;
 }
 
 interface ValidationErrors {
@@ -12,7 +13,7 @@ interface ValidationErrors {
     slug?: string;
 }
 
-const PageMetadataForm: React.FC<PageMetadataFormProps> = ({ page, onChange }) => {
+const PageMetadataForm: React.FC<PageMetadataFormProps> = ({ page, onChange, onValidationChange }) => {
     const [localPage, setLocalPage] = useState<IPage>(page);
     const [errors, setErrors] = useState<ValidationErrors>({});
     const [isValidatingSlug, setIsValidatingSlug] = useState(false);
@@ -178,6 +179,18 @@ const PageMetadataForm: React.FC<PageMetadataFormProps> = ({ page, onChange }) =
 
     // Check if form has errors
     const hasErrors = Object.keys(errors).length > 0;
+
+    // Notify parent of validation state changes
+    useEffect(() => {
+        const isValid = !hasErrors &&
+            !isValidatingSlug &&
+            localPage.title?.trim() !== '' &&
+            localPage.slug?.trim() !== '';
+
+        if (onValidationChange) {
+            onValidationChange(isValid);
+        }
+    }, [hasErrors, isValidatingSlug, localPage.title, localPage.slug, onValidationChange]);
 
     return (
         <div className="page-metadata-form">

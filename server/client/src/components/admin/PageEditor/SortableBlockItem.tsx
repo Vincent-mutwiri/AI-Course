@@ -7,6 +7,8 @@ import BlockToolbar from './BlockToolbar';
 interface SortableBlockItemProps {
     block: IBlock;
     isSelected: boolean;
+    isInvalid?: boolean;
+    validationErrors?: Array<{ field: string; message: string }>;
     onSelect: () => void;
     onDuplicate: () => void;
     onDelete: () => void;
@@ -15,6 +17,8 @@ interface SortableBlockItemProps {
 const SortableBlockItem: React.FC<SortableBlockItemProps> = ({
     block,
     isSelected,
+    isInvalid = false,
+    validationErrors = [],
     onSelect,
     onDuplicate,
     onDelete,
@@ -38,7 +42,7 @@ const SortableBlockItem: React.FC<SortableBlockItemProps> = ({
         <div
             ref={setNodeRef}
             style={style}
-            className={`sortable-block-item ${isSelected ? 'selected' : ''} ${isDragging ? 'dragging' : ''}`}
+            className={`sortable-block-item ${isSelected ? 'selected' : ''} ${isDragging ? 'dragging' : ''} ${isInvalid ? 'invalid' : ''}`}
             onClick={onSelect}
         >
             <BlockToolbar
@@ -54,6 +58,17 @@ const SortableBlockItem: React.FC<SortableBlockItemProps> = ({
                     {renderBlockPreview(block)}
                 </div>
             </div>
+
+            {isInvalid && validationErrors.length > 0 && (
+                <div className="block-validation-error">
+                    <strong>Validation errors:</strong>
+                    <ul>
+                        {validationErrors.map((error, index) => (
+                            <li key={index}>{error.message}</li>
+                        ))}
+                    </ul>
+                </div>
+            )}
         </div>
     );
 };

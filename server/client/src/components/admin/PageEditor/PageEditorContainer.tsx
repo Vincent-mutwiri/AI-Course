@@ -7,7 +7,9 @@ import BlockCanvas from './BlockCanvas';
 import BlockEditorPanel from './BlockEditorPanel';
 import AutoSaveIndicator, { SaveState } from './AutoSaveIndicator';
 import PagePreview from './PagePreview';
+import ErrorNotification from '../../common/ErrorNotification';
 import { debounce } from '../../../utils/debounce';
+import { cachePageData, getCachedPageData, clearCachedPageData, hasCachedPageData } from '../../../utils/localStorageCache';
 import './BlockEditor.css';
 
 interface PageEditorContainerProps {
@@ -28,11 +30,35 @@ const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = f
     const [isDirty, setIsDirty] = useState<boolean>(false);
     const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
     const [isPreviewMode, setIsPreviewMode] = useState<boolean>(false);
+    const [isMetadataValid, setIsMetadataValid] = useState<boolean>(false);
+    const [networkError, setNetworkError] = useState<string | null>(null);
+    const [isOnline, setIsOnline] = useState<boolean>(navigator.onLine);
 
     // Refs for auto-save
     const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const retryCountRef = useRef<number>(0);
     const maxRetries = 3;
+
+    // Monitor online/offline status
+    useEffect(() => {
+        const handleOnline = () => {
+            setIsOnline(true);
+            setNetworkError(null);
+        };
+
+        const handleOffline = () => {
+            setIsOnline(false);
+            setNetworkError('You are currently offline. Changes will be saved locally.');
+        };
+
+        window.addEventListener('online', handleOnline);
+        window.addEventListener('offline', handleOffline);
+
+        return () => {
+            window.removeEventListener('online', handleOnline);
+            window.removeEventListener('offline', handleOffline);
+        };
+    }, []);
 
     // Fetch page data on mount
     useEffect(() => {
@@ -60,6 +86,16 @@ const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = f
                 return;
             }
 
+            // Check for cached data first
+            if (hasCachedPageData(id)) {
+                const cached = getCachedPageData(id);
+                if (cached) {
+                    setPage(cached.page as IPage);
+                    setBlocks(cached.blocks);
+                    setNetworkError('Loaded from local cache. Attempting to sync with server...');
+                }
+            }
+
             try {
                 const response = await fetch(`/api/admin/pages/${id}/edit`, {
                     headers: {
@@ -74,9 +110,20 @@ const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = f
                 const data = await response.json();
                 setPage(data.page);
                 setBlocks(data.page.content.blocks || []);
+
+                // Clear cache on successful fetch
+                clearCachedPageData(id);
+                setNetworkError(null);
             } catch (error) {
                 console.error('Error fetching page:', error);
-                setSaveError('Failed to load page');
+
+                // If we have cached data, use it
+                if (hasCachedPageData(id)) {
+                    setNetworkError('Failed to load from server. Using cached data.');
+                } else {
+                    setSaveError('Failed to load page');
+                    setNetworkError('Failed to load page from server.');
+                }
             } finally {
                 setLoading(false);
             }
@@ -87,6 +134,13 @@ const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = f
 
     // Save page function
     const savePage = useCallback(async (pageData: Partial<IPage>, blocksData: IBlock[]) => {
+        // Validate metadata before saving
+        if (!isMetadataValid) {
+            setSaveError('Please fix validation errors before saving');
+            setSaveState('error');
+            return;
+        }
+
         setSaveState('saving');
         setSaveError(null);
 
@@ -132,17 +186,32 @@ const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = f
         } catch (error) {
             console.error('Error saving page:', error);
             setSaveState('error');
-            setSaveError('Failed to save page');
 
-            // Retry logic
-            if (retryCountRef.current < maxRetries) {
+            // Check if it's a network error
+            const isNetworkError = !navigator.onLine || error instanceof TypeError;
+
+            if (isNetworkError) {
+                setSaveError('Network error. Changes saved locally.');
+                setNetworkError('Unable to reach server. Your changes are saved locally and will sync when connection is restored.');
+
+                // Cache the data locally
+                if (page?._id) {
+                    cachePageData(page._id, pageData, blocksData);
+                }
+            } else {
+                setSaveError('Failed to save page');
+                setNetworkError('Failed to save page. Please try again.');
+            }
+
+            // Retry logic for transient failures
+            if (retryCountRef.current < maxRetries && !isNetworkError) {
                 retryCountRef.current++;
                 setTimeout(() => {
                     savePage(pageData, blocksData);
                 }, 10000); // Retry after 10 seconds
             }
         }
-    }, [isNewPage, page, navigate]);
+    }, [isNewPage, page, navigate, isMetadataValid]);
 
     // Debounced auto-save (30 seconds)
     const debouncedSave = useCallback(
@@ -163,6 +232,11 @@ const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = f
     const handlePageChange = useCallback((updates: Partial<IPage>) => {
         setPage(prev => prev ? { ...prev, ...updates } : null);
         setIsDirty(true);
+    }, []);
+
+    // Handle metadata validation state changes
+    const handleMetadataValidationChange = useCallback((isValid: boolean) => {
+        setIsMetadataValid(isValid);
     }, []);
 
     // Handle blocks changes
@@ -222,6 +296,14 @@ const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = f
             setBlocks(data.blocks);
         } catch (error) {
             console.error('Error reordering blocks:', error);
+
+            // Show network error notification
+            if (!navigator.onLine) {
+                setNetworkError('Cannot reorder blocks while offline. Changes will sync when connection is restored.');
+            } else {
+                setNetworkError('Failed to reorder blocks. Please try again.');
+            }
+
             throw error;
         }
     }, [page]);
@@ -282,6 +364,13 @@ const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = f
             }
         } catch (error) {
             console.error('Error duplicating block:', error);
+
+            // Show network error notification
+            if (!navigator.onLine) {
+                setNetworkError('Cannot duplicate blocks while offline.');
+            } else {
+                setNetworkError('Failed to duplicate block. Please try again.');
+            }
         }
     }, [page, blocks]);
 
@@ -329,6 +418,13 @@ const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = f
             }
         } catch (error) {
             console.error('Error deleting block:', error);
+
+            // Show network error notification
+            if (!navigator.onLine) {
+                setNetworkError('Cannot delete blocks while offline.');
+            } else {
+                setNetworkError('Failed to delete block. Please try again.');
+            }
         }
     }, [page, blocks, selectedBlockId]);
 
@@ -388,8 +484,21 @@ const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = f
 
     return (
         <div className="page-editor-container">
+            {networkError && (
+                <ErrorNotification
+                    message={networkError}
+                    onRetry={isOnline ? handleManualSave : undefined}
+                    onDismiss={() => setNetworkError(null)}
+                />
+            )}
+
             <div className="page-editor-header">
                 <h1>{isNewPage ? 'Create New Page' : 'Edit Page'}</h1>
+                {!isOnline && (
+                    <div className="offline-indicator">
+                        📡 Offline Mode
+                    </div>
+                )}
                 <div className="page-editor-actions">
                     <AutoSaveIndicator
                         saveState={saveState}
@@ -406,8 +515,9 @@ const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = f
                     </button>
                     <button
                         onClick={handleManualSave}
-                        disabled={!isDirty || saveState === 'saving'}
+                        disabled={!isDirty || saveState === 'saving' || !isMetadataValid}
                         className="btn-save"
+                        title={!isMetadataValid ? 'Please fix validation errors before saving' : ''}
                     >
                         Save Now
                     </button>
@@ -418,6 +528,7 @@ const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = f
                 <PageMetadataForm
                     page={page}
                     onChange={handlePageChange}
+                    onValidationChange={handleMetadataValidationChange}
                 />
 
                 <div className="blocks-section">

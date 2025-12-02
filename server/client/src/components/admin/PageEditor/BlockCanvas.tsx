@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
     DndContext,
     closestCenter,
@@ -17,6 +17,7 @@ import {
     verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { IBlock, BlockType } from '../../../types/page';
+import { validateBlocks } from '../../../utils/blockValidation';
 import SortableBlockItem from './SortableBlockItem';
 
 interface BlockCanvasProps {
@@ -40,6 +41,11 @@ const BlockCanvas: React.FC<BlockCanvasProps> = ({
 }) => {
     const [activeId, setActiveId] = useState<string | null>(null);
     const [isDraggingFromPalette, setIsDraggingFromPalette] = useState(false);
+
+    // Validate all blocks
+    const blockValidationResults = useMemo(() => {
+        return validateBlocks(blocks);
+    }, [blocks]);
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
@@ -162,16 +168,21 @@ const BlockCanvas: React.FC<BlockCanvasProps> = ({
                         strategy={verticalListSortingStrategy}
                     >
                         <div className="blocks-list">
-                            {blocks.map((block) => (
-                                <SortableBlockItem
-                                    key={block.id}
-                                    block={block}
-                                    isSelected={selectedBlockId === block.id}
-                                    onSelect={() => onBlockSelect?.(block.id)}
-                                    onDuplicate={() => onDuplicateBlock(block.id)}
-                                    onDelete={() => onDeleteBlock(block.id)}
-                                />
-                            ))}
+                            {blocks.map((block) => {
+                                const validationResult = blockValidationResults.get(block.id);
+                                return (
+                                    <SortableBlockItem
+                                        key={block.id}
+                                        block={block}
+                                        isSelected={selectedBlockId === block.id}
+                                        isInvalid={!!validationResult}
+                                        validationErrors={validationResult?.errors}
+                                        onSelect={() => onBlockSelect?.(block.id)}
+                                        onDuplicate={() => onDuplicateBlock(block.id)}
+                                        onDelete={() => onDeleteBlock(block.id)}
+                                    />
+                                );
+                            })}
                         </div>
                     </SortableContext>
 

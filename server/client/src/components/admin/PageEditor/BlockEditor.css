@@ -1298,3 +1298,157 @@ textarea.form-control {
         font-size: 1.25rem;
     }
 }
+
+/ * Validation Error Styles */ .page-metadata-form .form-group input.error,
+.page-metadata-form .form-group select.error {
+    border-color: #dc3545;
+}
+
+.page-metadata-form .form-group input.error:focus,
+.page-metadata-form .form-group select.error:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.page-metadata-form .error-message {
+    display: block;
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.page-metadata-form .required {
+    color: #dc3545;
+}
+
+.page-metadata-form .validating {
+    color: #6c757d;
+    font-size: 0.875rem;
+    font-style: italic;
+}
+
+.page-metadata-form .help-text {
+    display: block;
+    color: #6c757d;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.page-metadata-form .form-validation-summary {
+    padding: 0.75rem 1rem;
+    border-radius: 4px;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+}
+
+.page-metadata-form .form-validation-summary.error {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+}
+
+.block-editor-panel .error-message {
+    display: block;
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.block-editor-panel .form-group input.error,
+.block-editor-panel .form-group textarea.error,
+.block-editor-panel .form-group select.error {
+    border-color: #dc3545;
+}
+
+.block-editor-panel .form-group input.error:focus,
+.block-editor-panel .form-group textarea.error:focus,
+.block-editor-panel .form-group select.error:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.block-canvas .block-item.invalid {
+    border-left: 3px solid #dc3545;
+    background-color: #fff5f5;
+}
+
+.block-canvas .block-item.invalid .block-toolbar {
+    background-color: #ffe5e5;
+}
+
+.block-canvas .block-validation-error {
+    padding: 0.5rem;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+    color: #721c24;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+}
+
+.block-canvas .block-validation-error strong {
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.block-canvas .block-validation-error ul {
+    margin: 0;
+    padding-left: 1.5rem;
+}
+
+.block-canvas .block-validation-error li {
+    margin: 0.125rem 0;
+}
+
+/* Blo
+ck Editor Panel Validation Styles */
+.block-editor-panel .block-validation-errors {
+    background-color: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 4px;
+    padding: 1rem;
+    margin: 1rem;
+}
+
+.block-editor-panel .validation-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    color: #856404;
+}
+
+.block-editor-panel .validation-icon {
+    font-size: 1.2rem;
+}
+
+.block-editor-panel .validation-error-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.block-editor-panel .validation-error-list li {
+    padding: 0.25rem 0;
+    color: #856404;
+    font-size: 0.9rem;
+}
+
+.block-editor-panel .validation-error-list li strong {
+    color: #664d03;
+}
+
+/* 
+Offline Indicator */
+.page-editor-header .offline-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 4px;
+    color: #856404;
+    font-size: 0.9rem;
+    font-weight: 500;
+}

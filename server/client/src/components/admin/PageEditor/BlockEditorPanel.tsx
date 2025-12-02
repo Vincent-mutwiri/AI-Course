@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { IBlock } from '../../../types/page';
+import { validateBlock, BlockValidationResult } from '../../../utils/blockValidation';
 import {
     TextBlockEditor,
     VideoBlockEditor,
@@ -21,6 +22,12 @@ interface BlockEditorPanelProps {
 }
 
 const BlockEditorPanel: React.FC<BlockEditorPanelProps> = ({ block, onBlockChange, onClose }) => {
+    // Validate block content
+    const validationResult: BlockValidationResult | null = useMemo(() => {
+        if (!block) return null;
+        return validateBlock(block);
+    }, [block]);
+
     if (!block) {
         return (
             <div className="block-editor-panel empty">
@@ -121,6 +128,21 @@ const BlockEditorPanel: React.FC<BlockEditorPanelProps> = ({ block, onBlockChang
                     ✕
                 </button>
             </div>
+            {validationResult && !validationResult.isValid && (
+                <div className="block-validation-errors">
+                    <div className="validation-header">
+                        <span className="validation-icon">⚠</span>
+                        <strong>Validation Errors</strong>
+                    </div>
+                    <ul className="validation-error-list">
+                        {validationResult.errors.map((error, index) => (
+                            <li key={index}>
+                                <strong>{error.field}:</strong> {error.message}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
             <div className="block-editor-content">
                 {renderEditor()}
             </div>
