@@ -1,0 +1,583 @@
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import {
+    BookOpen,
+    Code,
+    BarChart,
+    Users,
+    Award,
+    Lightbulb,
+    TrendingUp,
+    ArrowRight,
+    ExternalLink,
+    ChevronRight
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { getSiteConfig, type Area, type Partner, type Reason, type CompanyInfo } from '@/config/sites';
+import { courseAPI } from '@/services/api';
+
+// Icon mapping for dynamic icon rendering
+const iconMap: Record<string, any> = {
+    BookOpen,
+    Code,
+    BarChart,
+    Users,
+    Award,
+    Lightbulb,
+    TrendingUp,
+    ArrowRight,
+    ExternalLink,
+    ChevronRight
+};
+
+// Animation variants
+const fadeInUp = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 }
+};
+
+const staggerContainer = {
+    hidden: { opacity: 0 },
+    visible: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.1
+        }
+    }
+};
+
+export default function EdulimikaLandingPage() {
+    const siteConfig = getSiteConfig();
+    const companyInfo = siteConfig.content.companyInfo;
+
+    if (!companyInfo) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <p className="text-lg text-muted-foreground">Configuration error: Company information not found</p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="min-h-screen">
+            <HeroSection companyInfo={companyInfo} theme={siteConfig.theme} />
+            <AreasSection areas={companyInfo.areasOfWork} />
+            <PartnersSection partners={companyInfo.partners} />
+            <ImageGallery images={companyInfo.images} companyName={companyInfo.name} />
+            <WhyWorkWithUsSection reasons={companyInfo.whyWorkWithUs} />
+            <FeaturedCoursesSection courseIds={companyInfo.featuredCourses} />
+            <CTASection theme={siteConfig.theme} companyName={companyInfo.name} />
+        </div>
+    );
+}
+
+// Hero Section Component
+interface HeroSectionProps {
+    companyInfo: CompanyInfo;
+    theme: { primaryColor: string; secondaryColor: string; logo: string };
+}
+
+function HeroSection({ companyInfo, theme }: HeroSectionProps) {
+    return (
+        <section className="relative bg-gradient-to-br from-primary/10 via-background to-secondary/10 py-20 md:py-32 overflow-hidden">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                <motion.div
+                    initial="hidden"
+                    animate="visible"
+                    variants={staggerContainer}
+                    className="max-w-4xl mx-auto text-center"
+                >
+                    <motion.h1
+                        variants={fadeInUp}
+                        className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
+                    >
+                        {companyInfo.name}
+                    </motion.h1>
+
+                    <motion.p
+                        variants={fadeInUp}
+                        className="text-lg sm:text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto"
+                    >
+                        {companyInfo.description}
+                    </motion.p>
+
+                    <motion.div
+                        variants={fadeInUp}
+                        className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+                    >
+                        <Button asChild size="lg" className="w-full sm:w-auto">
+                            <Link to="/courses">
+                                Explore Courses
+                                <ArrowRight className="ml-2 h-5 w-5" />
+                            </Link>
+                        </Button>
+                        <Button asChild variant="outline" size="lg" className="w-full sm:w-auto">
+                            <Link to="/signup">
+                                Get Started
+                            </Link>
+                        </Button>
+                    </motion.div>
+                </motion.div>
+            </div>
+
+            {/* Decorative elements */}
+            <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+                <div className="absolute top-20 left-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl" />
+                <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
+            </div>
+        </section>
+    );
+}
+
+// Areas of Work Section
+interface AreasSectionProps {
+    areas: Area[];
+}
+
+function AreasSection({ areas }: AreasSectionProps) {
+    if (!areas || areas.length === 0) {
+        return null;
+    }
+
+    return (
+        <section className="py-16 md:py-24 bg-background">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                <motion.div
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, margin: "-100px" }}
+                    variants={staggerContainer}
+                >
+                    <motion.div variants={fadeInUp} className="text-center mb-12">
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
+                            What We Do
+                        </h2>
+                        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                            Our areas of expertise in educational innovation
+                        </p>
+                    </motion.div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {areas.map((area, index) => {
+                            const Icon = iconMap[area.icon] || BookOpen;
+                            return (
+                                <motion.div key={index} variants={fadeInUp}>
+                                    <Card className="h-full hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                                        <CardHeader>
+                                            <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                                                <Icon className="h-6 w-6 text-primary" />
+                                            </div>
+                                            <CardTitle className="text-xl">{area.title}</CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <CardDescription className="text-base">
+                                                {area.description}
+                                            </CardDescription>
+                                        </CardContent>
+                                    </Card>
+                                </motion.div>
+                            );
+                        })}
+                    </div>
+                </motion.div>
+            </div>
+        </section>
+    );
+}
+
+// Partners Section
+interface PartnersSectionProps {
+    partners: Partner[];
+}
+
+function PartnersSection({ partners }: PartnersSectionProps) {
+    if (!partners || partners.length === 0) {
+        return null;
+    }
+
+    return (
+        <section className="py-16 md:py-24 bg-muted/30">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                <motion.div
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, margin: "-100px" }}
+                    variants={staggerContainer}
+                >
+                    <motion.div variants={fadeInUp} className="text-center mb-12">
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
+                            Our Partners
+                        </h2>
+                        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                            Collaborating with leading organizations to transform education
+                        </p>
+                    </motion.div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {partners.map((partner, index) => (
+                            <motion.div key={index} variants={fadeInUp}>
+                                <Card className="h-full hover:shadow-lg transition-all duration-300">
+                                    <CardHeader>
+                                        <div className="w-full h-32 bg-muted rounded-lg flex items-center justify-center mb-4 overflow-hidden">
+                                            <img
+                                                src={partner.logo}
+                                                alt={`${partner.name} logo`}
+                                                className="max-w-full max-h-full object-contain p-4"
+                                                onError={(e) => {
+                                                    e.currentTarget.style.display = 'none';
+                                                    e.currentTarget.parentElement!.innerHTML = `<span class="text-2xl font-bold text-muted-foreground">${partner.name}</span>`;
+                                                }}
+                                            />
+                                        </div>
+                                        <CardTitle className="text-xl">{partner.name}</CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <CardDescription className="text-base mb-4">
+                                            {partner.description}
+                                        </CardDescription>
+                                        {partner.website && (
+                                            <a
+                                                href={partner.website}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center text-primary hover:underline"
+                                            >
+                                                Visit Website
+                                                <ExternalLink className="ml-1 h-4 w-4" />
+                                            </a>
+                                        )}
+                                    </CardContent>
+                                </Card>
+                            </motion.div>
+                        ))}
+                    </div>
+                </motion.div>
+            </div>
+        </section>
+    );
+}
+
+// Image Gallery Section
+interface ImageGalleryProps {
+    images: string[];
+    companyName: string;
+}
+
+function ImageGallery({ images, companyName }: ImageGalleryProps) {
+    if (!images || images.length === 0) {
+        return null;
+    }
+
+    return (
+        <section className="py-16 md:py-24 bg-background">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                <motion.div
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, margin: "-100px" }}
+                    variants={staggerContainer}
+                >
+                    <motion.div variants={fadeInUp} className="text-center mb-12">
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
+                            Our Impact
+                        </h2>
+                        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                            See how we're transforming education around the world
+                        </p>
+                    </motion.div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {images.map((image, index) => (
+                            <motion.div
+                                key={index}
+                                variants={fadeInUp}
+                                className="relative aspect-video rounded-lg overflow-hidden bg-muted group"
+                            >
+                                <img
+                                    src={image}
+                                    alt={`${companyName} impact ${index + 1}`}
+                                    loading="lazy"
+                                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                    onError={(e) => {
+                                        e.currentTarget.src = `https://placehold.co/600x400/e2e8f0/64748b?text=${companyName}+Image+${index + 1}`;
+                                    }}
+                                />
+                            </motion.div>
+                        ))}
+                    </div>
+                </motion.div>
+            </div>
+        </section>
+    );
+}
+
+// Why Work With Us Section
+interface WhyWorkWithUsSectionProps {
+    reasons: Reason[];
+}
+
+function WhyWorkWithUsSection({ reasons }: WhyWorkWithUsSectionProps) {
+    if (!reasons || reasons.length === 0) {
+        return null;
+    }
+
+    return (
+        <section className="py-16 md:py-24 bg-muted/30">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                <motion.div
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, margin: "-100px" }}
+                    variants={staggerContainer}
+                >
+                    <motion.div variants={fadeInUp} className="text-center mb-12">
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
+                            Why Work With Us
+                        </h2>
+                        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                            What sets us apart in educational innovation
+                        </p>
+                    </motion.div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {reasons.map((reason, index) => {
+                            const Icon = iconMap[reason.icon] || Award;
+                            return (
+                                <motion.div key={index} variants={fadeInUp}>
+                                    <Card className="h-full hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                                        <CardHeader>
+                                            <div className="w-12 h-12 rounded-lg bg-secondary/10 flex items-center justify-center mb-4">
+                                                <Icon className="h-6 w-6 text-secondary" />
+                                            </div>
+                                            <CardTitle className="text-xl">{reason.title}</CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <CardDescription className="text-base">
+                                                {reason.description}
+                                            </CardDescription>
+                                        </CardContent>
+                                    </Card>
+                                </motion.div>
+                            );
+                        })}
+                    </div>
+                </motion.div>
+            </div>
+        </section>
+    );
+}
+
+// Featured Courses Section
+interface FeaturedCoursesSectionProps {
+    courseIds: string[];
+}
+
+interface Course {
+    _id: string;
+    title: string;
+    description: string;
+    thumbnail?: string;
+    level?: string;
+    duration?: string;
+}
+
+function FeaturedCoursesSection({ courseIds }: FeaturedCoursesSectionProps) {
+    const [courses, setCourses] = useState<Course[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchCourses = async () => {
+            if (!courseIds || courseIds.length === 0) {
+                // Fetch all courses if no specific IDs provided
+                try {
+                    const response = await courseAPI.getAll();
+                    setCourses(response.slice(0, 3)); // Show first 3 courses
+                    setLoading(false);
+                } catch (err) {
+                    console.error('Error fetching courses:', err);
+                    setError('Failed to load courses');
+                    setLoading(false);
+                }
+                return;
+            }
+
+            // Fetch specific courses by ID
+            try {
+                const coursePromises = courseIds.map(id =>
+                    courseAPI.getById(id).catch(err => {
+                        console.error(`Error fetching course ${id}:`, err);
+                        return null;
+                    })
+                );
+                const fetchedCourses = await Promise.all(coursePromises);
+                setCourses(fetchedCourses.filter(Boolean));
+                setLoading(false);
+            } catch (err) {
+                console.error('Error fetching courses:', err);
+                setError('Failed to load courses');
+                setLoading(false);
+            }
+        };
+
+        fetchCourses();
+    }, [courseIds]);
+
+    if (loading) {
+        return (
+            <section className="py-16 md:py-24 bg-background">
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center mb-12">
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
+                            Featured Courses
+                        </h2>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {[1, 2, 3].map((i) => (
+                            <Card key={i} className="h-full">
+                                <div className="w-full h-48 bg-muted animate-pulse" />
+                                <CardHeader>
+                                    <div className="h-6 bg-muted animate-pulse rounded mb-2" />
+                                    <div className="h-4 bg-muted animate-pulse rounded" />
+                                </CardHeader>
+                            </Card>
+                        ))}
+                    </div>
+                </div>
+            </section>
+        );
+    }
+
+    if (error || courses.length === 0) {
+        return null;
+    }
+
+    return (
+        <section className="py-16 md:py-24 bg-background">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                <motion.div
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, margin: "-100px" }}
+                    variants={staggerContainer}
+                >
+                    <motion.div variants={fadeInUp} className="text-center mb-12">
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
+                            Featured Courses
+                        </h2>
+                        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                            Explore our most popular learning experiences
+                        </p>
+                    </motion.div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {courses.map((course, index) => (
+                            <motion.div key={course._id} variants={fadeInUp}>
+                                <Link to={`/course/${course._id}`}>
+                                    <Card className="h-full hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                                        <div className="w-full h-48 bg-muted overflow-hidden">
+                                            {course.thumbnail ? (
+                                                <img
+                                                    src={course.thumbnail}
+                                                    alt={course.title}
+                                                    className="w-full h-full object-cover"
+                                                    onError={(e) => {
+                                                        e.currentTarget.src = `https://placehold.co/600x400/e2e8f0/64748b?text=${encodeURIComponent(course.title)}`;
+                                                    }}
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/10">
+                                                    <BookOpen className="h-16 w-16 text-muted-foreground" />
+                                                </div>
+                                            )}
+                                        </div>
+                                        <CardHeader>
+                                            <CardTitle className="text-xl line-clamp-2">{course.title}</CardTitle>
+                                            <CardDescription className="line-clamp-3">
+                                                {course.description}
+                                            </CardDescription>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <div className="flex items-center justify-between text-sm text-muted-foreground">
+                                                {course.level && <span className="capitalize">{course.level}</span>}
+                                                {course.duration && <span>{course.duration}</span>}
+                                            </div>
+                                            <Button variant="ghost" className="w-full mt-4 group">
+                                                Learn More
+                                                <ChevronRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                                            </Button>
+                                        </CardContent>
+                                    </Card>
+                                </Link>
+                            </motion.div>
+                        ))}
+                    </div>
+
+                    <motion.div variants={fadeInUp} className="text-center mt-12">
+                        <Button asChild size="lg" variant="outline">
+                            <Link to="/courses">
+                                View All Courses
+                                <ArrowRight className="ml-2 h-5 w-5" />
+                            </Link>
+                        </Button>
+                    </motion.div>
+                </motion.div>
+            </div>
+        </section>
+    );
+}
+
+// CTA Section
+interface CTASectionProps {
+    theme: { primaryColor: string; secondaryColor: string; logo: string };
+    companyName: string;
+}
+
+function CTASection({ theme, companyName }: CTASectionProps) {
+    return (
+        <section className="py-16 md:py-24 bg-gradient-to-br from-primary to-secondary text-primary-foreground">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                <motion.div
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    variants={staggerContainer}
+                    className="max-w-4xl mx-auto text-center"
+                >
+                    <motion.h2
+                        variants={fadeInUp}
+                        className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6"
+                    >
+                        Ready to Transform Your Learning Experience?
+                    </motion.h2>
+
+                    <motion.p
+                        variants={fadeInUp}
+                        className="text-lg sm:text-xl mb-8 opacity-90"
+                    >
+                        Join thousands of learners who are already benefiting from our innovative educational solutions.
+                    </motion.p>
+
+                    <motion.div
+                        variants={fadeInUp}
+                        className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+                    >
+                        <Button asChild size="lg" variant="secondary" className="w-full sm:w-auto">
+                            <Link to="/signup">
+                                Get Started Today
+                                <ArrowRight className="ml-2 h-5 w-5" />
+                            </Link>
+                        </Button>
+                        <Button asChild size="lg" variant="outline" className="w-full sm:w-auto bg-transparent border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10">
+                            <Link to="/courses">
+                                Browse Courses
+                            </Link>
+                        </Button>
+                    </motion.div>
+                </motion.div>
+            </div>
+        </section>
+    );
+}
