@@ -2,6 +2,7 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { BookOpen, LayoutDashboard, Home, User, LogOut, Bot, Menu, X, Sun, Moon } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useState, useEffect } from "react";
 
 const getNavLinks = (user: any) => {
@@ -11,23 +12,24 @@ const getNavLinks = (user: any) => {
     { to: "/dashboard", label: "Dashboard", icon: <LayoutDashboard className="h-4 w-4" /> },
     { to: "/ai-assistant", label: "AI Assistant", icon: <Bot className="h-4 w-4" /> },
   ];
-  
+
   // Show admin link for admin users or admin@example.com (temporary)
   const isAdmin = user?.role === "admin" || user?.email === "admin@example.com";
   if (isAdmin) {
     links.push({ to: "/admin", label: "Admin", icon: <LayoutDashboard className="h-4 w-4" /> });
   }
-  
+
   return links;
 };
 
 export default function Header() {
   const { user, logout } = useAuth();
+  const theme = useTheme();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('theme') === 'dark' || 
+      return localStorage.getItem('theme') === 'dark' ||
         (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
     }
     return false;
@@ -63,7 +65,7 @@ export default function Header() {
       <div className="container h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2" onClick={closeMobileMenu}>
           <BookOpen className="h-6 w-6" />
-          <span className="font-bold text-lg">Benki ya maarifa</span>
+          <span className="font-bold text-lg">{theme.displayName}</span>
         </Link>
 
         {/* Desktop Navigation */}
@@ -73,10 +75,9 @@ export default function Header() {
               key={link.to}
               to={link.to}
               className={({ isActive }) =>
-                `flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                  isActive
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                `flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-colors ${isActive
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                 }`
               }
             >
@@ -139,10 +140,9 @@ export default function Header() {
                 to={link.to}
                 onClick={closeMobileMenu}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-md transition-colors ${
-                    isActive
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                  `flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-md transition-colors ${isActive
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                   }`
                 }
               >
@@ -150,7 +150,7 @@ export default function Header() {
                 {link.label}
               </NavLink>
             ))}
-            
+
             <div className="border-t pt-4 mt-4 space-y-2">
               {user ? (
                 <>

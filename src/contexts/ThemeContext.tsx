@@ -39,9 +39,9 @@ interface ThemeProviderProps {
  * Automatically applies theme colors as CSS variables to the document root.
  * 
  * @param {ThemeProviderProps} props - Component props
- * @returns {JSX.Element} Provider component
+ * @returns Provider component
  */
-export function ThemeProvider({ children }: ThemeProviderProps): JSX.Element {
+export function ThemeProvider({ children }: ThemeProviderProps) {
     const siteConfig = getSiteConfig();
 
     const theme: ThemeContextType = {

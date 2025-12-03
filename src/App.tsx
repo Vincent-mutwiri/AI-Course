@@ -2,6 +2,7 @@ import { Route, Routes } from "react-router-dom";
 import { Toaster } from 'sonner';
 import Layout from "./components/shared/Layout";
 import HomePage from "./pages/HomePage";
+import EdulimikaLandingPage from "./pages/EdulimikaLandingPage";
 import CoursesPage from "./pages/CoursesPage";
 import CourseDetailPage from "./pages/CourseDetailPage";
 import DashboardPage from "./pages/DashboardPage";
@@ -25,8 +26,17 @@ import AdminRoute from "./components/shared/AdminRoute";
 import ModuleContent from "./pages/ModuleContent";
 import HelpPage from "./pages/HelpPage";
 import { ErrorBoundary } from "./components/shared/ErrorBoundary";
+import { getSiteConfig } from "./config/sites";
 
 function App() {
+  // Get site configuration to determine which landing page to render
+  const siteConfig = getSiteConfig();
+
+  // Determine landing page component based on site configuration
+  const LandingPage = siteConfig.content.landingPage === 'EdulimikaLandingPage'
+    ? EdulimikaLandingPage
+    : HomePage;
+
   return (
     <>
       <Toaster
@@ -47,7 +57,7 @@ function App() {
       />
       <Routes>
         <Route element={<Layout />}>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<LandingPage />} />
           <Route path="/courses" element={<CoursesPage />} />
           <Route path="/course/:id" element={<CourseDetailPage />} />
           <Route path="/login" element={<LoginPage />} />

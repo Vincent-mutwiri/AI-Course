@@ -69,19 +69,19 @@
     - Style with theme colors
     - _Requirements: 1.1, 3.3_
 
-- [ ] 3. Integrate site-aware routing
-  - [ ] 3.1 Update App.tsx with site-aware routing
+- [x] 3. Integrate site-aware routing
+  - [x] 3.1 Update App.tsx with site-aware routing
     - Import site configuration system
     - Implement conditional landing page rendering based on site config
     - Maintain existing routes for shared functionality
     - _Requirements: 3.2, 3.3, 7.2, 7.3_
   
-  - [ ] 3.2 Wrap application with ThemeProvider
+  - [x] 3.2 Wrap application with ThemeProvider
     - Update `src/main.tsx` to include ThemeProvider
     - Ensure theme is available throughout the application
     - _Requirements: 3.3, 3.4_
   
-  - [ ] 3.3 Update Layout component to use theme
+  - [x] 3.3 Update Layout component to use theme
     - Modify `src/components/shared/Layout.tsx` to use theme context
     - Apply site-specific logo and branding
     - _Requirements: 3.3, 3.4_
