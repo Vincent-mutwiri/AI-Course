@@ -68,17 +68,94 @@ export const SITE_CONFIGS: Record<string, SiteConfig> = {
         displayName: 'Edulimika',
         domain: 'localhost:5173',
         theme: {
-            primaryColor: '#3B82F6',
-            secondaryColor: '#8B5CF6',
-            logo: '/logo-default.png'
+            primaryColor: '#10B981',
+            secondaryColor: '#3B82F6',
+            logo: '/logo-edulimika.png'
         },
         features: {
-            showLandingPage: false,
+            showLandingPage: true,
             enableCourses: true,
             enableAuth: true
         },
         content: {
-            landingPage: 'HomePage'
+            landingPage: 'HomePage',
+            companyInfo: {
+                name: 'Edulimika',
+                description: 'Transforming education through innovative learning solutions and cutting-edge educational technology. We partner with organizations to create engaging, evidence-based learning experiences that drive measurable results.',
+                areasOfWork: [
+                    {
+                        title: 'Instructional Design',
+                        description: 'Creating engaging, evidence-based learning experiences that maximize knowledge retention and learner engagement through proven pedagogical approaches.',
+                        icon: 'BookOpen'
+                    },
+                    {
+                        title: 'EdTech Development',
+                        description: 'Building cutting-edge educational technology platforms that scale learning and provide seamless user experiences across devices.',
+                        icon: 'Code'
+                    },
+                    {
+                        title: 'Learning Analytics',
+                        description: 'Data-driven insights for improved learning outcomes through comprehensive analytics and actionable reporting.',
+                        icon: 'BarChart'
+                    },
+                    {
+                        title: 'Teacher Training',
+                        description: 'Professional development programs for educators that enhance teaching effectiveness and integrate modern pedagogical methods.',
+                        icon: 'Users'
+                    }
+                ],
+                partners: [
+                    {
+                        name: 'Educational Institution Partner',
+                        logo: '/partners/partner1.png',
+                        description: 'Collaborating to deliver innovative learning solutions to thousands of students worldwide.',
+                        website: 'https://example.com'
+                    },
+                    {
+                        name: 'Technology Partner',
+                        logo: '/partners/partner2.png',
+                        description: 'Working together to build next-generation educational technology platforms.',
+                        website: 'https://example.com'
+                    },
+                    {
+                        name: 'Research Partner',
+                        logo: '/partners/partner3.png',
+                        description: 'Conducting research on learning science and evidence-based instructional design.',
+                        website: 'https://example.com'
+                    }
+                ],
+                images: [
+                    '/edulimika/hero-1.jpg',
+                    '/edulimika/team-1.jpg',
+                    '/edulimika/impact-1.jpg',
+                    '/edulimika/classroom-1.jpg',
+                    '/edulimika/technology-1.jpg',
+                    '/edulimika/collaboration-1.jpg'
+                ],
+                whyWorkWithUs: [
+                    {
+                        title: 'Proven Expertise',
+                        description: 'Years of experience in educational technology and instructional design with a track record of successful implementations.',
+                        icon: 'Award'
+                    },
+                    {
+                        title: 'Innovative Solutions',
+                        description: 'Cutting-edge approaches to learning challenges that leverage the latest research and technology.',
+                        icon: 'Lightbulb'
+                    },
+                    {
+                        title: 'Measurable Results',
+                        description: 'Data-driven outcomes and continuous improvement through comprehensive analytics and feedback loops.',
+                        icon: 'TrendingUp'
+                    },
+                    {
+                        title: 'Collaborative Approach',
+                        description: 'Working closely with your team to understand needs and deliver customized solutions that fit your context.',
+                        icon: 'Users'
+                    }
+                ],
+                featuredCourses: [] // Will be populated with actual course IDs
+            }
         }
     },
     edulimika: {
