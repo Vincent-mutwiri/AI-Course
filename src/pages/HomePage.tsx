@@ -1,558 +1,351 @@
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
-import { profileAPI } from "@/services/api";
-import profileImage from "@/assets/Vincent profile.png";
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import {
-  User,
-  Mail,
-  Linkedin,
-  MapPin,
-  Briefcase,
-  GraduationCap,
-  Award,
-  BookOpen,
-  ArrowRight,
-  Code,
-  Lightbulb,
-  Users,
-  Github,
-  Twitter,
-} from "lucide-react";
+    BookOpen,
+    Code,
+    BarChart,
+    Users,
+    Award,
+    Lightbulb,
+    TrendingUp,
+    ArrowRight,
+    ChevronRight
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { courseAPI } from '@/services/api';
 
-interface Profile {
-  name: string;
-  location: string;
-  contact: {
-    phone: string;
-    email: string;
-    linkedin: string;
-    github?: string;
-    twitter?: string;
-  };
-  professionalProfile: string;
-  keySkills: string[];
-  experience?: Array<{
-    title: string;
-    organization: string;
-    period: string;
-    description: string;
-  }>;
-  education?: Array<{
-    degree: string;
-    institution: string;
-    year: string;
-    description?: string;
-  }>;
-  certifications?: string[];
-  volunteerExperience?: Array<{
-    title: string;
-    organization: string;
-    period: string;
-    description: string;
-  }>;
-  projects?: Array<{
-    title: string;
-    role: string;
-    url?: string;
-    period: string;
-    description: string;
-  }>;
-}
+// Icon mapping for dynamic icon rendering
+const iconMap: Record<string, any> = {
+    BookOpen,
+    Code,
+    BarChart,
+    Users,
+    Award,
+    Lightbulb,
+    TrendingUp,
+    ArrowRight,
+    ChevronRight
+};
 
-export default function HomePage() {
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true);
+// Animation variants
+const fadeInUp = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 }
+};
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const res = await profileAPI.getProfile();
-        setProfile(res);
-      } catch (err) {
-        console.error("Failed to load profile:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProfile();
-  }, []);
-
-  // Helper function to ensure URL has protocol
-  const ensureProtocol = (url: string | undefined, fallback: string): string => {
-    if (!url) return fallback;
-    if (url.startsWith('http://') || url.startsWith('https://')) {
-      return url;
-    }
-    return `https://${url}`;
-  };
-
-  const containerVariants = {
+const staggerContainer = {
     hidden: { opacity: 0 },
     visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.1
+        }
+    }
+};
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.5,
-      },
-    },
-  };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden py-20 px-4">
-        <div className="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] -z-10" />
-        
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={containerVariants}
-          className="max-w-7xl mx-auto"
-        >
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left Column - Profile Info */}
-            <motion.div variants={itemVariants} className="space-y-6">
-              {/* Profile Image - Mobile/Tablet */}
-              <div className="lg:hidden flex justify-center mb-8">
-                <motion.div
-                  initial={{ scale: 0.8, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ duration: 0.5 }}
-                  className="relative"
-                >
-                  <div className="w-48 h-48 rounded-full overflow-hidden border-4 border-white shadow-2xl">
-                    <img
-                      src={profileImage}
-                      alt="Vincent Mutwiri"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="absolute -bottom-2 -right-2 w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center border-4 border-white">
-                    <Award className="h-8 w-8 text-white" />
-                  </div>
-                </motion.div>
-              </div>
-
-              <div className="inline-block">
-                <span className="px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
-                  Instructional Designer & EdTech Professional
-                </span>
-              </div>
-              
-              <h1 className="text-5xl md:text-6xl font-bold text-gray-900 leading-tight">
-                {loading ? (
-                  <div className="h-16 bg-gray-200 rounded animate-pulse" />
-                ) : (
-                  profile?.name || "Vincent Mutwiri"
-                )}
-              </h1>
-              
-              <div className="flex items-center gap-2 text-gray-600">
-                <MapPin className="h-5 w-5" />
-                <span className="text-lg">
-                  {loading ? "Loading..." : profile?.location || "Nairobi, Kenya"}
-                </span>
-              </div>
-
-              <p className="text-xl text-gray-700 leading-relaxed">
-                {loading ? (
-                  <div className="space-y-2">
-                    <div className="h-4 bg-gray-200 rounded animate-pulse" />
-                    <div className="h-4 bg-gray-200 rounded animate-pulse w-5/6" />
-                  </div>
-                ) : (
-                  profile?.professionalProfile ||
-                  "A results-oriented Instructional Designer and EdTech professional with a proven record of developing engaging learning experiences."
-                )}
-              </p>
-
-              <div className="flex flex-wrap gap-4 pt-4">
-                <Button asChild size="lg" className="gap-2">
-                  <Link to="/courses">
-                    Explore Courses <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </Button>
-                <Button asChild variant="outline" size="lg" className="gap-2">
-                  <a
-                    href={`mailto:${profile?.contact.email || "vincentmutwir9i@email.com"}`}
-                  >
-                    <Mail className="h-4 w-4" /> Get in Touch
-                  </a>
-                </Button>
-              </div>
-
-              <div className="flex flex-wrap gap-4 pt-2">
-                <a
-                  href={ensureProtocol(profile?.contact.linkedin, "https://www.linkedin.com/in/vincentmutwiri/")}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors"
-                >
-                  <Linkedin className="h-5 w-5" />
-                  <span className="font-medium">LinkedIn</span>
-                </a>
-                <a
-                  href={ensureProtocol(profile?.contact.github, "https://github.com/Vincent-mutwiri")}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
-                >
-                  <Github className="h-5 w-5" />
-                  <span className="font-medium">GitHub</span>
-                </a>
-                <a
-                  href={ensureProtocol(profile?.contact.twitter, "https://x.com/Mu_twiry")}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-sky-50 text-sky-700 hover:bg-sky-100 transition-colors"
-                >
-                  <Twitter className="h-5 w-5" />
-                  <span className="font-medium">X (Twitter)</span>
-                </a>
-              </div>
-            </motion.div>
-
-            {/* Right Column - Profile Image & Highlights */}
-            <motion.div variants={itemVariants} className="space-y-6">
-              {/* Profile Image - Desktop */}
-              <div className="hidden lg:flex justify-center mb-8">
-                <motion.div
-                  initial={{ scale: 0.8, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
-                  className="relative"
-                >
-                  <div className="w-64 h-64 rounded-full overflow-hidden border-8 border-white shadow-2xl">
-                    <img
-                      src={profileImage}
-                      alt="Vincent Mutwiri"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="absolute -bottom-4 -right-4 w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center border-4 border-white shadow-lg">
-                    <Award className="h-10 w-10 text-white" />
-                  </div>
-                </motion.div>
-              </div>
-
-              <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-                <h3 className="text-2xl font-bold text-gray-900 mb-6">
-                  What I Bring
-                </h3>
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <div className="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <Lightbulb className="h-6 w-6 text-blue-600" />
-                    </div>
-                    <h4 className="font-semibold text-gray-900">Innovation</h4>
-                    <p className="text-sm text-gray-600">
-                      Cutting-edge learning solutions
-                    </p>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                      <Users className="h-6 w-6 text-purple-600" />
-                    </div>
-                    <h4 className="font-semibold text-gray-900">Mentorship</h4>
-                    <p className="text-sm text-gray-600">
-                      Guiding learners to success
-                    </p>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="h-12 w-12 bg-green-100 rounded-lg flex items-center justify-center">
-                      <Code className="h-6 w-6 text-green-600" />
-                    </div>
-                    <h4 className="font-semibold text-gray-900">Technical</h4>
-                    <p className="text-sm text-gray-600">
-                      MERN Stack & Modern Tools
-                    </p>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="h-12 w-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                      <BookOpen className="h-6 w-6 text-orange-600" />
-                    </div>
-                    <h4 className="font-semibold text-gray-900">Pedagogy</h4>
-                    <p className="text-sm text-gray-600">
-                      Evidence-based teaching
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </motion.div>
-      </section>
-
-      {/* Skills Section */}
-      <section className="py-16 px-4 bg-white">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={containerVariants}
-          className="max-w-7xl mx-auto"
-        >
-          <motion.div variants={itemVariants} className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Key Expertise
-            </h2>
-            <p className="text-xl text-gray-600">
-              A comprehensive skill set in instructional design and technology
-            </p>
-          </motion.div>
-
-          <motion.div
-            variants={itemVariants}
-            className="flex flex-wrap justify-center gap-3"
-          >
-            {loading ? (
-              Array.from({ length: 12 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="h-10 w-32 bg-gray-200 rounded-full animate-pulse"
-                />
-              ))
-            ) : (
-              profile?.keySkills.map((skill, index) => (
-                <motion.span
-                  key={index}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="px-6 py-3 bg-gradient-to-r from-blue-50 to-purple-50 text-gray-800 rounded-full font-medium border border-gray-200 hover:shadow-md transition-shadow"
-                >
-                  {skill}
-                </motion.span>
-              ))
-            )}
-          </motion.div>
-        </motion.div>
-      </section>
-
-      {/* Projects Section */}
-      {profile?.projects && profile.projects.length > 0 && (
-        <section className="py-16 px-4 bg-white">
-          <div className="max-w-7xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-center mb-12"
-            >
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                Featured Projects
-              </h2>
-              <p className="text-xl text-gray-600">
-                Innovative educational technology solutions I've developed
-              </p>
-            </motion.div>
-
-            <div className="grid md:grid-cols-2 gap-8">
-              {profile.projects.map((project, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  className="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg p-8 border border-gray-200 hover:shadow-xl transition-shadow"
-                >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">
-                        {project.title}
-                      </h3>
-                      <p className="text-sm font-medium text-blue-600 mb-1">
-                        {project.role}
-                      </p>
-                      <p className="text-sm text-gray-500">{project.period}</p>
-                    </div>
-                  </div>
-                  <p className="text-gray-700 mb-4 leading-relaxed">
-                    {project.description}
-                  </p>
-                  {project.url && (
-                    <a
-                      href={project.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium transition-colors"
-                    >
-                      <span>View Project</span>
-                      <ArrowRight className="h-4 w-4" />
-                    </a>
-                  )}
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Experience & Education Section */}
-      <section className="py-16 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-8">
-            {/* Experience */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100"
-            >
-              <div className="flex items-center gap-3 mb-6">
-                <div className="h-10 w-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <Briefcase className="h-5 w-5 text-blue-600" />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900">Experience</h3>
-              </div>
-              <div className="space-y-6">
-                {loading ? (
-                  <div className="space-y-4">
-                    <div className="h-4 bg-gray-200 rounded animate-pulse" />
-                    <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4" />
-                  </div>
-                ) : (
-                  profile?.experience?.map((exp, index) => (
-                    <div key={index} className="border-l-2 border-blue-200 pl-4">
-                      <h4 className="font-semibold text-gray-900">{exp.title}</h4>
-                      <p className="text-blue-600 font-medium">
-                        {exp.organization}
-                      </p>
-                      <p className="text-sm text-gray-500 mb-2">{exp.period}</p>
-                      <p className="text-gray-700 text-sm">{exp.description}</p>
-                    </div>
-                  ))
-                )}
-              </div>
-            </motion.div>
-
-            {/* Education & Certifications */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="space-y-8"
-            >
-              {/* Education */}
-              <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="h-10 w-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                    <GraduationCap className="h-5 w-5 text-purple-600" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900">Education</h3>
-                </div>
-                <div className="space-y-4">
-                  {loading ? (
-                    <div className="space-y-2">
-                      <div className="h-4 bg-gray-200 rounded animate-pulse" />
-                      <div className="h-4 bg-gray-200 rounded animate-pulse w-2/3" />
-                    </div>
-                  ) : (
-                    profile?.education?.map((edu, index) => (
-                      <div key={index} className="pb-4 last:pb-0">
-                        <h4 className="font-semibold text-gray-900">
-                          {edu.degree}
-                        </h4>
-                        <p className="text-purple-600 font-medium">
-                          {edu.institution}
-                        </p>
-                        <p className="text-sm text-gray-500 mb-2">{edu.year}</p>
-                        {edu.description && (
-                          <p className="text-sm text-gray-600 italic">
-                            {edu.description}
-                          </p>
-                        )}
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-
-              {/* Certifications */}
-              <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="h-10 w-10 bg-green-100 rounded-lg flex items-center justify-center">
-                    <Award className="h-5 w-5 text-green-600" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900">
-                    Certifications
-                  </h3>
-                </div>
-                <ul className="space-y-2">
-                  {loading ? (
-                    Array.from({ length: 4 }).map((_, i) => (
-                      <li key={i}>
-                        <div className="h-4 bg-gray-200 rounded animate-pulse" />
-                      </li>
-                    ))
-                  ) : (
-                    profile?.certifications?.map((cert, index) => (
-                      <li
-                        key={index}
-                        className="flex items-start gap-2 text-gray-700"
-                      >
-                        <span className="text-green-600 mt-1">✓</span>
-                        <span>{cert}</span>
-                      </li>
-                    ))
-                  )}
-                </ul>
-              </div>
-            </motion.div>
-          </div>
+export default function HomePage() {
+    return (
+        <div className="min-h-screen">
+            <HeroSection />
+            <AreasSection />
+            <FeaturedCoursesSection />
+            <CTASection />
         </div>
-      </section>
+    );
+}
 
-      {/* CTA Section */}
-      <section className="py-20 px-4 bg-gradient-to-r from-blue-600 to-purple-600">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="max-w-4xl mx-auto text-center text-white"
-        >
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Ready to Start Learning?
-          </h2>
-          <p className="text-xl mb-8 text-blue-100">
-            Join me on an interactive journey through Learning Science and
-            Educational Technology
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Button
-              asChild
-              size="lg"
-              variant="secondary"
-              className="gap-2 text-lg px-8"
-            >
-              <Link to="/courses">
-                Explore Courses <ArrowRight className="h-5 w-5" />
-              </Link>
-            </Button>
-            <Button
-              asChild
-              size="lg"
-              variant="outline"
-              className="gap-2 text-lg px-8 bg-transparent text-white border-white hover:bg-white hover:text-blue-600"
-            >
-              <Link to="/signup">Get Started Free</Link>
-            </Button>
-          </div>
-        </motion.div>
-      </section>
-    </div>
-  );
+// Hero Section Component
+function HeroSection() {
+    return (
+        <section className="relative bg-gradient-to-br from-primary/10 via-background to-secondary/10 py-20 md:py-32 overflow-hidden">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                <motion.div
+                    initial="hidden"
+                    animate="visible"
+                    variants={staggerContainer}
+                    className="max-w-4xl mx-auto text-center"
+                >
+                    <motion.h1
+                        variants={fadeInUp}
+                        className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
+                    >
+                        Edulimika
+                    </motion.h1>
+
+                    <motion.p
+                        variants={fadeInUp}
+                        className="text-lg sm:text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto"
+                    >
+                        Transforming education through innovative learning solutions and technology
+                    </motion.p>
+
+                    <motion.div
+                        variants={fadeInUp}
+                        className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+                    >
+                        <Button asChild size="lg" className="w-full sm:w-auto">
+                            <Link to="/courses">
+                                Explore Courses
+                                <ArrowRight className="ml-2 h-5 w-5" />
+                            </Link>
+                        </Button>
+                        <Button asChild variant="outline" size="lg" className="w-full sm:w-auto">
+                            <Link to="/signup">
+                                Get Started
+                            </Link>
+                        </Button>
+                    </motion.div>
+                </motion.div>
+            </div>
+
+            {/* Decorative elements */}
+            <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+                <div className="absolute top-20 left-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl" />
+                <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
+            </div>
+        </section>
+    );
+}
+
+// Areas of Work Section
+function AreasSection() {
+    const areas = [
+        { icon: 'Lightbulb', title: 'Instructional Design', description: 'Creating engaging and effective learning experiences' },
+        { icon: 'Code', title: 'EdTech Development', description: 'Building innovative educational technology solutions' },
+        { icon: 'Users', title: 'Training & Workshops', description: 'Empowering educators with modern teaching methods' },
+        { icon: 'Award', title: 'Curriculum Development', description: 'Designing comprehensive learning pathways' }
+    ];
+
+    return (
+        <section className="py-16 md:py-24 bg-background">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                <motion.div
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, margin: "-100px" }}
+                    variants={staggerContainer}
+                >
+                    <motion.div variants={fadeInUp} className="text-center mb-12">
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
+                            What We Do
+                        </h2>
+                        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                            Our areas of expertise in educational innovation
+                        </p>
+                    </motion.div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {areas.map((area, index) => {
+                            const Icon = iconMap[area.icon] || BookOpen;
+                            return (
+                                <motion.div key={index} variants={fadeInUp}>
+                                    <Card className="h-full hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                                        <CardHeader>
+                                            <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                                                <Icon className="h-6 w-6 text-primary" />
+                                            </div>
+                                            <CardTitle className="text-xl">{area.title}</CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <CardDescription className="text-base">
+                                                {area.description}
+                                            </CardDescription>
+                                        </CardContent>
+                                    </Card>
+                                </motion.div>
+                            );
+                        })}
+                    </div>
+                </motion.div>
+            </div>
+        </section>
+    );
+}
+
+
+
+// Featured Courses Section
+interface Course {
+    _id: string;
+    title: string;
+    description: string;
+    thumbnail?: string;
+    level?: string;
+    duration?: string;
+}
+
+function FeaturedCoursesSection() {
+    const [courses, setCourses] = useState<Course[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchCourses = async () => {
+            try {
+                const response = await courseAPI.getAll();
+                const coursesArray = Array.isArray(response) ? response : [];
+                setCourses(coursesArray.slice(0, 3));
+                setLoading(false);
+            } catch (err) {
+                console.error('Error fetching courses:', err);
+                setError('Failed to load courses');
+                setLoading(false);
+            }
+        };
+
+        fetchCourses();
+    }, []);
+
+    if (loading) {
+        return (
+            <section className="py-16 md:py-24 bg-background">
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center mb-12">
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
+                            Featured Courses
+                        </h2>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {[1, 2, 3].map((i) => (
+                            <Card key={i} className="h-full">
+                                <div className="w-full h-48 bg-muted animate-pulse" />
+                                <CardHeader>
+                                    <div className="h-6 bg-muted animate-pulse rounded mb-2" />
+                                    <div className="h-4 bg-muted animate-pulse rounded" />
+                                </CardHeader>
+                            </Card>
+                        ))}
+                    </div>
+                </div>
+            </section>
+        );
+    }
+
+    if (error || courses.length === 0) {
+        return null;
+    }
+
+    return (
+        <section className="py-16 md:py-24 bg-background">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                <motion.div
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, margin: "-100px" }}
+                    variants={staggerContainer}
+                >
+                    <motion.div variants={fadeInUp} className="text-center mb-12">
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
+                            Featured Courses
+                        </h2>
+                        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                            Explore our most popular learning experiences
+                        </p>
+                    </motion.div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {courses.map((course, index) => (
+                            <motion.div key={course._id} variants={fadeInUp}>
+                                <Link to={`/course/${course._id}`}>
+                                    <Card className="h-full hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                                        <div className="w-full h-48 bg-muted overflow-hidden">
+                                            {course.thumbnail ? (
+                                                <img
+                                                    src={course.thumbnail}
+                                                    alt={course.title}
+                                                    className="w-full h-full object-cover"
+                                                    onError={(e) => {
+                                                        e.currentTarget.src = `https://placehold.co/600x400/e2e8f0/64748b?text=${encodeURIComponent(course.title)}`;
+                                                    }}
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/10">
+                                                    <BookOpen className="h-16 w-16 text-muted-foreground" />
+                                                </div>
+                                            )}
+                                        </div>
+                                        <CardHeader>
+                                            <CardTitle className="text-xl line-clamp-2">{course.title}</CardTitle>
+                                            <CardDescription className="line-clamp-3">
+                                                {course.description}
+                                            </CardDescription>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <div className="flex items-center justify-between text-sm text-muted-foreground">
+                                                {course.level && <span className="capitalize">{course.level}</span>}
+                                                {course.duration && <span>{course.duration}</span>}
+                                            </div>
+                                            <Button variant="ghost" className="w-full mt-4 group">
+                                                Learn More
+                                                <ChevronRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                                            </Button>
+                                        </CardContent>
+                                    </Card>
+                                </Link>
+                            </motion.div>
+                        ))}
+                    </div>
+
+                    <motion.div variants={fadeInUp} className="text-center mt-12">
+                        <Button asChild size="lg" variant="outline">
+                            <Link to="/courses">
+                                View All Courses
+                                <ArrowRight className="ml-2 h-5 w-5" />
+                            </Link>
+                        </Button>
+                    </motion.div>
+                </motion.div>
+            </div>
+        </section>
+    );
+}
+
+// CTA Section
+function CTASection() {
+    return (
+        <section className="py-16 md:py-24 bg-gradient-to-br from-primary to-secondary text-primary-foreground">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                <motion.div
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    variants={staggerContainer}
+                    className="max-w-4xl mx-auto text-center"
+                >
+                    <motion.h2
+                        variants={fadeInUp}
+                        className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6"
+                    >
+                        Ready to Transform Your Learning Experience?
+                    </motion.h2>
+
+                    <motion.p
+                        variants={fadeInUp}
+                        className="text-lg sm:text-xl mb-8 opacity-90"
+                    >
+                        Join thousands of learners who are already benefiting from our innovative educational solutions.
+                    </motion.p>
+
+                    <motion.div
+                        variants={fadeInUp}
+                        className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+                    >
+                        <Button asChild size="lg" variant="secondary" className="w-full sm:w-auto">
+                            <Link to="/signup">
+                                Get Started Today
+                                <ArrowRight className="ml-2 h-5 w-5" />
+                            </Link>
+                        </Button>
+                        <Button asChild size="lg" variant="outline" className="w-full sm:w-auto bg-transparent border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10">
+                            <Link to="/courses">
+                                Browse Courses
+                            </Link>
+                        </Button>
+                    </motion.div>
+                </motion.div>
+            </div>
+        </section>
+    );
 }

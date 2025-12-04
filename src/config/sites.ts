@@ -65,7 +65,7 @@ export interface SiteConfig {
 export const SITE_CONFIGS: Record<string, SiteConfig> = {
     default: {
         name: 'default',
-        displayName: 'Learning Platform',
+        displayName: 'Edulimika',
         domain: 'localhost:5173',
         theme: {
             primaryColor: '#3B82F6',
