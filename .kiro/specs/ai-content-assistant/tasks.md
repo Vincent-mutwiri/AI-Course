@@ -84,7 +84,7 @@
   - Handle missing or incomplete context data gracefully
   - _Requirements: 9.1, 9.2, 9.3, 9.4, 9.5_
 
-- [ ] 7. Create PromptConstructor service
+- [x] 7. Create PromptConstructor service
   - Create `src/services/promptConstructor.ts`
   - Implement `buildPrompt()` method combining template, user input, context, and options
   - Implement variable replacement in templates (topic, courseTitle, moduleName, etc.)
