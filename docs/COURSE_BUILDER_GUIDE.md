@@ -415,11 +415,26 @@ Comprehensive assessment with multiple question types.
 
 ## Keyboard Shortcuts
 
+### General Shortcuts
+
 | Action | Mac | Windows/Linux |
 |--------|-----|---------------|
 | Undo | `Cmd+Z` | `Ctrl+Z` |
 | Duplicate Block | `Cmd+D` | `Ctrl+D` |
 | Save (manual) | `Cmd+S` | `Ctrl+S` |
+
+### AI Content Assistant Shortcuts
+
+When editing blocks with AI assistance, use these shortcuts to work faster:
+
+| Action | Mac | Windows/Linux | Description |
+|--------|-----|---------------|-------------|
+| Toggle AI Assistant | `Cmd+G` | `Ctrl+G` | Open or close the AI assistant panel |
+| Generate Content | `Cmd+Shift+G` | `Ctrl+Shift+G` | Generate content with the current prompt |
+| Regenerate Content | `Cmd+R` | `Ctrl+R` | Generate new content with the same prompt |
+| Refine Content | `Cmd+Shift+R` | `Ctrl+Shift+R` | Show refinement options menu |
+
+**Tip:** Click the keyboard icon in the AI assistant panel header to view these shortcuts anytime.
 
 ## Troubleshooting
 

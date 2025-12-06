@@ -283,7 +283,7 @@
   - Store custom templates in localStorage
   - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5_
 
-- [ ] 24. Add keyboard shortcuts for AI features
+- [x] 24. Add keyboard shortcuts for AI features
   - Add Cmd/Ctrl+G to open AI assistant panel
   - Add Cmd/Ctrl+Shift+G to generate with current prompt
   - Add Cmd/Ctrl+R to regenerate content
@@ -291,7 +291,7 @@
   - Display keyboard shortcuts in tooltip or help panel
   - _Requirements: 1.1, 8.1_
 
-- [ ]* 25. Write comprehensive documentation
+- [ ] 25. Write comprehensive documentation
   - Create user guide for AI Content Assistant features
   - Document each block type's AI capabilities
   - Document template system and custom templates

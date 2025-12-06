@@ -126,12 +126,24 @@ The component uses `aiContentCache` to:
 - Track cache hit rate statistics
 - Reduce redundant API calls
 
+## Keyboard Shortcuts
+
+The component supports the following keyboard shortcuts for faster workflow:
+
+- **Cmd/Ctrl+G**: Toggle AI assistant panel (open/close)
+- **Cmd/Ctrl+Shift+G**: Generate content with current prompt
+- **Cmd/Ctrl+R**: Regenerate content with the same prompt
+- **Cmd/Ctrl+Shift+R**: Show refinement options menu
+
+A keyboard shortcuts help dialog is available by clicking the keyboard icon in the panel header.
+
 ## Accessibility
 
 - Keyboard navigation support
 - ARIA labels and roles
 - Focus management
 - Screen reader friendly error messages
+- Keyboard shortcuts for all major actions
 
 ## State Management
 

@@ -97,6 +97,8 @@ Your block appears in the canvas and auto-saves!
 |--------|-----|---------------|
 | Undo | Cmd+Z | Ctrl+Z |
 | Duplicate | Cmd+D | Ctrl+D |
+| Toggle AI Assistant | Cmd+G | Ctrl+G |
+| Generate Content | Cmd+Shift+G | Ctrl+Shift+G |
 
 ### File Limits
 - Videos: 100MB max
