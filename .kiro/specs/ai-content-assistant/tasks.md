@@ -30,8 +30,8 @@
     - Generate placeholder content for each block
     - _Requirements: 11.1, 11.2, 11.3, 11.4, 11.5_
 
-- [ ] 3. Create API endpoints for AI content generation
-  - [ ] 3.1 Implement POST /api/ai/generate-content endpoint
+- [x] 3. Create API endpoints for AI content generation
+  - [x] 3.1 Implement POST /api/ai/generate-content endpoint
     - Add route in `server/src/routes/` with admin authentication
     - Validate request body (blockType, prompt, context, options)
     - Call `generateBlockContent()` service method
@@ -40,7 +40,7 @@
     - Return generated content with metadata
     - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 14.1, 14.2, 14.3, 14.4_
   
-  - [ ] 3.2 Implement POST /api/ai/refine-content endpoint
+  - [x] 3.2 Implement POST /api/ai/refine-content endpoint
     - Add route with admin authentication
     - Validate request body (content, refinementType, context)
     - Call `refineContent()` service method
@@ -48,7 +48,7 @@
     - Return refined content
     - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5_
   
-  - [ ] 3.3 Implement POST /api/ai/generate-outline endpoint
+  - [x] 3.3 Implement POST /api/ai/generate-outline endpoint
     - Add route with admin authentication
     - Validate request body (topic, objectives, context)
     - Call `generateLessonOutline()` service method
@@ -56,7 +56,7 @@
     - Return outline with placeholder content
     - _Requirements: 11.1, 11.2, 11.3, 11.4, 11.5_
   
-  - [ ] 3.4 Implement GET /api/ai/usage-stats endpoint
+  - [x] 3.4 Implement GET /api/ai/usage-stats endpoint
     - Add route with admin authentication
     - Query AIUsage collection with filters (courseId, date range)
     - Calculate statistics (total generations, by type, cache hit rate)
