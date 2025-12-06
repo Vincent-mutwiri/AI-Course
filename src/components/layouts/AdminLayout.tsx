@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
-import { LayoutDashboard, Users, BookOpen, FileText, Settings, LogOut } from "lucide-react";
+import { LayoutDashboard, Users, BookOpen, FileText, Settings, LogOut, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -10,6 +10,7 @@ export function AdminLayout() {
         { icon: LayoutDashboard, label: "Dashboard", href: "/admin" },
         { icon: Users, label: "Users", href: "/admin/users" },
         { icon: BookOpen, label: "Courses", href: "/admin/courses" },
+        { icon: Sparkles, label: "AI Usage", href: "/admin/ai-usage" },
         { icon: FileText, label: "Pages", href: "/admin/pages" },
     ];
 

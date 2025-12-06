@@ -159,6 +159,10 @@ export const aiAPI = {
     const { data } = await api.post("/ai/generate", { generatorType, userInput, options });
     return data;
   },
+  getUsageStats: async (filters?: { courseId?: string; startDate?: string; endDate?: string }) => {
+    const { data } = await api.get("/ai/usage-stats", { params: filters });
+    return data;
+  },
 };
 
 export const quizAPI = {

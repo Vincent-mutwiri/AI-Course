@@ -245,7 +245,7 @@
   - Load settings on component mount
   - _Requirements: 13.1, 13.2, 13.3, 13.4, 13.5_
 
-- [ ] 20. Create AI usage dashboard
+- [x] 20. Create AI usage dashboard
   - Create `src/pages/admin/AIUsageDashboard.tsx`
   - Fetch usage stats from /api/ai/usage-stats endpoint
   - Display total generations count
