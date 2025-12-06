@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import { getAllTemplatesForBlockType, ContentTemplate } from '@/config/contentTemplates';
 import { aiContentCache, GenerationOptions } from '@/utils/aiContentCache';
 import { addToHistory } from '@/components/admin/GenerationHistory';
+import { loadAISettings } from '@/components/admin/AISettings';
 import api from '@/services/api';
 
 /**
@@ -52,11 +53,14 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({
     const [selectedTemplate, setSelectedTemplate] = useState<ContentTemplate | null>(null);
     const [customPrompt, setCustomPrompt] = useState<string>('');
 
-    // Generation options state
-    const [generationOptions, setGenerationOptions] = useState<GenerationOptions>({
-        tone: 'conversational',
-        readingLevel: 'college',
-        length: 'moderate'
+    // Generation options state - load from saved settings
+    const [generationOptions, setGenerationOptions] = useState<GenerationOptions>(() => {
+        const savedSettings = loadAISettings();
+        return {
+            tone: savedSettings.tone,
+            readingLevel: savedSettings.readingLevel,
+            length: savedSettings.length
+        };
     });
 
     // Generated content state

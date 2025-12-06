@@ -236,7 +236,7 @@
     - Store history in localStorage per course
     - _Requirements: 10.2, 10.3, 10.5_
 
-- [ ] 19. Create AI settings panel
+- [x] 19. Create AI settings panel
   - Create `src/components/admin/AISettings.tsx`
   - Add settings for default tone (formal, conversational, encouraging)
   - Add settings for default reading level (high school, college, professional)
