@@ -101,7 +101,14 @@ const BlockEditorPanel: React.FC<BlockEditorPanelProps> = ({
                 return <DividerBlockEditor block={block} onChange={handleChange} />;
 
             case 'reflection':
-                return <ReflectionBlockEditor block={block} onChange={handleChange} />;
+                return (
+                    <ReflectionBlockEditor
+                        block={block}
+                        onChange={handleChange}
+                        courseContext={courseContext}
+                        existingBlocks={existingBlocks}
+                    />
+                );
 
             case 'poll':
                 return <PollBlockEditor block={block} onChange={handleChange} />;
