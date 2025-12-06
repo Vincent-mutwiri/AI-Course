@@ -9,6 +9,7 @@ import { ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getAllTemplatesForBlockType, ContentTemplate } from '@/config/contentTemplates';
 import { aiContentCache, GenerationOptions } from '@/utils/aiContentCache';
+import { addToHistory } from '@/components/admin/GenerationHistory';
 import api from '@/services/api';
 
 /**
@@ -151,6 +152,14 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({
                 courseContext,
                 content,
                 generationOptions
+            );
+
+            // Add to generation history
+            addToHistory(
+                courseContext.courseId,
+                blockType,
+                customPrompt,
+                content
             );
         } catch (err: any) {
             console.error('Content generation failed:', err);

@@ -220,15 +220,15 @@
     - Close modal after blocks are added
     - _Requirements: 11.4, 11.5_
 
-- [ ] 18. Create generation history feature
-  - [ ] 18.1 Create GenerationHistory component
+- [x] 18. Create generation history feature
+  - [x] 18.1 Create GenerationHistory component
     - Create `src/components/admin/GenerationHistory.tsx`
     - Display list of previous generations for current course
     - Show prompt, block type, date, and preview of content
     - Organize by block type and date
     - _Requirements: 10.1, 10.2, 10.4_
   
-  - [ ] 18.2 Implement history actions
+  - [x] 18.2 Implement history actions
     - Add "Copy to Clipboard" button for each entry
     - Add "Reuse" button to load content into current block
     - Add "Delete" button to remove individual entries
