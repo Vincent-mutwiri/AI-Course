@@ -63,7 +63,7 @@
     - Return usage statistics
     - _Requirements: 14.1, 14.2, 14.5_
 
-- [ ] 4. Create AI usage tracking model
+- [x] 4. Create AI usage tracking model
   - Create `server/src/models/AIUsage.ts` with Mongoose schema
   - Include fields: userId, courseId, blockType, generationType, promptLength, responseLength, tokensUsed, cached, timestamp
   - Add indexes for efficient querying (userId, courseId, timestamp)
