@@ -166,6 +166,14 @@ export async function generateBlockContent(
             contextSummary: buildContextSummary(context.existingBlocks)
         };
 
+        // Add image-specific variables if generating alt text
+        if (blockType === 'image') {
+            // Extract surrounding text from existing blocks
+            const surroundingText = extractSurroundingText(context.existingBlocks);
+            variables.surroundingText = surroundingText || 'No surrounding content available';
+            variables.purpose = prompt; // The prompt describes the image purpose
+        }
+
         const constructedPrompt = replaceTemplateVariables(template.template, variables);
 
         // Build Inflection API payload
@@ -702,4 +710,25 @@ function generatePlaceholderContent(blockType: string, title: string): any {
 function estimateTokens(text: string): number {
     // Rough estimate: ~4 characters per token
     return Math.ceil(text.length / 4);
+}
+
+/**
+ * Extract surrounding text from existing blocks for image context
+ */
+function extractSurroundingText(existingBlocks?: Array<{ type: string; content: any }>): string {
+    if (!existingBlocks || existingBlocks.length === 0) {
+        return '';
+    }
+
+    // Get text from text blocks
+    const textBlocks = existingBlocks
+        .filter(b => b.type === 'text' && b.content.text)
+        .map(b => {
+            // Strip HTML tags and get plain text
+            const text = b.content.text.replace(/<[^>]*>/g, '').trim();
+            return text.substring(0, 300); // Limit to 300 chars per block
+        })
+        .filter(text => text.length > 0);
+
+    return textBlocks.join(' ').substring(0, 500); // Limit total to 500 chars
 }

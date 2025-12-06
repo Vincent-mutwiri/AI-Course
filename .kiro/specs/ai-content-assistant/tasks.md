@@ -257,7 +257,7 @@
   - Add course filter
   - _Requirements: 14.1, 14.2, 14.5_
 
-- [ ] 21. Implement image alt text generation
+- [x] 21. Implement image alt text generation
   - Add "Generate Alt Text" button to ImageBlockEditor
   - Analyze surrounding text and lesson topic for context
   - Call AI service to generate descriptive alt text (under 125 characters)

@@ -1,15 +1,27 @@
 import React, { useState } from 'react';
 import { IBlock } from '@/types/page';
+import { AIAssistantPanel } from '@/components/admin/AIAssistantPanel';
+import { CourseContext, CourseContextBuilder } from '@/services/courseContextBuilder';
+import { Button } from '@/components/ui/button';
+import { Sparkles } from 'lucide-react';
 import './BlockEditors.css';
 
 interface ImageBlockEditorProps {
     block: IBlock;
     onChange: (content: Partial<IBlock['content']>) => void;
+    courseContext?: CourseContext;
+    existingBlocks?: IBlock[];
 }
 
-const ImageBlockEditor: React.FC<ImageBlockEditorProps> = ({ block, onChange }) => {
+const ImageBlockEditor: React.FC<ImageBlockEditorProps> = ({
+    block,
+    onChange,
+    courseContext,
+    existingBlocks
+}) => {
     const [uploading, setUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
+    const [showAIAssistant, setShowAIAssistant] = useState(false);
 
     const handleImageUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         onChange({ imageUrl: e.target.value });
@@ -88,6 +100,80 @@ const ImageBlockEditor: React.FC<ImageBlockEditorProps> = ({ block, onChange }) 
         }
     };
 
+    /**
+     * Build course context for AI generation
+     * Includes surrounding text from existing blocks for better context
+     */
+    const buildCourseContext = (): CourseContext => {
+        const baseContext = courseContext || CourseContextBuilder.buildContext({
+            existingBlocks: existingBlocks
+        });
+
+        // Add existing blocks for context analysis
+        return {
+            ...baseContext,
+            existingBlocks: existingBlocks || baseContext.existingBlocks
+        };
+    };
+
+    /**
+     * Extract surrounding text from existing blocks
+     * Used to provide context for alt text generation
+     */
+    const getSurroundingText = (): string => {
+        if (!existingBlocks || existingBlocks.length === 0) {
+            return '';
+        }
+
+        // Get text from text blocks before and after current image
+        const textBlocks = existingBlocks
+            .filter(b => b.type === 'text' && b.content.text)
+            .map(b => {
+                // Strip HTML tags and get plain text
+                const text = b.content.text.replace(/<[^>]*>/g, '').trim();
+                return text.substring(0, 300); // Limit to 300 chars per block
+            })
+            .filter(text => text.length > 0);
+
+        return textBlocks.join(' ');
+    };
+
+    /**
+     * Handle AI-generated alt text and caption
+     * Populates the alt text and caption fields
+     */
+    const handleContentGenerated = (content: any) => {
+        const updates: Partial<IBlock['content']> = {};
+
+        if (typeof content === 'string') {
+            // If content is a plain string, use it as alt text
+            updates.altText = content.substring(0, 125);
+        } else if (content.altText || content.caption) {
+            // If content has structured alt text and caption
+            if (content.altText) {
+                // Ensure alt text is under 125 characters
+                updates.altText = content.altText.substring(0, 125);
+            }
+            if (content.caption) {
+                updates.caption = content.caption;
+            }
+        } else {
+            // Fallback: try to parse the content
+            const text = JSON.stringify(content);
+            updates.altText = text.substring(0, 125);
+        }
+
+        // Apply updates
+        onChange(updates);
+    };
+
+    /**
+     * Toggle AI Assistant panel
+     */
+    const toggleAIAssistant = () => {
+        setShowAIAssistant(!showAIAssistant);
+    };
+
     return (
         <div className="image-block-editor">
             <div className="form-group">
@@ -125,8 +211,51 @@ const ImageBlockEditor: React.FC<ImageBlockEditorProps> = ({ block, onChange }) 
                 />
             </div>
 
+            {/* AI Assistant for Alt Text Generation */}
+            {block.content.imageUrl && (
+                <div className="form-group">
+                    <div className="flex items-center justify-between mb-2">
+                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Accessibility
+                        </label>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={toggleAIAssistant}
+                            className="flex items-center gap-1"
+                        >
+                            <Sparkles className="h-3 w-3" />
+                            {showAIAssistant ? 'Hide' : 'Generate'} Alt Text
+                        </Button>
+                    </div>
+
+                    {showAIAssistant && (
+                        <div className="mb-4">
+                            <AIAssistantPanel
+                                blockType="image"
+                                courseContext={buildCourseContext()}
+                                onContentGenerated={handleContentGenerated}
+                                currentContent={{
+                                    imageUrl: block.content.imageUrl,
+                                    altText: block.content.altText,
+                                    caption: block.content.caption,
+                                    surroundingText: getSurroundingText()
+                                }}
+                                placeholder="Describe the image purpose and what it shows (e.g., 'A diagram showing the water cycle with arrows indicating evaporation and precipitation')"
+                            />
+                        </div>
+                    )}
+                </div>
+            )}
+
             <div className="form-group">
-                <label htmlFor="altText">Alt Text (for accessibility)</label>
+                <label htmlFor="altText">
+                    Alt Text (for accessibility)
+                    <span className="text-xs text-gray-500 ml-2">
+                        {block.content.altText?.length || 0}/125 characters
+                    </span>
+                </label>
                 <input
                     type="text"
                     id="altText"
@@ -134,7 +263,11 @@ const ImageBlockEditor: React.FC<ImageBlockEditorProps> = ({ block, onChange }) 
                     onChange={handleAltTextChange}
                     placeholder="Describe the image for screen readers"
                     className="form-control"
+                    maxLength={125}
                 />
+                <p className="text-xs text-gray-500 mt-1">
+                    Describe what the image shows and its purpose in the lesson. Keep it concise and under 125 characters.
+                </p>
             </div>
 
             <div className="form-group">
@@ -147,6 +280,9 @@ const ImageBlockEditor: React.FC<ImageBlockEditorProps> = ({ block, onChange }) 
                     placeholder="Add a caption for the image"
                     className="form-control"
                 />
+                <p className="text-xs text-gray-500 mt-1">
+                    Provide additional context or explanation about the image.
+                </p>
             </div>
 
             {block.content.imageUrl && (
