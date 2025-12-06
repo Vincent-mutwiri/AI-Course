@@ -5,12 +5,16 @@ import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
+import { ChevronDown, ChevronUp, Sparkles, WifiOff, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getAllTemplatesForBlockType, ContentTemplate } from '@/config/contentTemplates';
 import { aiContentCache, GenerationOptions } from '@/utils/aiContentCache';
 import { addToHistory } from '@/components/admin/GenerationHistory';
 import { loadAISettings } from '@/components/admin/AISettings';
+import { AILoadingProgress } from '@/components/admin/AILoadingProgress';
+import { useOnlineStatus } from '@/hooks/useOnlineStatus';
+import { classifyError, getErrorMessageWithSuggestions, retryWithBackoff, AIError } from '@/utils/aiErrorHandler';
+import { toast } from '@/components/ui/toast';
 import api from '@/services/api';
 
 /**
@@ -45,7 +49,12 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({
     // Panel state
     const [isExpanded, setIsExpanded] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const [error, setError] = useState<AIError | null>(null);
+    const [lastPrompt, setLastPrompt] = useState<string>(''); // Preserve prompt on error
+    const [retryCount, setRetryCount] = useState(0);
+
+    // Online status
+    const isOnline = useOnlineStatus();
 
     // Template state
     const [templates, setTemplates] = useState<ContentTemplate[]>([]);
@@ -112,39 +121,79 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({
     };
 
     /**
-     * Generate content using AI
+     * Generate content using AI with comprehensive error handling
      */
-    const handleGenerate = async () => {
+    const handleGenerate = async (isRetry: boolean = false) => {
         if (!customPrompt.trim()) {
-            setError('Please enter a prompt or select a template');
+            const validationError: AIError = {
+                type: 'validation' as any,
+                message: 'Empty prompt',
+                userMessage: 'Please enter a prompt or select a template',
+                retryable: false
+            };
+            setError(validationError);
+            toast.error('Please enter a prompt or select a template');
+            return;
+        }
+
+        // Check online status
+        if (!isOnline) {
+            const offlineError: AIError = {
+                type: 'offline' as any,
+                message: 'No internet connection',
+                userMessage: 'You appear to be offline. Please check your internet connection.',
+                retryable: true
+            };
+            setError(offlineError);
+            toast.error('No internet connection', {
+                description: 'Please check your connection and try again.',
+                action: {
+                    label: 'Retry',
+                    onClick: () => handleGenerate(true)
+                }
+            });
             return;
         }
 
         setIsLoading(true);
         setError(null);
+        setLastPrompt(customPrompt); // Preserve prompt for retry
+
+        if (!isRetry) {
+            setRetryCount(0);
+        }
 
         try {
-            // Check cache first
-            const cached = aiContentCache.get(
-                blockType,
-                customPrompt,
-                courseContext,
-                generationOptions
-            );
+            // Check cache first (skip cache on retry)
+            if (!isRetry) {
+                const cached = aiContentCache.get(
+                    blockType,
+                    customPrompt,
+                    courseContext,
+                    generationOptions
+                );
 
-            if (cached) {
-                setGeneratedContent(cached);
-                setIsLoading(false);
-                return;
+                if (cached) {
+                    setGeneratedContent(cached);
+                    setIsLoading(false);
+                    toast.success('Content loaded from cache', {
+                        description: 'Using previously generated content'
+                    });
+                    return;
+                }
             }
 
-            // Call API to generate content
-            const response = await api.post('/ai/generate-content', {
-                blockType,
-                prompt: customPrompt,
-                context: courseContext,
-                options: generationOptions
-            });
+            // Call API to generate content with retry logic
+            const response = await retryWithBackoff(
+                () => api.post('/ai/generate-content', {
+                    blockType,
+                    prompt: customPrompt,
+                    context: courseContext,
+                    options: generationOptions
+                }),
+                3, // max retries
+                1000 // initial delay
+            );
 
             const content = response.data.content;
             setGeneratedContent(content);
@@ -165,20 +214,64 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({
                 customPrompt,
                 content
             );
+
+            // Success toast
+            toast.success('Content generated successfully', {
+                description: 'Review and refine the content as needed'
+            });
+
+            // Reset retry count on success
+            setRetryCount(0);
         } catch (err: any) {
             console.error('Content generation failed:', err);
-            const errorMessage = err.response?.data?.message || err.message || 'Failed to generate content';
-            setError(errorMessage);
+
+            // Classify the error
+            const aiError = classifyError(err);
+            setError(aiError);
+
+            // Get detailed error information
+            const errorDetails = getErrorMessageWithSuggestions(aiError);
+
+            // Show error toast with retry option if retryable
+            if (aiError.retryable) {
+                toast.error(errorDetails.title, {
+                    description: errorDetails.message,
+                    duration: 6000,
+                    action: {
+                        label: 'Retry',
+                        onClick: () => {
+                            setRetryCount(prev => prev + 1);
+                            handleGenerate(true);
+                        }
+                    },
+                    cancel: {
+                        label: 'Dismiss'
+                    }
+                });
+            } else {
+                toast.error(errorDetails.title, {
+                    description: errorDetails.message,
+                    duration: 5000
+                });
+            }
         } finally {
             setIsLoading(false);
         }
     };
 
     /**
-     * Refine generated content
+     * Refine generated content with error handling
      */
     const handleRefine = async (refinementType: 'shorter' | 'longer' | 'simplify' | 'add-examples' | 'change-tone') => {
         if (!generatedContent) return;
+
+        // Check online status
+        if (!isOnline) {
+            toast.error('No internet connection', {
+                description: 'Please check your connection and try again.'
+            });
+            return;
+        }
 
         setIsLoading(true);
         setError(null);
@@ -187,19 +280,45 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({
             // Save current content to history before refining
             setRefinementHistory(prev => [...prev, generatedContent]);
 
-            // Call API to refine content
-            const response = await api.post('/ai/refine-content', {
-                content: generatedContent,
-                refinementType,
-                context: courseContext
-            });
+            // Call API to refine content with retry logic
+            const response = await retryWithBackoff(
+                () => api.post('/ai/refine-content', {
+                    content: generatedContent,
+                    refinementType,
+                    context: courseContext
+                }),
+                2, // fewer retries for refinement
+                1000
+            );
 
             const refinedContent = response.data.content;
             setGeneratedContent(refinedContent);
+
+            toast.success('Content refined successfully', {
+                description: `Applied: ${refinementType.replace('-', ' ')}`
+            });
         } catch (err: any) {
             console.error('Content refinement failed:', err);
-            const errorMessage = err.response?.data?.message || err.message || 'Failed to refine content';
-            setError(errorMessage);
+
+            // Classify the error
+            const aiError = classifyError(err);
+            setError(aiError);
+
+            // Restore previous content on error
+            if (refinementHistory.length > 0) {
+                const previousContent = refinementHistory[refinementHistory.length - 1];
+                setGeneratedContent(previousContent);
+                setRefinementHistory(prev => prev.slice(0, -1));
+            }
+
+            // Get detailed error information
+            const errorDetails = getErrorMessageWithSuggestions(aiError);
+
+            // Show error toast
+            toast.error(errorDetails.title, {
+                description: 'Content was not modified. ' + errorDetails.message,
+                duration: 5000
+            });
         } finally {
             setIsLoading(false);
         }
@@ -236,14 +355,20 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({
      * Regenerate content with the same prompt
      */
     const handleRegenerate = async () => {
-        if (!customPrompt.trim()) return;
+        const promptToUse = customPrompt.trim() || lastPrompt.trim();
+        if (!promptToUse) return;
+
+        // Restore last prompt if current is empty
+        if (!customPrompt.trim() && lastPrompt.trim()) {
+            setCustomPrompt(lastPrompt);
+        }
 
         // Clear cache for this prompt to force regeneration
         setGeneratedContent(null);
         setRefinementHistory([]);
 
-        // Generate new content
-        await handleGenerate();
+        // Generate new content (force retry)
+        await handleGenerate(true);
     };
 
     /**
@@ -318,25 +443,66 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({
                     id="ai-assistant-content"
                     className="p-4 border-t bg-white dark:bg-gray-900"
                 >
+                    {/* Offline Indicator */}
+                    {!isOnline && (
+                        <div
+                            className="mb-4 p-3 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-md"
+                            role="alert"
+                        >
+                            <div className="flex items-center gap-2">
+                                <WifiOff className="h-5 w-5 text-orange-600 dark:text-orange-400 flex-shrink-0" />
+                                <div className="flex-1">
+                                    <p className="text-sm font-medium text-orange-800 dark:text-orange-200">
+                                        You're offline
+                                    </p>
+                                    <p className="text-xs text-orange-700 dark:text-orange-300 mt-1">
+                                        AI generation requires an internet connection. You can still edit existing content.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Error Display */}
                     {error && (
                         <div
                             className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md"
                             role="alert"
                         >
-                            <div className="flex items-start justify-between gap-2">
+                            <div className="flex items-start gap-2">
+                                <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
                                 <div className="flex-1">
                                     <p className="text-sm font-medium text-red-800 dark:text-red-200">
-                                        Generation Error
+                                        {getErrorMessageWithSuggestions(error).title}
                                     </p>
                                     <p className="text-sm text-red-700 dark:text-red-300 mt-1">
-                                        {error}
+                                        {error.userMessage}
                                     </p>
+                                    {/* Suggestions */}
+                                    {getErrorMessageWithSuggestions(error).suggestions.length > 0 && (
+                                        <ul className="text-xs text-red-600 dark:text-red-400 mt-2 space-y-1 list-disc list-inside">
+                                            {getErrorMessageWithSuggestions(error).suggestions.map((suggestion, idx) => (
+                                                <li key={idx}>{suggestion}</li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                    {/* Retry button for retryable errors */}
+                                    {error.retryable && lastPrompt && (
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => handleRegenerate()}
+                                            className="mt-3 text-red-700 border-red-300 hover:bg-red-100 dark:text-red-300 dark:border-red-700 dark:hover:bg-red-900/30"
+                                        >
+                                            Try Again {retryCount > 0 && `(Attempt ${retryCount + 1})`}
+                                        </Button>
+                                    )}
                                 </div>
                                 <button
                                     type="button"
                                     onClick={clearError}
-                                    className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-200"
+                                    className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-200 flex-shrink-0"
                                     aria-label="Dismiss error"
                                 >
                                     ×
@@ -345,14 +511,13 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({
                         </div>
                     )}
 
-                    {/* Loading State */}
+                    {/* Loading State with Progress */}
                     {isLoading && (
-                        <div className="flex flex-col items-center justify-center py-8 gap-3">
-                            <Spinner size="lg" className="text-purple-600" />
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
-                                Generating content...
-                            </p>
-                        </div>
+                        <AILoadingProgress
+                            isLoading={isLoading}
+                            estimatedDuration={generationOptions.length === 'detailed' ? 15000 : 10000}
+                            message="Generating content..."
+                        />
                     )}
 
                     {/* Template Selector and Prompt Input */}
@@ -480,9 +645,10 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({
 
                             {/* Generate Button */}
                             <Button
-                                onClick={handleGenerate}
-                                disabled={!customPrompt.trim()}
+                                onClick={() => handleGenerate(false)}
+                                disabled={!customPrompt.trim() || !isOnline}
                                 className="w-full"
+                                title={!isOnline ? 'Internet connection required' : ''}
                             >
                                 <Sparkles className="h-4 w-4 mr-2" />
                                 Generate Content
