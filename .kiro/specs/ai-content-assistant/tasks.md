@@ -146,7 +146,7 @@
     - Implement onContentGenerated callback
     - _Requirements: 1.6, 8.1_
 
-- [ ] 10. Integrate AIAssistantPanel into Text Block Editor
+- [x] 10. Integrate AIAssistantPanel into Text Block Editor
   - Import AIAssistantPanel into `src/components/admin/PageEditor/BlockEditors/TextBlockEditor.tsx`
   - Build CourseContext from available props
   - Add AIAssistantPanel above or beside text editor

@@ -643,6 +643,11 @@ const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = f
                         block={blocks.find(b => b.id === selectedBlockId) || null}
                         onBlockChange={handleBlockContentChange}
                         onClose={() => setSelectedBlockId(null)}
+                        courseContext={{
+                            lessonId: page._id,
+                            lessonName: page.title,
+                        }}
+                        existingBlocks={blocks}
                     />
                 </div>
             </div>

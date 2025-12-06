@@ -19,9 +19,25 @@ interface BlockEditorPanelProps {
     block: IBlock | null;
     onBlockChange: (blockId: string, content: Partial<IBlock['content']>) => void;
     onClose: () => void;
+    courseContext?: {
+        courseId?: string;
+        courseTitle?: string;
+        moduleId?: string;
+        moduleName?: string;
+        lessonId?: string;
+        lessonName?: string;
+        learningObjectives?: string[];
+    };
+    existingBlocks?: IBlock[];
 }
 
-const BlockEditorPanel: React.FC<BlockEditorPanelProps> = ({ block, onBlockChange, onClose }) => {
+const BlockEditorPanel: React.FC<BlockEditorPanelProps> = ({
+    block,
+    onBlockChange,
+    onClose,
+    courseContext,
+    existingBlocks
+}) => {
     // Validate block content
     const validationResult: BlockValidationResult | null = useMemo(() => {
         if (!block) return null;
@@ -47,7 +63,14 @@ const BlockEditorPanel: React.FC<BlockEditorPanelProps> = ({ block, onBlockChang
     const renderEditor = () => {
         switch (block.type) {
             case 'text':
-                return <TextBlockEditor block={block} onChange={handleChange} />;
+                return (
+                    <TextBlockEditor
+                        block={block}
+                        onChange={handleChange}
+                        courseContext={courseContext}
+                        existingBlocks={existingBlocks}
+                    />
+                );
 
             case 'video':
                 return <VideoBlockEditor block={block} onChange={handleChange} />;
