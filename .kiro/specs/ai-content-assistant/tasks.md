@@ -197,22 +197,22 @@
   - Auto-detect list type from generated content
   - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5_
 
-- [ ] 17. Create lesson outline generation feature
-  - [ ] 17.1 Add "Generate Lesson Outline" button to lesson canvas
+- [x] 17. Create lesson outline generation feature
+  - [x] 17.1 Add "Generate Lesson Outline" button to lesson canvas
     - Add button to empty lesson state or lesson toolbar
     - Open modal dialog for outline generation
     - Add input fields for topic and learning objectives
     - Add block count preference (8-12 default)
     - _Requirements: 11.1, 11.2_
   
-  - [ ] 17.2 Implement outline generation and preview
+  - [x] 17.2 Implement outline generation and preview
     - Call /api/ai/generate-outline endpoint
     - Display suggested blocks in preview list
     - Show block type, title, description, and estimated time for each
     - Allow reordering of suggested blocks
     - _Requirements: 11.2, 11.3_
   
-  - [ ] 17.3 Implement outline acceptance workflow
+  - [x] 17.3 Implement outline acceptance workflow
     - Add checkboxes to accept/reject individual blocks
     - Add "Accept All" and "Reject All" buttons
     - Add "Add Selected Blocks" button

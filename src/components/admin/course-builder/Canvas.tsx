@@ -1,7 +1,8 @@
 import { useCallback, memo } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
-import { GripVertical, AlertCircle } from "lucide-react";
+import { GripVertical, AlertCircle, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import BlockRenderer from "./BlockRenderer";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import type { Block } from "@/hooks/useBlockModal";
@@ -18,6 +19,7 @@ interface CanvasProps {
     onBlockSelect?: (blockId: string | null, isMultiSelect?: boolean) => void;
     onBulkDelete?: () => void;
     isLoading?: boolean;
+    onGenerateOutline?: () => void;
 }
 
 /**
@@ -35,6 +37,7 @@ const Canvas = memo(function Canvas({
     onBlockSelect,
     onBulkDelete,
     isLoading = false,
+    onGenerateOutline,
 }: CanvasProps) {
     const handleDragEnd = useCallback((result: DropResult) => {
         // Dropped outside the list
@@ -93,7 +96,7 @@ const Canvas = memo(function Canvas({
                                     role="status"
                                     aria-label="Empty canvas"
                                 >
-                                    <div className="text-center space-y-2">
+                                    <div className="text-center space-y-4">
                                         <div className="text-muted-foreground/50 mb-2" aria-hidden="true">
                                             <svg
                                                 className="h-12 w-12 mx-auto"
@@ -109,12 +112,24 @@ const Canvas = memo(function Canvas({
                                                 />
                                             </svg>
                                         </div>
-                                        <p className="text-sm font-medium text-muted-foreground">
-                                            No blocks yet
-                                        </p>
-                                        <p className="text-xs text-muted-foreground/75">
-                                            Add blocks from the library to get started
-                                        </p>
+                                        <div>
+                                            <p className="text-sm font-medium text-muted-foreground">
+                                                No blocks yet
+                                            </p>
+                                            <p className="text-xs text-muted-foreground/75">
+                                                Add blocks from the library or generate a lesson outline with AI
+                                            </p>
+                                        </div>
+                                        {onGenerateOutline && (
+                                            <Button
+                                                onClick={onGenerateOutline}
+                                                variant="outline"
+                                                className="gap-2"
+                                            >
+                                                <Sparkles className="h-4 w-4" />
+                                                Generate Lesson Outline
+                                            </Button>
+                                        )}
                                     </div>
                                 </div>
                             ) : (

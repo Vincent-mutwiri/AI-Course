@@ -13,6 +13,7 @@ import { BlockModalRouter } from "@/components/admin/course-builder/BlockModalRo
 import { AddModuleModal } from "@/components/admin/course-builder/AddModuleModal";
 import { AddLessonModal } from "@/components/admin/course-builder/AddLessonModal";
 import { DeleteConfirmationDialog } from "@/components/admin/course-builder/DeleteConfirmationDialog";
+import { GenerateLessonOutlineModal } from "@/components/admin/course-builder/GenerateLessonOutlineModal";
 import { Button } from "@/components/ui/button";
 import type { BlockType, Block } from "@/hooks/useBlockModal";
 
@@ -63,6 +64,7 @@ export default function CourseBuilderPage() {
     const [blockToDelete, setBlockToDelete] = useState<Block | null>(null);
     const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
     const [selectedBlockIds, setSelectedBlockIds] = useState<Set<string>>(new Set());
+    const [isGenerateOutlineModalOpen, setIsGenerateOutlineModalOpen] = useState(false);
 
     // Initialize block modal management
     const { modalState, openModal, closeModal, handleSave } = useBlockModal({
@@ -506,6 +508,59 @@ export default function CourseBuilderPage() {
         setIsDeleteDialogOpen(true);
     }, [selectedBlockIds]);
 
+    // Handle generate outline - opens modal
+    const handleGenerateOutline = useCallback(() => {
+        setIsGenerateOutlineModalOpen(true);
+    }, []);
+
+    // Handle generate outline submission - placeholder for subtask 17.2
+    const handleGenerateOutlineSubmit = useCallback((data: {
+        topic: string;
+        objectives: string[];
+        blockCount: number;
+    }) => {
+        // This is called when the form is submitted, but actual generation happens in the modal
+        console.log('Generate outline with data:', data);
+    }, []);
+
+    // Handle accept outline - creates blocks from the generated outline
+    const handleAcceptOutline = useCallback(async (outlineBlocks: any[]) => {
+        if (!currentLessonId || !id) {
+            toast.error('No lesson selected');
+            return;
+        }
+
+        try {
+            // Create blocks from the outline
+            const newBlocks = outlineBlocks.map((outlineBlock, index) => ({
+                id: `temp-${Date.now()}-${index}`, // Temporary ID
+                type: outlineBlock.type,
+                order: blocks.length + index,
+                content: outlineBlock.placeholderContent,
+            }));
+
+            // Add blocks to the lesson via API
+            const promises = newBlocks.map(async (block) => {
+                const response = await api.post(
+                    `/admin/courses/${id}/lessons/${currentLessonId}/blocks`,
+                    { block }
+                );
+                return response.data.block;
+            });
+
+            const createdBlocks = await Promise.all(promises);
+
+            // Update local state with created blocks
+            setBlocks([...blocks, ...createdBlocks]);
+            setHasUnsavedChanges(false); // Blocks are already saved via API
+            toast.success(`${createdBlocks.length} block${createdBlocks.length !== 1 ? 's' : ''} added successfully`);
+        } catch (error: any) {
+            console.error('Failed to create blocks from outline:', error);
+            const errorMessage = error.response?.data?.message || 'Failed to create blocks. Please try again.';
+            toast.error(errorMessage);
+        }
+    }, [blocks, currentLessonId, id]);
+
     // Handle preview toggle
     const handlePreviewToggle = () => {
         setIsPreviewOpen(!isPreviewOpen);
@@ -821,6 +876,7 @@ export default function CourseBuilderPage() {
                             onBlockSelect={handleBlockSelect}
                             onBulkDelete={handleBulkDelete}
                             isLoading={isLoading}
+                            onGenerateOutline={handleGenerateOutline}
                         />
                     ) : (
                         <div className="flex items-center justify-center h-full p-4">
@@ -926,6 +982,28 @@ export default function CourseBuilderPage() {
                 block={blockToDelete}
                 blockCount={selectedBlockIds.size > 0 ? selectedBlockIds.size : 1}
             />
+
+            {/* Generate Lesson Outline Modal */}
+            {currentModuleId && currentLessonId && course && id && (
+                <GenerateLessonOutlineModal
+                    isOpen={isGenerateOutlineModalOpen}
+                    onClose={() => setIsGenerateOutlineModalOpen(false)}
+                    onGenerate={handleGenerateOutlineSubmit}
+                    onAcceptOutline={handleAcceptOutline}
+                    courseId={id}
+                    moduleId={currentModuleId}
+                    lessonId={currentLessonId}
+                    courseTitle={course.title}
+                    moduleName={
+                        course.modules.find((m) => m._id === currentModuleId)?.title || ''
+                    }
+                    lessonName={
+                        course.modules
+                            .find((m) => m._id === currentModuleId)
+                            ?.lessons.find((l) => l._id === currentLessonId)?.title || ''
+                    }
+                />
+            )}
         </div>
     );
 }
