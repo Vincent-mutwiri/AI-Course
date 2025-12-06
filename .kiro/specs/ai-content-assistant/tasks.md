@@ -183,14 +183,14 @@
   - Display generated discussion questions
   - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5_
 
-- [ ] 15. Integrate AIAssistantPanel into Interactive Block Editor
+- [x] 15. Integrate AIAssistantPanel into Interactive Block Editor
   - Import AIAssistantPanel into `src/components/admin/PageEditor/BlockEditors/InteractiveBlockEditor.tsx`
   - Configure for quiz question generation (Final Assessment type)
   - Implement onContentGenerated to populate questions, options, and answers
   - Handle multiple question types (multiple choice, true/false, short answer)
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5_
 
-- [ ] 16. Integrate AIAssistantPanel into List Block Editor
+- [x] 16. Integrate AIAssistantPanel into List Block Editor
   - Import AIAssistantPanel into `src/components/admin/PageEditor/BlockEditors/ListBlockEditor.tsx`
   - Configure for list generation (steps, requirements, tips, checklist)
   - Implement onContentGenerated to populate list items

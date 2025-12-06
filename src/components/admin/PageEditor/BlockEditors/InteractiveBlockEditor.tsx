@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { IBlock, BlockType } from '@/types/page';
+import { AIAssistantPanel } from '@/components/admin/AIAssistantPanel';
+import { CourseContext, CourseContextBuilder } from '@/services/courseContextBuilder';
 
 interface InteractiveBlockEditorProps {
     block: IBlock;
     onChange: (content: Partial<IBlock['content']>) => void;
+    courseContext?: CourseContext;
+    existingBlocks?: IBlock[];
 }
 
 // Define field configurations for each interactive block type
@@ -128,7 +132,13 @@ const blockFieldConfigs: Record<string, Array<{
     ]
 };
 
-const InteractiveBlockEditor: React.FC<InteractiveBlockEditorProps> = ({ block, onChange }) => {
+const InteractiveBlockEditor: React.FC<InteractiveBlockEditorProps> = ({
+    block,
+    onChange,
+    courseContext,
+    existingBlocks
+}) => {
+    const [showAIAssistant, setShowAIAssistant] = useState(true);
     const fields = blockFieldConfigs[block.type] || [];
 
     const handleFieldChange = (
@@ -136,6 +146,160 @@ const InteractiveBlockEditor: React.FC<InteractiveBlockEditorProps> = ({ block, 
         value: string
     ) => {
         onChange({ [fieldName]: value });
+    };
+
+    /**
+     * Build course context for AI generation
+     * Uses provided context or creates a minimal context
+     */
+    const buildCourseContext = (): CourseContext => {
+        if (courseContext) {
+            // Use provided context and add existing blocks
+            return {
+                ...courseContext,
+                existingBlocks: existingBlocks || courseContext.existingBlocks
+            };
+        }
+
+        // Create minimal context if none provided
+        return CourseContextBuilder.buildContext({
+            existingBlocks: existingBlocks
+        });
+    };
+
+    /**
+     * Handle AI-generated content for interactive blocks
+     * Specifically handles quiz question generation for Final Assessment type
+     */
+    const handleContentGenerated = (content: any) => {
+        // Only apply AI generation for finalAssessment type
+        if (block.type !== 'finalAssessment') {
+            console.warn('AI generation is currently only supported for finalAssessment interactive blocks');
+            return;
+        }
+
+        // Handle different content formats from AI
+        if (Array.isArray(content)) {
+            // Array of questions - parse and populate
+            parseAndPopulateQuestions(content);
+        } else if (content.questions && Array.isArray(content.questions)) {
+            // Structured content with questions array
+            parseAndPopulateQuestions(content.questions);
+        } else if (content.question || content.text) {
+            // Single question - convert to array and parse
+            parseAndPopulateQuestions([content]);
+        } else if (typeof content === 'string') {
+            // Plain text - try to parse as JSON or treat as single question
+            try {
+                const parsed = JSON.parse(content);
+                if (Array.isArray(parsed)) {
+                    parseAndPopulateQuestions(parsed);
+                } else if (parsed.questions) {
+                    parseAndPopulateQuestions(parsed.questions);
+                } else {
+                    parseAndPopulateQuestions([parsed]);
+                }
+            } catch {
+                // Not JSON, treat as question text
+                parseAndPopulateQuestions([{ question: content }]);
+            }
+        }
+    };
+
+    /**
+     * Parse and populate quiz questions from AI-generated content
+     * Handles multiple question types: multiple choice, true/false, short answer
+     */
+    const parseAndPopulateQuestions = (questions: any[]) => {
+        if (!questions || questions.length === 0) return;
+
+        // Transform questions into the format expected by the config
+        const formattedQuestions = questions.map((q, index) => {
+            // Extract question text
+            const questionText = q.question || q.text || q.prompt || `Question ${index + 1}`;
+
+            // Determine question type
+            let questionType = q.type || 'multiple-choice';
+
+            // Auto-detect true/false questions
+            if (q.options && Array.isArray(q.options) && q.options.length === 2) {
+                const optionTexts = q.options.map((opt: any) =>
+                    typeof opt === 'string' ? opt.toLowerCase() : (opt.text || '').toLowerCase()
+                );
+                if (optionTexts.includes('true') && optionTexts.includes('false')) {
+                    questionType = 'true-false';
+                }
+            }
+
+            // Auto-detect short answer questions (no options provided)
+            if (!q.options || (Array.isArray(q.options) && q.options.length === 0)) {
+                questionType = 'short-answer';
+            }
+
+            // Parse options for multiple choice and true/false
+            let options: string[] = [];
+            let correctAnswer: string | number = '';
+
+            if (questionType === 'multiple-choice' || questionType === 'true-false') {
+                if (q.options && Array.isArray(q.options)) {
+                    options = q.options.map((opt: any) =>
+                        typeof opt === 'string' ? opt : (opt.text || opt.option || '')
+                    );
+                }
+
+                // Determine correct answer
+                if (typeof q.correctAnswer === 'number') {
+                    correctAnswer = q.correctAnswer;
+                } else if (typeof q.correctAnswer === 'string') {
+                    // Find index of correct answer in options
+                    const correctIndex = options.findIndex(opt =>
+                        opt.toLowerCase() === q.correctAnswer.toLowerCase()
+                    );
+                    correctAnswer = correctIndex >= 0 ? correctIndex : q.correctAnswer;
+                } else if (q.answer !== undefined) {
+                    // Alternative field name
+                    if (typeof q.answer === 'number') {
+                        correctAnswer = q.answer;
+                    } else {
+                        const correctIndex = options.findIndex(opt =>
+                            opt.toLowerCase() === String(q.answer).toLowerCase()
+                        );
+                        correctAnswer = correctIndex >= 0 ? correctIndex : q.answer;
+                    }
+                }
+            } else if (questionType === 'short-answer') {
+                // For short answer, store the expected answer
+                correctAnswer = q.correctAnswer || q.answer || '';
+            }
+
+            // Extract explanation
+            const explanation = q.explanation || q.rationale || q.feedback || '';
+
+            // Extract difficulty level (for Bloom's taxonomy alignment)
+            const difficulty = q.difficulty || q.bloomLevel || 'medium';
+
+            return {
+                question: questionText,
+                type: questionType,
+                options: options,
+                correctAnswer: correctAnswer,
+                explanation: explanation,
+                difficulty: difficulty
+            };
+        });
+
+        // Update the block's config with the formatted questions
+        onChange({
+            config: {
+                ...block.content.config,
+                questions: formattedQuestions
+            }
+        });
+
+        // If there's a title in the generated content, update it
+        if (questions[0]?.title) {
+            onChange({ title: questions[0].title });
+        }
     };
 
     const renderField = (field: typeof fields[0]) => {
@@ -192,6 +356,19 @@ const InteractiveBlockEditor: React.FC<InteractiveBlockEditorProps> = ({ block, 
 
     return (
         <div className="interactive-block-editor">
+            {/* AI Content Assistant Panel - Only for Final Assessment */}
+            {block.type === 'finalAssessment' && showAIAssistant && (
+                <div className="ai-assistant-wrapper" style={{ marginBottom: '1rem' }}>
+                    <AIAssistantPanel
+                        blockType="interactive"
+                        courseContext={buildCourseContext()}
+                        onContentGenerated={handleContentGenerated}
+                        currentContent={block.content.config?.questions}
+                        placeholder="Describe the quiz questions you want to generate (e.g., 'Generate 5 multiple choice questions about machine learning basics with varying difficulty levels' or 'Create 3 true/false questions and 2 short answer questions about data structures')"
+                    />
+                </div>
+            )}
+
             {fields.map(renderField)}
 
             <div className="form-group">
