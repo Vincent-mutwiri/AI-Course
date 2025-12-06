@@ -6,8 +6,8 @@
   - Create TypeScript interfaces for GenerationOptions, GeneratedContent, RefinementType, and CourseContext
   - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 2.1, 2.2, 2.3, 2.4, 2.5, 3.1, 3.2, 3.3, 3.4, 3.5, 4.1, 4.2, 4.3, 4.4, 4.5, 5.1, 5.2, 5.3, 5.4, 5.5, 6.1, 6.2, 6.3, 6.4, 6.5_
 
-- [ ] 2. Enhance AI service with content generation methods
-  - [ ] 2.1 Implement `generateBlockContent()` method in `server/src/services/aiService.ts`
+- [x] 2. Enhance AI service with content generation methods
+  - [x] 2.1 Implement `generateBlockContent()` method in `server/src/services/aiService.ts`
     - Accept blockType, prompt, context, and options parameters
     - Build context-aware prompt using course/module/lesson information
     - Call Inflection AI API with constructed prompt
@@ -15,14 +15,14 @@
     - Return GeneratedContent with metadata
     - _Requirements: 1.1, 1.2, 1.3, 1.4, 9.1, 9.2, 9.3, 9.4, 9.5_
   
-  - [ ] 2.2 Implement `refineContent()` method in `server/src/services/aiService.ts`
+  - [x] 2.2 Implement `refineContent()` method in `server/src/services/aiService.ts`
     - Accept content, refinementType, and context parameters
     - Build refinement prompt based on type
     - Call Inflection AI API
     - Return refined content
     - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5_
   
-  - [ ] 2.3 Implement `generateLessonOutline()` method in `server/src/services/aiService.ts`
+  - [x] 2.3 Implement `generateLessonOutline()` method in `server/src/services/aiService.ts`
     - Accept topic, objectives, and context parameters
     - Build outline generation prompt
     - Call Inflection AI API
