@@ -154,7 +154,7 @@
   - Handle rich text formatting from AI
   - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6_
 
-- [ ] 11. Integrate AIAssistantPanel into Video Block Editor
+- [x] 11. Integrate AIAssistantPanel into Video Block Editor
   - Import AIAssistantPanel into `src/components/admin/PageEditor/BlockEditors/VideoBlockEditor.tsx`
   - Configure for video script generation
   - Implement onContentGenerated to populate title and description fields

@@ -73,7 +73,13 @@ const BlockEditorPanel: React.FC<BlockEditorPanelProps> = ({
                 );
 
             case 'video':
-                return <VideoBlockEditor block={block} onChange={handleChange} />;
+                return (
+                    <VideoBlockEditor
+                        block={block}
+                        onChange={handleChange}
+                        courseContext={courseContext}
+                    />
+                );
 
             case 'image':
                 return <ImageBlockEditor block={block} onChange={handleChange} />;
