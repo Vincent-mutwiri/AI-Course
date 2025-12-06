@@ -176,7 +176,7 @@
   - Auto-populate suggested minimum length
   - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5_
 
-- [ ] 14. Integrate AIAssistantPanel into Poll Block Editor
+- [x] 14. Integrate AIAssistantPanel into Poll Block Editor
   - Import AIAssistantPanel into `src/components/admin/PageEditor/BlockEditors/PollBlockEditor.tsx`
   - Configure for poll question generation
   - Implement onContentGenerated to populate question and options
