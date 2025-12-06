@@ -85,7 +85,14 @@ const BlockEditorPanel: React.FC<BlockEditorPanelProps> = ({
                 return <ImageBlockEditor block={block} onChange={handleChange} />;
 
             case 'code':
-                return <CodeBlockEditor block={block} onChange={handleChange} />;
+                return (
+                    <CodeBlockEditor
+                        block={block}
+                        onChange={handleChange}
+                        courseContext={courseContext}
+                        existingBlocks={existingBlocks}
+                    />
+                );
 
             case 'list':
                 return <ListBlockEditor block={block} onChange={handleChange} />;

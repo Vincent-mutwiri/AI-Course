@@ -161,7 +161,7 @@
   - Display generated script in separate section
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5_
 
-- [ ] 12. Integrate AIAssistantPanel into Code Block Editor
+- [x] 12. Integrate AIAssistantPanel into Code Block Editor
   - Import AIAssistantPanel into `src/components/admin/PageEditor/BlockEditors/CodeBlockEditor.tsx`
   - Configure for code example generation
   - Implement onContentGenerated to insert code and explanation
