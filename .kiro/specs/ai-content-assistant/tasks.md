@@ -92,7 +92,7 @@
   - Add formatting instructions based on block type
   - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 8.1, 8.2, 8.3, 13.1, 13.2, 13.3_
 
-- [ ] 8. Create ResponseParser service
+- [x] 8. Create ResponseParser service
   - Create `src/services/responseParser.ts`
   - Implement `parseTextBlock()` to clean and format text content
   - Implement `parseCodeBlock()` to extract code and explanation
