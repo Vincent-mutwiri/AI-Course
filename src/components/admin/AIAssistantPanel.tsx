@@ -5,9 +5,12 @@ import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { ChevronDown, ChevronUp, Sparkles, WifiOff, AlertTriangle } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { ChevronDown, ChevronUp, Sparkles, WifiOff, AlertTriangle, Save, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { getAllTemplatesForBlockType, ContentTemplate } from '@/config/contentTemplates';
+import { getAllTemplatesForBlockType, ContentTemplate, saveCustomTemplate, deleteCustomTemplate } from '@/config/contentTemplates';
 import { aiContentCache, GenerationOptions } from '@/utils/aiContentCache';
 import { addToHistory } from '@/components/admin/GenerationHistory';
 import { loadAISettings } from '@/components/admin/AISettings';
@@ -76,6 +79,11 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({
     const [generatedContent, setGeneratedContent] = useState<any>(null);
     const [refinementHistory, setRefinementHistory] = useState<any[]>([]);
 
+    // Custom template saving state
+    const [showSaveTemplateDialog, setShowSaveTemplateDialog] = useState(false);
+    const [newTemplateName, setNewTemplateName] = useState('');
+    const [newTemplateDescription, setNewTemplateDescription] = useState('');
+
     /**
      * Load templates for the current block type
      */
@@ -83,6 +91,14 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({
         const availableTemplates = getAllTemplatesForBlockType(blockType);
         setTemplates(availableTemplates);
     }, [blockType]);
+
+    /**
+     * Reload templates (useful after saving/deleting custom templates)
+     */
+    const reloadTemplates = () => {
+        const availableTemplates = getAllTemplatesForBlockType(blockType);
+        setTemplates(availableTemplates);
+    };
 
     /**
      * Handle template selection
@@ -407,6 +423,92 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({
         setError(null);
     };
 
+    /**
+     * Save current prompt as a custom template
+     */
+    const handleSaveAsTemplate = () => {
+        if (!customPrompt.trim()) {
+            toast.error('Cannot save empty template');
+            return;
+        }
+
+        setShowSaveTemplateDialog(true);
+    };
+
+    /**
+     * Confirm saving custom template
+     */
+    const confirmSaveTemplate = () => {
+        if (!newTemplateName.trim()) {
+            toast.error('Please enter a template name');
+            return;
+        }
+
+        try {
+            const newTemplate = saveCustomTemplate({
+                name: newTemplateName.trim(),
+                description: newTemplateDescription.trim() || 'Custom template',
+                blockTypes: [blockType],
+                prompt: customPrompt.trim(),
+                category: 'general'
+            });
+
+            toast.success('Template saved successfully', {
+                description: `"${newTemplate.name}" is now available in your templates`
+            });
+
+            // Reset dialog state
+            setShowSaveTemplateDialog(false);
+            setNewTemplateName('');
+            setNewTemplateDescription('');
+
+            // Reload templates to include the new one
+            reloadTemplates();
+        } catch (error) {
+            console.error('Failed to save template:', error);
+            toast.error('Failed to save template', {
+                description: 'Please try again'
+            });
+        }
+    };
+
+    /**
+     * Cancel saving template
+     */
+    const cancelSaveTemplate = () => {
+        setShowSaveTemplateDialog(false);
+        setNewTemplateName('');
+        setNewTemplateDescription('');
+    };
+
+    /**
+     * Delete a custom template
+     */
+    const handleDeleteTemplate = (templateId: string) => {
+        if (!templateId.startsWith('custom-')) {
+            toast.error('Cannot delete built-in templates');
+            return;
+        }
+
+        try {
+            deleteCustomTemplate(templateId);
+            toast.success('Template deleted');
+
+            // If the deleted template was selected, clear selection
+            if (selectedTemplateId === templateId) {
+                setSelectedTemplateId('');
+                setSelectedTemplate(null);
+                setCustomPrompt('');
+            }
+
+            // Reload templates
+            reloadTemplates();
+        } catch (error) {
+            console.error('Failed to delete template:', error);
+            toast.error('Failed to delete template');
+        }
+    };
+
     return (
         <div className="ai-assistant-panel border rounded-lg overflow-hidden bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-950/20 dark:to-blue-950/20">
             {/* Panel Header */}
@@ -543,16 +645,30 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({
                                         {templates.map(template => (
                                             <SelectItem key={template.id} value={template.id}>
                                                 {template.name}
+                                                {template.id.startsWith('custom-') && ' (Custom)'}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
 
-                                {/* Template Description */}
+                                {/* Template Description and Actions */}
                                 {selectedTemplate && (
-                                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                                        {selectedTemplate.description}
-                                    </p>
+                                    <div className="flex items-start justify-between gap-2">
+                                        <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 flex-1">
+                                            {selectedTemplate.description}
+                                        </p>
+                                        {selectedTemplate.id.startsWith('custom-') && (
+                                            <button
+                                                type="button"
+                                                onClick={() => handleDeleteTemplate(selectedTemplate.id)}
+                                                className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 p-1"
+                                                title="Delete custom template"
+                                                aria-label="Delete custom template"
+                                            >
+                                                <Trash2 className="h-3 w-3" />
+                                            </button>
+                                        )}
+                                    </div>
                                 )}
                             </div>
 
@@ -565,9 +681,22 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({
                                     >
                                         Prompt
                                     </label>
-                                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                                        {customPrompt.length} / 2000
-                                    </span>
+                                    <div className="flex items-center gap-2">
+                                        {customPrompt.trim() && (
+                                            <button
+                                                type="button"
+                                                onClick={handleSaveAsTemplate}
+                                                className="text-xs text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 flex items-center gap-1"
+                                                title="Save as template"
+                                            >
+                                                <Save className="h-3 w-3" />
+                                                Save as Template
+                                            </button>
+                                        )}
+                                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                                            {customPrompt.length} / 2000
+                                        </span>
+                                    </div>
                                 </div>
                                 <Textarea
                                     id="prompt-input"
@@ -767,6 +896,64 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({
                     )}
                 </div>
             )}
+
+            {/* Save Template Dialog */}
+            <Dialog open={showSaveTemplateDialog} onOpenChange={setShowSaveTemplateDialog}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Save as Template</DialogTitle>
+                        <DialogDescription>
+                            Save this prompt as a reusable template for future use.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="template-name">Template Name *</Label>
+                            <Input
+                                id="template-name"
+                                value={newTemplateName}
+                                onChange={(e) => setNewTemplateName(e.target.value)}
+                                placeholder="e.g., My Custom Introduction"
+                                maxLength={100}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="template-description">Description</Label>
+                            <Textarea
+                                id="template-description"
+                                value={newTemplateDescription}
+                                onChange={(e) => setNewTemplateDescription(e.target.value)}
+                                placeholder="Brief description of when to use this template"
+                                maxLength={200}
+                                rows={3}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Prompt Preview</Label>
+                            <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-md border text-sm max-h-32 overflow-y-auto">
+                                {customPrompt}
+                            </div>
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={cancelSaveTemplate}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            type="button"
+                            onClick={confirmSaveTemplate}
+                            disabled={!newTemplateName.trim()}
+                        >
+                            <Save className="h-4 w-4 mr-2" />
+                            Save Template
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };

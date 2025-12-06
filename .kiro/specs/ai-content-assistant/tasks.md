@@ -274,7 +274,7 @@
   - Add loading progress indicator for long generations
   - _Requirements: 15.1, 15.2, 15.3, 15.4, 15.5_
 
-- [ ] 23. Implement content templates system
+- [x] 23. Implement content templates system
   - Create `src/config/contentTemplates.ts` with template definitions
   - Define templates for common scenarios (lesson intro, learning objectives, summary, practice activity)
   - Add template metadata (name, description, block types, required fields)
