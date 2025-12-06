@@ -104,8 +104,8 @@
   - Handle malformed responses with fallback strategies
   - _Requirements: 1.5, 1.6, 2.2, 2.3, 3.2, 3.3, 4.2, 4.3, 5.2, 5.3, 6.2, 6.3_
 
-- [ ] 9. Create AIAssistantPanel component
-  - [ ] 9.1 Create base component structure
+- [x] 9. Create AIAssistantPanel component
+  - [x] 9.1 Create base component structure
     - Create `src/components/admin/AIAssistantPanel.tsx`
     - Implement collapsible panel UI with expand/collapse state
     - Add props interface (blockType, courseContext, onContentGenerated, currentContent)
@@ -113,7 +113,7 @@
     - Add error state display
     - _Requirements: 1.1, 1.2, 8.1, 15.1, 15.2_
   
-  - [ ] 9.2 Implement template selector
+  - [x] 9.2 Implement template selector
     - Add dropdown for template selection
     - Load templates based on blockType
     - Display template description on selection
@@ -121,7 +121,7 @@
     - Allow custom prompt override
     - _Requirements: 7.1, 7.2, 7.3, 7.4_
   
-  - [ ] 9.3 Implement generation controls
+  - [x] 9.3 Implement generation controls
     - Add prompt input textarea with character counter
     - Add generation options (tone, readingLevel, length)
     - Add "Generate" button with loading state
@@ -130,7 +130,7 @@
     - Display generated content in preview area
     - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 13.1, 13.2, 13.3, 13.4, 13.5, 14.3, 14.4_
   
-  - [ ] 9.4 Implement refinement controls
+  - [x] 9.4 Implement refinement controls
     - Add refinement option buttons (shorter, longer, simplify, add examples, change tone)
     - Implement API call to /api/ai/refine-content
     - Update preview with refined content
@@ -138,7 +138,7 @@
     - Track refinement history
     - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5_
   
-  - [ ] 9.5 Implement content actions
+  - [x] 9.5 Implement content actions
     - Add "Accept" button to insert content into block editor
     - Add "Regenerate" button to generate new content with same prompt
     - Add "Discard" button to clear generated content
