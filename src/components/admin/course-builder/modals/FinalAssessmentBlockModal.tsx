@@ -24,6 +24,8 @@ import { finalAssessmentBlockSchema, type FinalAssessmentBlock } from '@/lib/val
 import { Plus, Trash2, X, AlertCircle, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import api from '@/services/api';
+import { AIAssistantPanel } from '@/components/admin/AIAssistantPanel';
+import { CourseContextBuilder } from '@/services/courseContextBuilder';
 
 interface FinalAssessmentBlockModalProps {
     open: boolean;
@@ -34,6 +36,65 @@ interface FinalAssessmentBlockModalProps {
 
 export function FinalAssessmentBlockModal({ open, onClose, onSave, initialData }: FinalAssessmentBlockModalProps) {
     const [generatingRubric, setGeneratingRubric] = React.useState<number | null>(null);
+
+    // Handle AI-generated questions
+    const handleContentGenerated = (content: any) => {
+        let questions: any[] = [];
+        
+        if (Array.isArray(content)) {
+            questions = content;
+        } else if (content.questions && Array.isArray(content.questions)) {
+            questions = content.questions;
+        } else if (content.question) {
+            questions = [content];
+        }
+        
+        const formattedQuestions = questions.map(q => {
+            const questionType = q.type || (q.options && q.options.length > 0 ? 'multiple-choice' : 'short-answer');
+            
+            if (questionType === 'multiple-choice') {
+                const options = (q.options || []).map((opt: any) => ({
+                    text: typeof opt === 'string' ? opt : (opt.text || opt.option || ''),
+                    feedback: typeof opt === 'object' ? (opt.feedback || opt.explanation || '') : ''
+                }));
+                
+                let correctAnswer = '';
+                if (typeof q.correctAnswer === 'number' && options[q.correctAnswer]) {
+                    correctAnswer = options[q.correctAnswer].text;
+                } else if (typeof q.correctAnswer === 'string') {
+                    correctAnswer = q.correctAnswer;
+                } else if (q.answer !== undefined) {
+                    correctAnswer = typeof q.answer === 'number' ? options[q.answer]?.text || '' : q.answer;
+                }
+                
+                return {
+                    question: q.question || q.text || '',
+                    type: 'multiple-choice',
+                    options,
+                    correctAnswer
+                };
+            } else {
+                return {
+                    question: q.question || q.text || '',
+                    type: questionType,
+                    maxScore: q.maxScore || q.points || 10,
+                    rubric: q.rubric || q.gradingCriteria || '',
+                    correctAnswer: q.correctAnswer || q.answer || q.sampleAnswer || ''
+                };
+            }
+        }).filter(q => q.question);
+        
+        if (formattedQuestions.length > 0) {
+            setValue('content.questions', formattedQuestions as any, { shouldValidate: true });
+        }
+        
+        if (content.title) {
+            setValue('content.title', content.title, { shouldValidate: true });
+        }
+        if (content.description || content.instructions) {
+            setValue('content.description', content.description || content.instructions, { shouldValidate: true });
+        }
+    };
 
     const {
         register,
@@ -116,6 +177,17 @@ Format the rubric in a clear, easy-to-read structure.`
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+                    {/* AI Content Assistant */}
+                    <div className="mb-4">
+                        <AIAssistantPanel
+                            blockType="finalAssessment"
+                            courseContext={CourseContextBuilder.buildContext({})}
+                            onContentGenerated={handleContentGenerated}
+                            currentContent={watch('content.questions')}
+                            placeholder="Describe the quiz questions you want to generate (e.g., 'Generate 5 multiple choice questions about machine learning basics with varying difficulty' or 'Create 3 short answer questions about data structures')"
+                        />
+                    </div>
+
                     {/* Title */}
                     <div className="space-y-2">
                         <Label htmlFor="title" className="text-sm font-medium">
