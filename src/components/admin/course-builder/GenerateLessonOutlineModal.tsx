@@ -148,10 +148,20 @@ export function GenerateLessonOutlineModal({
     };
 
     const handleNextToAcceptance = () => {
+        console.log('[GenerateLessonOutline] Next button clicked');
+        console.log('[GenerateLessonOutline] Generated outline:', generatedOutline);
+        console.log('[GenerateLessonOutline] Current showPreview:', showPreview);
+        console.log('[GenerateLessonOutline] Current showAcceptance:', showAcceptance);
+
         // Initialize all blocks as selected
         if (generatedOutline) {
-            setSelectedBlockIndices(new Set(generatedOutline.map((_, index) => index)));
+            const allIndices = new Set(generatedOutline.map((_, index) => index));
+            console.log('[GenerateLessonOutline] Setting selected indices:', allIndices);
+            setSelectedBlockIndices(allIndices);
         }
+
+        console.log('[GenerateLessonOutline] Setting showAcceptance to true');
+        setShowPreview(false);
         setShowAcceptance(true);
     };
 
@@ -270,7 +280,222 @@ export function GenerateLessonOutlineModal({
                     </DialogDescription>
                 </DialogHeader>
 
-                {!showPreview && !showAcceptance ? (
+                {showAcceptance ? (
+                    /* Acceptance Section */
+                    <div className="space-y-4 py-4">
+                        {/* Summary and Actions */}
+                        <div className="bg-muted/50 rounded-lg p-4 space-y-3">
+                            <div className="flex items-center justify-between">
+                                <p className="text-sm font-medium">Select Blocks to Add</p>
+                                <p className="text-xs text-muted-foreground">
+                                    {selectedBlockIndices.size} of {generatedOutline?.length || 0} selected
+                                </p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={handleSelectAll}
+                                    disabled={selectedBlockIndices.size === generatedOutline?.length}
+                                >
+                                    Select All
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={handleDeselectAll}
+                                    disabled={selectedBlockIndices.size === 0}
+                                >
+                                    Deselect All
+                                </Button>
+                            </div>
+                        </div>
+
+                        {/* Block List with Checkboxes */}
+                        <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                            {generatedOutline?.map((block, index) => (
+                                <div
+                                    key={`accept-${block.type}-${index}`}
+                                    className={cn(
+                                        "bg-background border rounded-lg p-4 transition-all cursor-pointer hover:border-primary/50",
+                                        selectedBlockIndices.has(index) && "border-primary bg-primary/5"
+                                    )}
+                                    onClick={() => handleToggleBlock(index)}
+                                >
+                                    <div className="flex items-start gap-3">
+                                        {/* Checkbox */}
+                                        <Checkbox
+                                            checked={selectedBlockIndices.has(index)}
+                                            onCheckedChange={() => handleToggleBlock(index)}
+                                            className="mt-1"
+                                        />
+
+                                        {/* Block Content */}
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-start justify-between gap-2 mb-2">
+                                                <div className="flex items-center gap-2">
+                                                    <span
+                                                        className={cn(
+                                                            "text-xs font-medium px-2 py-1 rounded",
+                                                            getBlockTypeColor(block.type)
+                                                        )}
+                                                    >
+                                                        {getBlockTypeLabel(block.type)}
+                                                    </span>
+                                                    {block.estimatedTime && (
+                                                        <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                                                            <Clock className="h-3 w-3" />
+                                                            {block.estimatedTime} min
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <h4 className="font-medium text-sm mb-1">
+                                                {block.title}
+                                            </h4>
+                                            <p className="text-xs text-muted-foreground">
+                                                {block.description}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex items-center justify-between pt-4 border-t">
+                            <Button variant="outline" onClick={handleBackToPreview}>
+                                ← Back to Preview
+                            </Button>
+                            <div className="flex items-center gap-3">
+                                <Button variant="outline" onClick={handleClose}>
+                                    Cancel
+                                </Button>
+                                <Button
+                                    onClick={handleAddSelectedBlocks}
+                                    disabled={selectedBlockIndices.size === 0}
+                                    className="gap-2"
+                                >
+                                    <Check className="h-4 w-4" />
+                                    Add {selectedBlockIndices.size} Block{selectedBlockIndices.size !== 1 ? 's' : ''}
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                ) : showPreview ? (
+                    <div className="space-y-4 py-4">
+                        {/* Summary */}
+                        <div className="bg-muted/50 rounded-lg p-4 space-y-2">
+                            <div className="flex items-center justify-between">
+                                <p className="text-sm font-medium">Generated Outline</p>
+                                <p className="text-xs text-muted-foreground">
+                                    {generatedOutline?.length || 0} blocks • ~
+                                    {generatedOutline?.reduce((sum, block) => sum + (block.estimatedTime || 5), 0) || 0} minutes
+                                </p>
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                                Drag blocks to reorder them. You can accept or reject individual blocks in the next step.
+                            </p>
+                        </div>
+
+                        {/* Block List with Drag and Drop */}
+                        <DragDropContext onDragEnd={handleReorderBlocks}>
+                            <Droppable droppableId="outline-blocks">
+                                {(provided, snapshot) => (
+                                    <div
+                                        ref={provided.innerRef}
+                                        {...provided.droppableProps}
+                                        className={cn(
+                                            "space-y-2 min-h-[200px]",
+                                            snapshot.isDraggingOver && "bg-accent/30 rounded-lg p-2"
+                                        )}
+                                    >
+                                        {generatedOutline?.map((block, index) => (
+                                            <Draggable
+                                                key={`${block.type}-${index}`}
+                                                draggableId={`${block.type}-${index}`}
+                                                index={index}
+                                            >
+                                                {(provided, snapshot) => (
+                                                    <div
+                                                        ref={provided.innerRef}
+                                                        {...provided.draggableProps}
+                                                        className={cn(
+                                                            "bg-background border rounded-lg p-4 transition-all",
+                                                            snapshot.isDragging && "shadow-lg ring-2 ring-primary/50"
+                                                        )}
+                                                    >
+                                                        <div className="flex items-start gap-3">
+                                                            {/* Drag Handle */}
+                                                            <div
+                                                                {...provided.dragHandleProps}
+                                                                className="mt-1 cursor-grab active:cursor-grabbing"
+                                                            >
+                                                                <GripVertical className="h-5 w-5 text-muted-foreground" />
+                                                            </div>
+
+                                                            {/* Block Content */}
+                                                            <div className="flex-1 min-w-0">
+                                                                <div className="flex items-start justify-between gap-2 mb-2">
+                                                                    <div className="flex items-center gap-2">
+                                                                        <span
+                                                                            className={cn(
+                                                                                "text-xs font-medium px-2 py-1 rounded",
+                                                                                getBlockTypeColor(block.type)
+                                                                            )}
+                                                                        >
+                                                                            {getBlockTypeLabel(block.type)}
+                                                                        </span>
+                                                                        {block.estimatedTime && (
+                                                                            <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                                                                                <Clock className="h-3 w-3" />
+                                                                                {block.estimatedTime} min
+                                                                            </span>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                                <h4 className="font-medium text-sm mb-1">
+                                                                    {block.title}
+                                                                </h4>
+                                                                <p className="text-xs text-muted-foreground">
+                                                                    {block.description}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </Draggable>
+                                        ))}
+                                        {provided.placeholder}
+                                    </div>
+                                )}
+                            </Droppable>
+                        </DragDropContext>
+
+                        {/* Actions */}
+                        <div className="flex items-center justify-between pt-4 border-t">
+                            <Button variant="outline" onClick={handleBackToForm}>
+                                ← Back to Form
+                            </Button>
+                            <div className="flex items-center gap-3">
+                                <Button variant="outline" onClick={handleClose}>
+                                    Cancel
+                                </Button>
+                                <Button
+                                    onClick={(e) => {
+                                        console.log('[Button] Next button clicked', e);
+                                        handleNextToAcceptance();
+                                    }}
+                                    className="gap-2"
+                                    type="button"
+                                >
+                                    Next: Select Blocks →
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                ) : (
+                    /* Form Section */
                     <div className="space-y-6 py-4">
                         {/* Context Information */}
                         <div className="bg-muted/50 rounded-lg p-4 space-y-1">
@@ -365,238 +590,29 @@ export function GenerateLessonOutlineModal({
                                 Recommended: 8-12 blocks (approximately {blockCount * 5} minutes of content)
                             </p>
                         </div>
-                    </div>
 
-                    {/* Actions */}
-                <div className="flex items-center justify-end gap-3 pt-4 border-t">
-                    <Button variant="outline" onClick={handleClose}>
-                        Cancel
-                    </Button>
-                    <Button onClick={handleGenerate} disabled={isGenerating} className="gap-2">
-                        {isGenerating ? (
-                            <>
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                                Generating...
-                            </>
-                        ) : (
-                            <>
-                                <Sparkles className="h-4 w-4" />
-                                Generate Outline
-                            </>
-                        )}
-                    </Button>
-                </div>
-            </div>
-            ) : (
-            /* Preview Section */
-            <div className="space-y-4 py-4">
-                {/* Summary */}
-                <div className="bg-muted/50 rounded-lg p-4 space-y-2">
-                    <div className="flex items-center justify-between">
-                        <p className="text-sm font-medium">Generated Outline</p>
-                        <p className="text-xs text-muted-foreground">
-                            {generatedOutline?.length || 0} blocks • ~
-                            {generatedOutline?.reduce((sum, block) => sum + (block.estimatedTime || 5), 0) || 0} minutes
-                        </p>
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                        Drag blocks to reorder them. You can accept or reject individual blocks in the next step.
-                    </p>
-                </div>
-
-                {/* Block List with Drag and Drop */}
-                <DragDropContext onDragEnd={handleReorderBlocks}>
-                    <Droppable droppableId="outline-blocks">
-                        {(provided, snapshot) => (
-                            <div
-                                ref={provided.innerRef}
-                                {...provided.droppableProps}
-                                className={cn(
-                                    "space-y-2 min-h-[200px]",
-                                    snapshot.isDraggingOver && "bg-accent/30 rounded-lg p-2"
+                        {/* Actions */}
+                        <div className="flex items-center justify-end gap-3 pt-4 border-t">
+                            <Button variant="outline" onClick={handleClose}>
+                                Cancel
+                            </Button>
+                            <Button onClick={handleGenerate} disabled={isGenerating} className="gap-2">
+                                {isGenerating ? (
+                                    <>
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                        Generating...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Sparkles className="h-4 w-4" />
+                                        Generate Outline
+                                    </>
                                 )}
-                            >
-                                {generatedOutline?.map((block, index) => (
-                                    <Draggable
-                                        key={`${block.type}-${index}`}
-                                        draggableId={`${block.type}-${index}`}
-                                        index={index}
-                                    >
-                                        {(provided, snapshot) => (
-                                            <div
-                                                ref={provided.innerRef}
-                                                {...provided.draggableProps}
-                                                className={cn(
-                                                    "bg-background border rounded-lg p-4 transition-all",
-                                                    snapshot.isDragging && "shadow-lg ring-2 ring-primary/50"
-                                                )}
-                                            >
-                                                <div className="flex items-start gap-3">
-                                                    {/* Drag Handle */}
-                                                    <div
-                                                        {...provided.dragHandleProps}
-                                                        className="mt-1 cursor-grab active:cursor-grabbing"
-                                                    >
-                                                        <GripVertical className="h-5 w-5 text-muted-foreground" />
-                                                    </div>
-
-                                                    {/* Block Content */}
-                                                    <div className="flex-1 min-w-0">
-                                                        <div className="flex items-start justify-between gap-2 mb-2">
-                                                            <div className="flex items-center gap-2">
-                                                                <span
-                                                                    className={cn(
-                                                                        "text-xs font-medium px-2 py-1 rounded",
-                                                                        getBlockTypeColor(block.type)
-                                                                    )}
-                                                                >
-                                                                    {getBlockTypeLabel(block.type)}
-                                                                </span>
-                                                                {block.estimatedTime && (
-                                                                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                                                                        <Clock className="h-3 w-3" />
-                                                                        {block.estimatedTime} min
-                                                                    </span>
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                        <h4 className="font-medium text-sm mb-1">
-                                                            {block.title}
-                                                        </h4>
-                                                        <p className="text-xs text-muted-foreground">
-                                                            {block.description}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </Draggable>
-                                ))}
-                                {provided.placeholder}
-                            </div>
-                        )}
-                    </Droppable>
-                </DragDropContext>
-
-                {/* Actions */}
-                <div className="flex items-center justify-between pt-4 border-t">
-                    <Button variant="outline" onClick={handleBackToForm}>
-                        ← Back to Form
-                    </Button>
-                    <div className="flex items-center gap-3">
-                        <Button variant="outline" onClick={handleClose}>
-                            Cancel
-                        </Button>
-                        <Button onClick={handleNextToAcceptance} className="gap-2">
-                            Next: Select Blocks →
-                        </Button>
-                    </div>
-                </div>
-            </div>
-            ) : showAcceptance ? (
-            /* Acceptance Section */
-            <div className="space-y-4 py-4">
-                {/* Summary and Actions */}
-                <div className="bg-muted/50 rounded-lg p-4 space-y-3">
-                    <div className="flex items-center justify-between">
-                        <p className="text-sm font-medium">Select Blocks to Add</p>
-                        <p className="text-xs text-muted-foreground">
-                            {selectedBlockIndices.size} of {generatedOutline?.length || 0} selected
-                        </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={handleSelectAll}
-                            disabled={selectedBlockIndices.size === generatedOutline?.length}
-                        >
-                            Select All
-                        </Button>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={handleDeselectAll}
-                            disabled={selectedBlockIndices.size === 0}
-                        >
-                            Deselect All
-                        </Button>
-                    </div>
-                </div>
-
-                {/* Block List with Checkboxes */}
-                <div className="space-y-2 max-h-[400px] overflow-y-auto">
-                    {generatedOutline?.map((block, index) => (
-                        <div
-                            key={`accept-${block.type}-${index}`}
-                            className={cn(
-                                "bg-background border rounded-lg p-4 transition-all cursor-pointer hover:border-primary/50",
-                                selectedBlockIndices.has(index) && "border-primary bg-primary/5"
-                            )}
-                            onClick={() => handleToggleBlock(index)}
-                        >
-                            <div className="flex items-start gap-3">
-                                {/* Checkbox */}
-                                <Checkbox
-                                    checked={selectedBlockIndices.has(index)}
-                                    onCheckedChange={() => handleToggleBlock(index)}
-                                    className="mt-1"
-                                />
-
-                                {/* Block Content */}
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-start justify-between gap-2 mb-2">
-                                        <div className="flex items-center gap-2">
-                                            <span
-                                                className={cn(
-                                                    "text-xs font-medium px-2 py-1 rounded",
-                                                    getBlockTypeColor(block.type)
-                                                )}
-                                            >
-                                                {getBlockTypeLabel(block.type)}
-                                            </span>
-                                            {block.estimatedTime && (
-                                                <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                                                    <Clock className="h-3 w-3" />
-                                                    {block.estimatedTime} min
-                                                </span>
-                                            )}
-                                        </div>
-                                    </div>
-                                    <h4 className="font-medium text-sm mb-1">
-                                        {block.title}
-                                    </h4>
-                                    <p className="text-xs text-muted-foreground">
-                                        {block.description}
-                                    </p>
-                                </div>
-                            </div>
+                            </Button>
                         </div>
-                    ))}
-                </div>
-
-                {/* Actions */}
-                <div className="flex items-center justify-between pt-4 border-t">
-                    <Button variant="outline" onClick={handleBackToPreview}>
-                        ← Back to Preview
-                    </Button>
-                    <div className="flex items-center gap-3">
-                        <Button variant="outline" onClick={handleClose}>
-                            Cancel
-                        </Button>
-                        <Button
-                            onClick={handleAddSelectedBlocks}
-                            disabled={selectedBlockIndices.size === 0}
-                            className="gap-2"
-                        >
-                            <Check className="h-4 w-4" />
-                            Add {selectedBlockIndices.size} Block{selectedBlockIndices.size !== 1 ? 's' : ''}
-                        </Button>
                     </div>
-                </div>
-            </div>
-            ) : null}
-        </DialogContent>
-        </Dialog >
+                )}
+            </DialogContent>
+        </Dialog>
     );
 }

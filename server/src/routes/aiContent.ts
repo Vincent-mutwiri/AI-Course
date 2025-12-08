@@ -126,14 +126,11 @@ router.post(
                 });
             }
 
-            // Validate context has required fields
-            const requiredContextFields = ['courseId', 'courseTitle', 'moduleId', 'moduleName', 'lessonId', 'lessonName'];
-            for (const field of requiredContextFields) {
-                if (!context[field]) {
-                    return res.status(400).json({
-                        message: `context.${field} is required`
-                    });
-                }
+            // Validate context has at least courseId (other fields are optional)
+            if (!context.courseId) {
+                return res.status(400).json({
+                    message: 'context.courseId is required. Please provide at least a courseId for tracking purposes.'
+                });
             }
 
             // Generate cache key

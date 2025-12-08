@@ -1,5 +1,13 @@
 # Implementation Plan
 
+## ✅ VISIBILITY FIX APPLIED (December 8, 2024)
+**Issue**: AI Assistant panel was collapsed by default, making features invisible to users.
+**Fix**: Changed `isExpanded` state from `false` to `true` in `AIAssistantPanel.tsx`.
+**Result**: AI Assistant now visible by default in all block editors.
+**Documentation**: See `AI_ASSISTANT_FIX_SUMMARY.md` and `AI_ASSISTANT_USER_GUIDE.md` for details.
+
+---
+
 - [x] 1. Set up AI content generation infrastructure
   - Create `server/src/config/aiContentPrompts.ts` with prompt templates for all block types (text, video, code, reflection, poll, quiz, list, lesson outline)
   - Add refinement prompt templates (make-shorter, make-longer, simplify, add-examples, change-tone)

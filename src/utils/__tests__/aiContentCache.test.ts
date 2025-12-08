@@ -1,5 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { aiContentCache, BlockType, CourseContext, GenerationOptions } from '../aiContentCache';
+import { aiContentCache, GenerationOptions } from '../aiContentCache';
+import { BlockType } from '@/types/page';
+import { CourseContext } from '@/services/courseContextBuilder';
 
 describe('aiContentCache', () => {
     const mockContext: CourseContext = {

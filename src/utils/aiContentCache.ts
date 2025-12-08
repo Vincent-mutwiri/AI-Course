@@ -9,31 +9,19 @@
  * - Course-specific cache isolation
  */
 
-import { IBlock } from '@/types/page';
+import { IBlock, BlockType } from '@/types/page';
+import { CourseContext } from '@/services/courseContextBuilder';
 
 const CACHE_PREFIX = 'ai_content_cache_';
 const CACHE_EXPIRY_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 const MAX_ENTRIES_PER_COURSE = 50;
 const STATS_KEY = 'ai_content_cache_stats';
 
-export type BlockType = 'text' | 'video' | 'code' | 'reflection' | 'poll' | 'quiz' | 'list' | 'image' | 'divider' | 'interactive';
-
 export interface GenerationOptions {
     tone?: 'formal' | 'conversational' | 'encouraging';
     readingLevel?: 'high-school' | 'college' | 'professional';
     length?: 'brief' | 'moderate' | 'detailed';
     [key: string]: any;
-}
-
-export interface CourseContext {
-    courseId: string;
-    courseTitle?: string;
-    moduleId?: string;
-    moduleName?: string;
-    lessonId?: string;
-    lessonName?: string;
-    learningObjectives?: string[];
-    existingBlocks?: IBlock[];
 }
 
 interface CachedContent {

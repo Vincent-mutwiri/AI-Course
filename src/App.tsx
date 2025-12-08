@@ -25,6 +25,7 @@ import AIUsageDashboard from "./pages/admin/AIUsageDashboard";
 import ProtectedRoute from "./components/shared/ProtectedRoute";
 import AdminRoute from "./components/shared/AdminRoute";
 import ModuleContent from "./pages/ModuleContent";
+import DebugAIGenerator from "./pages/DebugAIGenerator";
 import HelpPage from "./pages/HelpPage";
 import { ErrorBoundary } from "./components/shared/ErrorBoundary";
 import { getSiteConfig } from "./config/sites";
@@ -99,6 +100,7 @@ function App() {
           />
           <Route path="/demo/quiz" element={<QuizDemoPage />} />
           <Route path="/quiz-demo" element={<QuizDemoPage />} />
+          <Route path="/debug-ai" element={<DebugAIGenerator />} />
           <Route path="/help" element={<HelpPage />} />
           <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
             <Route index element={<AdminDashboard />} />

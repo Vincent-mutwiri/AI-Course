@@ -39,6 +39,9 @@ const BlockCanvas: React.FC<BlockCanvasProps> = ({
     onBlockSelect,
     selectedBlockId,
 }) => {
+    console.log('[BlockCanvas] Rendering with blocks:', blocks);
+    console.log('[BlockCanvas] Blocks length:', blocks.length);
+
     const [activeId, setActiveId] = useState<string | null>(null);
     const [isDraggingFromPalette, setIsDraggingFromPalette] = useState(false);
 

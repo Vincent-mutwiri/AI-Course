@@ -11,6 +11,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { textBlockSchema, type TextBlock } from '@/lib/validation/blockSchemas';
+import { AIAssistantPanel } from '@/components/admin/AIAssistantPanel';
+import { CourseContextBuilder } from '@/services/courseContextBuilder';
 
 // Lazy load the rich text editor for better performance
 const RichTextEditor = lazy(() => import('./RichTextEditor').then(m => ({ default: m.RichTextEditor })));
@@ -65,6 +67,23 @@ export function TextBlockModal({ open, onClose, onSave, initialData }: TextBlock
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+                    {/* AI Content Assistant */}
+                    <div className="mb-4">
+                        <AIAssistantPanel
+                            blockType="text"
+                            courseContext={{
+                                courseId: 'course-builder',  // Fallback ID for course builder
+                                courseTitle: 'Course Content',
+                            }}
+                            onContentGenerated={(content) => {
+                                const htmlContent = typeof content === 'string' ? content : content.text || content.html || '';
+                                handleEditorChange(htmlContent);
+                            }}
+                            currentContent={textContent}
+                            placeholder="Describe the text content you want to generate (e.g., 'Explain machine learning basics' or 'Write a lesson introduction')"
+                        />
+                    </div>
+
                     <div className="space-y-2">
                         <Label htmlFor="text-editor" className="text-sm font-medium">
                             Content <span className="text-destructive" aria-label="required">*</span>

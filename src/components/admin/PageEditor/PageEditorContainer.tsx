@@ -321,20 +321,31 @@ const PageEditorContainer: React.FC<PageEditorContainerProps> = ({ isNewPage = f
 
     // Add new block
     const handleAddBlock = useCallback((blockType: BlockType) => {
-        const newBlock: IBlock = {
-            id: `block-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-            type: blockType,
-            order: blocks.length,
-            content: {},
-            createdAt: new Date(),
-            updatedAt: new Date(),
-        };
+        console.log('[PageEditor] Adding block:', blockType);
 
-        const newBlocks = [...blocks, newBlock];
-        setBlocks(newBlocks);
+        const newBlockId = `block-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+        setBlocks(prevBlocks => {
+            console.log('[PageEditor] Previous blocks:', prevBlocks);
+
+            const newBlock: IBlock = {
+                id: newBlockId,
+                type: blockType,
+                order: prevBlocks.length,
+                content: {},
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            };
+
+            const newBlocks = [...prevBlocks, newBlock];
+            console.log('[PageEditor] New blocks array:', newBlocks);
+
+            return newBlocks;
+        });
+
         setIsDirty(true);
-        setSelectedBlockId(newBlock.id);
-    }, [blocks]);
+        setSelectedBlockId(newBlockId);
+    }, []); // Remove blocks dependency to avoid stale closure
 
     // Reorder blocks
     const handleReorderBlocks = useCallback(async (blockIds: string[]) => {

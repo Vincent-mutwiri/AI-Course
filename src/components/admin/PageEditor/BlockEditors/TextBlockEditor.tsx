@@ -95,11 +95,21 @@ const TextBlockEditor: React.FC<TextBlockEditorProps> = ({
         editorRef.current.focus();
     };
 
+    console.log('[TextBlockEditor] Rendering, showAIAssistant:', showAIAssistant);
+    console.log('[TextBlockEditor] courseContext:', courseContext);
+    console.log('[TextBlockEditor] Built context:', buildCourseContext());
+
     return (
         <div className="text-block-editor">
             {/* AI Content Assistant Panel */}
+            <div style={{ padding: '10px', background: '#f0f0f0', marginBottom: '10px' }}>
+                <strong>Debug:</strong> showAIAssistant = {showAIAssistant ? 'TRUE' : 'FALSE'}
+            </div>
             {showAIAssistant && (
-                <div className="ai-assistant-wrapper" style={{ marginBottom: '1rem' }}>
+                <div className="ai-assistant-wrapper" style={{ marginBottom: '1rem', border: '2px solid red', padding: '10px' }}>
+                    <div style={{ background: 'yellow', padding: '5px', marginBottom: '5px' }}>
+                        AI Assistant Panel Should Be Here
+                    </div>
                     <AIAssistantPanel
                         blockType="text"
                         courseContext={buildCourseContext()}

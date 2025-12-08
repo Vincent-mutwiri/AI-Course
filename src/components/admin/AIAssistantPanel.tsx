@@ -51,7 +51,7 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({
     placeholder = 'Describe what content you want to generate...'
 }) => {
     // Panel state
-    const [isExpanded, setIsExpanded] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<AIError | null>(null);
     const [lastPrompt, setLastPrompt] = useState<string>(''); // Preserve prompt on error
@@ -322,12 +322,14 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({
             );
 
             // Add to generation history
-            addToHistory(
-                courseContext.courseId,
-                blockType,
-                customPrompt,
-                content
-            );
+            if (courseContext.courseId) {
+                addToHistory(
+                    courseContext.courseId,
+                    blockType,
+                    customPrompt,
+                    content
+                );
+            }
 
             // Success toast
             toast.success('Content generated successfully', {

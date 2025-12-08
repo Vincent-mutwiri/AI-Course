@@ -134,17 +134,16 @@ function formatDate(timestamp: number): string {
  * Get block type display name
  */
 function getBlockTypeLabel(blockType: BlockType): string {
-    const labels: Record<BlockType, string> = {
+    const labels: Partial<Record<BlockType, string>> = {
         text: 'Text',
         video: 'Video',
         code: 'Code',
         reflection: 'Reflection',
         poll: 'Poll',
-        quiz: 'Quiz',
         list: 'List',
         image: 'Image',
         divider: 'Divider',
-        interactive: 'Interactive',
+        finalAssessment: 'Quiz',
     };
 
     return labels[blockType] || blockType;
@@ -154,17 +153,16 @@ function getBlockTypeLabel(blockType: BlockType): string {
  * Get block type color
  */
 function getBlockTypeColor(blockType: BlockType): string {
-    const colors: Record<BlockType, string> = {
+    const colors: Partial<Record<BlockType, string>> = {
         text: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
         video: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
         code: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
         reflection: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
         poll: 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200',
-        quiz: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200',
+        finalAssessment: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200',
         list: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
         image: 'bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200',
         divider: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
-        interactive: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
     };
 
     return colors[blockType] || 'bg-gray-100 text-gray-800';
