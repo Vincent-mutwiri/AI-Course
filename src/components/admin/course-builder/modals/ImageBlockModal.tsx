@@ -3,6 +3,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
 import api from '@/services/api';
+import { AIAssistantPanel } from '@/components/admin/AIAssistantPanel';
+import { CourseContextBuilder } from '@/services/courseContextBuilder';
 import {
     Dialog,
     DialogContent,
@@ -46,6 +48,7 @@ export function ImageBlockModal({ open, onClose, onSave, initialData }: ImageBlo
         register,
         handleSubmit,
         setValue,
+        watch,
         formState: { errors, isSubmitting },
     } = useForm<ImageBlock>({
         resolver: zodResolver(imageBlockSchema),
@@ -58,6 +61,26 @@ export function ImageBlockModal({ open, onClose, onSave, initialData }: ImageBlo
             },
         },
     });
+
+    const altText = watch('content.altText');
+    const caption = watch('content.caption');
+
+    // Handle AI-generated content
+    const handleContentGenerated = (content: any) => {
+        if (typeof content === 'string') {
+            // Plain string - use as alt text, truncate to 125 chars for WCAG
+            setValue('content.altText', content.substring(0, 125), { shouldValidate: true });
+        } else {
+            // Structured content
+            if (content.altText) {
+                // Ensure WCAG compliance: max 125 characters
+                setValue('content.altText', content.altText.substring(0, 125), { shouldValidate: true });
+            }
+            if (content.caption) {
+                setValue('content.caption', content.caption, { shouldValidate: true });
+            }
+        }
+    };
 
     const uploadFile = async (file: File) => {
         setUploadError(null);
@@ -168,6 +191,19 @@ export function ImageBlockModal({ open, onClose, onSave, initialData }: ImageBlo
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+                    {/* AI Content Assistant */}
+                    {previewUrl && (
+                        <div className="mb-4">
+                            <AIAssistantPanel
+                                blockType="image"
+                                courseContext={CourseContextBuilder.buildContext({})}
+                                onContentGenerated={handleContentGenerated}
+                                currentContent={{ imageUrl: previewUrl, altText, caption }}
+                                placeholder="Describe what the image shows and its purpose in the lesson (e.g., 'A diagram showing the water cycle with arrows indicating evaporation and precipitation')"
+                            />
+                        </div>
+                    )}
+
                     {/* File Upload */}
                     <div className="space-y-2">
                         <Label htmlFor="imageFile" className="text-sm font-medium">

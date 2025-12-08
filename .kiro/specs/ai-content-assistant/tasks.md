@@ -368,7 +368,7 @@
   - [ ] 26.8 Integrate AI into FinalAssessmentBlockModal (Course Builder)
     - Import AIAssistantPanel into `src/components/admin/course-builder/modals/FinalAssessmentBlockModal.tsx`
     - Configure for quiz question generation
-    - Implement onContentGenerated to populate questions, options, and correct answers
+    - Implement onContentGenerated to populate questions, options, and correct answers, feedback
     - Handle multiple question types (multiple choice, true/false, short answer)
     - Test assessment generation with various difficulty levels
     - _Requirements: 16.1, 16.2, 16.3, 16.4, 16.5, 3.1, 3.2, 3.3, 3.4, 3.5_
