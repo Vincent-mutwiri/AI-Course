@@ -20,6 +20,8 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { aiGeneratorBlockSchema, type AIGeneratorBlock } from '@/lib/validation/blockSchemas';
+import { AIAssistantPanel } from '@/components/admin/AIAssistantPanel';
+import { CourseContextBuilder } from '@/services/courseContextBuilder';
 
 interface AIGeneratorBlockModalProps {
     open: boolean;
@@ -104,6 +106,28 @@ export function AIGeneratorBlockModal({ open, onClose, onSave, initialData }: AI
     });
 
     const generatorType = watch('content.generatorType');
+    const title = watch('content.title');
+    const description = watch('content.description');
+
+    // Handle AI-generated content
+    const handleContentGenerated = (content: any) => {
+        if (typeof content === 'string') {
+            setValue('content.description', content, { shouldValidate: true });
+        } else {
+            if (content.title) {
+                setValue('content.title', content.title, { shouldValidate: true });
+            }
+            if (content.description || content.instructions) {
+                setValue('content.description', content.description || content.instructions, { shouldValidate: true });
+            }
+            if (content.prompt || content.systemPrompt) {
+                setValue('content.prompt', content.prompt || content.systemPrompt, { shouldValidate: true });
+            }
+            if (content.placeholder) {
+                setValue('content.placeholder', content.placeholder, { shouldValidate: true });
+            }
+        }
+    };
 
     const onSubmit = (data: AIGeneratorBlock) => {
         onSave(data);
@@ -120,6 +144,17 @@ export function AIGeneratorBlockModal({ open, onClose, onSave, initialData }: AI
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                    {/* AI Content Assistant */}
+                    <div className="mb-4">
+                        <AIAssistantPanel
+                            blockType="aiGenerator"
+                            courseContext={CourseContextBuilder.buildContext({})}
+                            onContentGenerated={handleContentGenerated}
+                            currentContent={{ generatorType, title, description }}
+                            placeholder="Describe the AI generator you want to create (e.g., 'Create a study buddy that helps students summarize complex topics' or 'Build a code debugger for Python beginners')"
+                        />
+                    </div>
+
                     {/* Generator Type */}
                     <div className="space-y-2">
                         <Label htmlFor="generatorType">Generator Type *</Label>
