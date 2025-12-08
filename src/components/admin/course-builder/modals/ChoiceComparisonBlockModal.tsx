@@ -16,6 +16,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { choiceComparisonBlockSchema, type ChoiceComparisonBlock } from '@/lib/validation/blockSchemas';
 import { Plus, Trash2, AlertCircle, HelpCircle } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { AIAssistantPanel } from '@/components/admin/AIAssistantPanel';
+import { CourseContextBuilder } from '@/services/courseContextBuilder';
 
 interface ChoiceComparisonBlockModalProps {
     open: boolean;
@@ -54,6 +56,7 @@ export function ChoiceComparisonBlockModal({ open, onClose, onSave, initialData 
         register,
         handleSubmit,
         reset,
+        setValue,
         formState: { errors, isSubmitting },
     } = useForm<ChoiceComparisonBlock>({
         defaultValues: {
@@ -64,6 +67,28 @@ export function ChoiceComparisonBlockModal({ open, onClose, onSave, initialData 
             },
         },
     });
+
+    const handleContentGenerated = (content: any) => {
+        if (typeof content === 'string') {
+            setValue('content.question', content, { shouldValidate: true });
+        } else {
+            if (content.question || content.scenario || content.prompt) {
+                setValue('content.question', content.question || content.scenario || content.prompt, { shouldValidate: true });
+            }
+            if (content.title) {
+                setValue('content.title', content.title, { shouldValidate: true });
+            }
+            if (content.choices && Array.isArray(content.choices)) {
+                const parsedChoices = content.choices.slice(0, 6).map((c: any) => ({
+                    label: typeof c === 'string' ? c : (c.label || c.name || c.option || ''),
+                    description: typeof c === 'object' ? (c.description || c.desc || '') : ''
+                })).filter((c: any) => c.label.trim());
+                if (parsedChoices.length >= 2) {
+                    setChoices(parsedChoices);
+                }
+            }
+        }
+    };
 
     // Reset form when modal opens with initialData
     React.useEffect(() => {
@@ -143,6 +168,16 @@ export function ChoiceComparisonBlockModal({ open, onClose, onSave, initialData 
                 </DialogHeader>
 
                 <form onSubmit={(e) => e.preventDefault()} className="space-y-5">
+                    <div className="mb-4">
+                        <AIAssistantPanel
+                            blockType="choiceComparison"
+                            courseContext={CourseContextBuilder.buildContext({})}
+                            onContentGenerated={handleContentGenerated}
+                            currentContent=""
+                            placeholder="Describe the comparison scenario and choices you want to generate..."
+                        />
+                    </div>
+
                     {/* Title */}
                     <div className="space-y-2">
                         <Label htmlFor="title" className="text-sm font-medium">
