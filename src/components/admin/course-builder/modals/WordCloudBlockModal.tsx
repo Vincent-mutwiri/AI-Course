@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
 import {
     Dialog,
     DialogContent,
@@ -14,7 +13,10 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Plus, Trash2, HelpCircle } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { wordCloudBlockSchema, type WordCloudBlock } from '@/lib/validation/blockSchemas';
+import { type WordCloudBlock } from '@/lib/validation/blockSchemas';
+import { AIAssistantPanel } from '@/components/admin/AIAssistantPanel';
+import { CourseContextBuilder } from '@/services/courseContextBuilder';
+
 
 interface WordCloudBlockModalProps {
     open: boolean;
@@ -52,8 +54,10 @@ export function WordCloudBlockModal({ open, onClose, onSave, initialData }: Word
         register,
         handleSubmit,
         reset,
+        setValue,
+        watch,
         formState: { errors, isSubmitting },
-    } = useForm<WordCloudBlock>({
+    } = useForm({
         defaultValues: {
             type: 'wordCloud',
             content: {
@@ -64,6 +68,13 @@ export function WordCloudBlockModal({ open, onClose, onSave, initialData }: Word
             },
         },
     });
+
+    const handleContentGenerated = (content: any) => {
+        const prompt = typeof content === 'string' ? content : (content.prompt || content.question || content.text || '');
+        if (prompt) {
+            setValue('content.instructionText', prompt, { shouldValidate: true });
+        }
+    };
 
     // Reset form when modal opens with initialData
     React.useEffect(() => {
@@ -149,6 +160,16 @@ export function WordCloudBlockModal({ open, onClose, onSave, initialData }: Word
                 </DialogHeader>
 
                 <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
+                    <div className="mb-4">
+                        <AIAssistantPanel
+                            blockType="wordCloud"
+                            courseContext={CourseContextBuilder.buildContext({})}
+                            onContentGenerated={handleContentGenerated}
+                            currentContent=""
+                            placeholder="Describe the word cloud prompt you want to generate..."
+                        />
+                    </div>
+
                     {/* Title */}
                     <div className="space-y-2">
                         <Label htmlFor="title">Title</Label>
@@ -169,7 +190,7 @@ export function WordCloudBlockModal({ open, onClose, onSave, initialData }: Word
                         <Label htmlFor="description">Description</Label>
                         <Textarea
                             id="description"
-                            placeholder="e.g., Click on a word to see which motivation principle it connects to!"
+                            placeholder="e.g., Click on a word to see which motivation principle it connects to"
                             rows={2}
                             {...register('content.description')}
                         />
@@ -247,7 +268,7 @@ export function WordCloudBlockModal({ open, onClose, onSave, initialData }: Word
                         <Label htmlFor="instructionText">Instruction Text (Optional)</Label>
                         <Input
                             id="instructionText"
-                            placeholder="e.g., 👆 Click on any word above to discover its connection"
+                            placeholder="e.g., Click on any word above to discover its connection"
                             {...register('content.instructionText')}
                         />
                         <p className="text-xs text-muted-foreground">
