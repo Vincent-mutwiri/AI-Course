@@ -16,6 +16,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { pollBlockSchema, type PollBlock } from '@/lib/validation/blockSchemas';
 import { Plus, Trash2, GripVertical, AlertCircle } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
+import { AIAssistantPanel } from '@/components/admin/AIAssistantPanel';
+import { CourseContextBuilder } from '@/services/courseContextBuilder';
 
 interface PollBlockModalProps {
     open: boolean;
@@ -62,10 +64,42 @@ export function PollBlockModal({ open, onClose, onSave, initialData }: PollBlock
 
     const allowMultiple = watch('content.allowMultiple');
     const options = watch('content.options');
+    const question = watch('content.question');
 
     // Validate that at least 2 options have text
     const validOptionsCount = options?.filter(opt => opt.text?.trim().length > 0).length || 0;
     const hasMinimumOptions = validOptionsCount >= 2;
+
+    // Handle AI-generated content
+    const handleContentGenerated = (content: any) => {
+        if (typeof content === 'string') {
+            setValue('content.question', content, { shouldValidate: true });
+        } else {
+            if (content.question) {
+                setValue('content.question', content.question, { shouldValidate: true });
+            }
+            if (content.title) {
+                setValue('content.title', content.title, { shouldValidate: true });
+            }
+            
+            let parsedOptions: string[] = [];
+            if (Array.isArray(content.options)) {
+                parsedOptions = content.options.map((opt: any) => 
+                    typeof opt === 'string' ? opt : (opt.text || opt.option || '')
+                ).filter((text: string) => text.trim().length > 0);
+            } else if (typeof content.options === 'string') {
+                parsedOptions = content.options.split(/[,\n]+/).map((opt: string) => opt.trim()).filter((text: string) => text.length > 0);
+            }
+            
+            if (parsedOptions.length >= 2) {
+                setValue('content.options', parsedOptions.slice(0, 10).map(text => ({
+                    id: uuidv4(),
+                    text,
+                    votes: 0
+                })), { shouldValidate: true });
+            }
+        }
+    };
 
     const onSubmit = (data: PollBlock) => {
         // Ensure all options have IDs and reset votes to 0
@@ -109,6 +143,17 @@ export function PollBlockModal({ open, onClose, onSave, initialData }: PollBlock
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                    {/* AI Content Assistant */}
+                    <div className="mb-4">
+                        <AIAssistantPanel
+                            blockType="poll"
+                            courseContext={CourseContextBuilder.buildContext({})}
+                            onContentGenerated={handleContentGenerated}
+                            currentContent={{ question, options }}
+                            placeholder="Describe the poll you want to generate (e.g., 'Create a poll about preferred learning styles with 4 options' or 'Generate a poll asking about gamification experience levels')"
+                        />
+                    </div>
+
                     {/* Title */}
                     <div className="space-y-2">
                         <Label htmlFor="title">
