@@ -111,6 +111,41 @@ Each block editor gets AI assistance tailored to its content type:
 - **Quiz Block**: Generate questions with distractors and explanations
 - **List Block**: Generate structured lists (steps, requirements, tips)
 
+### 4a. Dual System Integration
+
+The AI Content Assistant integrates with **two different editing systems**:
+
+**PageEditor System** (Side Panel):
+- Location: `src/components/admin/PageEditor/BlockEditors/`
+- Uses side panel for block editing
+- AI integration: ✅ Complete (Tasks 10-16)
+
+**Course Builder System** (Modal Dialogs):
+- Location: `src/components/admin/course-builder/modals/`
+- Uses modal dialogs for block editing
+- AI integration: ⏳ In Progress (Task 26)
+- Modals requiring integration:
+  - TextBlockModal.tsx ✅ Complete
+  - VideoBlockModal.tsx
+  - CodeBlockModal.tsx
+  - ReflectionBlockModal.tsx
+  - PollBlockModal.tsx
+  - ListBlockModal.tsx
+  - ImageBlockModal.tsx
+  - FinalAssessmentBlockModal.tsx
+  - AIGeneratorBlockModal.tsx
+  - WordCloudBlockModal.tsx
+  - ChoiceComparisonBlockModal.tsx
+  - CertificateGeneratorBlockModal.tsx
+  - DividerBlockModal.tsx
+
+**Integration Pattern for Course Builder Modals**:
+1. Import AIAssistantPanel and CourseContextBuilder
+2. Add AIAssistantPanel before the form content
+3. Implement onContentGenerated callback to populate form fields using react-hook-form's setValue()
+4. Pass appropriate blockType and placeholder text
+5. Extract content from generated response and map to form fields
+
 ### 5. Context Builder Service
 
 Frontend service that gathers course context for AI generation.

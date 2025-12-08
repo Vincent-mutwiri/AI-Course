@@ -199,3 +199,15 @@ The AI Content Assistant is an intelligent content generation system that accele
 3. WHEN the API times out, THE AI Content Assistant SHALL allow manual retry with increased timeout
 4. THE AI Content Assistant SHALL provide fallback suggestions based on templates when AI is unavailable
 5. THE AI Content Assistant SHALL log generation errors for troubleshooting
+
+### Requirement 16
+
+**User Story:** As an admin using the Course Builder system, I want AI assistance in block modals, so that I can generate content regardless of which editing system I use
+
+#### Acceptance Criteria
+
+1. WHEN an admin opens a Course Builder block modal, THE AI Content Assistant SHALL display the AIAssistantPanel component
+2. THE AI Content Assistant SHALL provide the same generation capabilities in Course Builder modals as in PageEditor block editors
+3. WHEN content is generated in a Course Builder modal, THE AI Content Assistant SHALL populate the modal's form fields appropriately
+4. THE AI Content Assistant SHALL support all Course Builder block types (text, video, code, reflection, poll, list, image, interactive)
+5. THE AI Content Assistant SHALL maintain consistent UI and behavior between PageEditor and Course Builder systems

@@ -580,5 +580,3 @@ export function validateTemplateVariables(
 // ============================================================================
 // Export Types and Functions
 // ============================================================================
-
-export type { PromptTemplate };

@@ -25,6 +25,8 @@ import {
     validateFileType,
 } from '@/lib/validation/blockSchemas';
 import { Upload, Link as LinkIcon, RefreshCw, X } from 'lucide-react';
+import { AIAssistantPanel } from '@/components/admin/AIAssistantPanel';
+import { CourseContextBuilder } from '@/services/courseContextBuilder';
 
 interface VideoBlockModalProps {
     open: boolean;
@@ -39,6 +41,7 @@ export function VideoBlockModal({ open, onClose, onSave, initialData }: VideoBlo
     const [uploadError, setUploadError] = useState<string | null>(null);
     const [lastFile, setLastFile] = useState<File | null>(null);
     const [uploadController, setUploadController] = useState<AbortController | null>(null);
+    const [generatedScript, setGeneratedScript] = useState<string>('');
 
     const {
         register,
@@ -61,6 +64,41 @@ export function VideoBlockModal({ open, onClose, onSave, initialData }: VideoBlo
     });
 
     const videoSource = watch('content.videoSource');
+    const titleContent = watch('content.title');
+    const descriptionContent = watch('content.description');
+
+    /**
+     * Handle AI-generated video content
+     * Expected format: { title, description, script, keyPoints }
+     */
+    const handleContentGenerated = (content: any) => {
+        // Parse the generated content
+        let parsedContent = content;
+
+        // If content is a string, try to parse it as JSON
+        if (typeof content === 'string') {
+            try {
+                parsedContent = JSON.parse(content);
+            } catch {
+                // If not JSON, treat as script text
+                parsedContent = { script: content };
+            }
+        }
+
+        // Update form fields with generated data
+        if (parsedContent.title) {
+            setValue('content.title', parsedContent.title, { shouldValidate: true });
+        }
+
+        if (parsedContent.description) {
+            setValue('content.description', parsedContent.description, { shouldValidate: true });
+        }
+
+        // Store the generated script separately for display
+        if (parsedContent.script) {
+            setGeneratedScript(parsedContent.script);
+        }
+    };
 
     const uploadFile = async (file: File) => {
         setUploadError(null);
@@ -162,6 +200,20 @@ export function VideoBlockModal({ open, onClose, onSave, initialData }: VideoBlo
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+                    {/* AI Content Assistant */}
+                    <div className="mb-4">
+                        <AIAssistantPanel
+                            blockType="video"
+                            courseContext={{
+                                courseId: 'course-builder',
+                                courseTitle: 'Course Content',
+                            }}
+                            onContentGenerated={handleContentGenerated}
+                            currentContent={{ title: titleContent, description: descriptionContent }}
+                            placeholder="Describe the video topic and duration (e.g., 'Create a 5-minute video script about gamification principles including introduction, main concepts, examples, and conclusion')"
+                        />
+                    </div>
+
                     {/* Video Source Selection */}
                     <div className="space-y-2">
                         <Label className="text-sm font-medium">Video Source <span className="text-destructive" aria-label="required">*</span></Label>
@@ -320,6 +372,23 @@ export function VideoBlockModal({ open, onClose, onSave, initialData }: VideoBlo
                             Optional description or context for the video content
                         </p>
                     </div>
+
+                    {/* Generated Video Script Display */}
+                    {generatedScript && (
+                        <div className="space-y-2">
+                            <Label className="text-sm font-medium">
+                                Generated Video Script
+                            </Label>
+                            <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-md border border-gray-200 dark:border-gray-700 max-h-96 overflow-y-auto">
+                                <pre className="text-sm text-gray-900 dark:text-gray-100 whitespace-pre-wrap font-sans">
+                                    {generatedScript}
+                                </pre>
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                                Use this script as a guide when recording your video. The title and description have been populated above.
+                            </p>
+                        </div>
+                    )}
 
                     <div className="text-xs text-muted-foreground bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded p-3">
                         <strong>💡 Tip:</strong> For best performance, use YouTube or Vimeo for longer videos.

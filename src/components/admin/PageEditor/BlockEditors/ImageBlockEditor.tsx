@@ -130,7 +130,7 @@ const ImageBlockEditor: React.FC<ImageBlockEditorProps> = ({
             .filter(b => b.type === 'text' && b.content.text)
             .map(b => {
                 // Strip HTML tags and get plain text
-                const text = b.content.text.replace(/<[^>]*>/g, '').trim();
+                const text = (b.content.text || '').replace(/<[^>]*>/g, '').trim();
                 return text.substring(0, 300); // Limit to 300 chars per block
             })
             .filter(text => text.length > 0);

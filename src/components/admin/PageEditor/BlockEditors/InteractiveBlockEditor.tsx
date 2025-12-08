@@ -360,7 +360,7 @@ const InteractiveBlockEditor: React.FC<InteractiveBlockEditorProps> = ({
             {block.type === 'finalAssessment' && showAIAssistant && (
                 <div className="ai-assistant-wrapper" style={{ marginBottom: '1rem' }}>
                     <AIAssistantPanel
-                        blockType="interactive"
+                        blockType="finalAssessment"
                         courseContext={buildCourseContext()}
                         onContentGenerated={handleContentGenerated}
                         currentContent={block.content.config?.questions}

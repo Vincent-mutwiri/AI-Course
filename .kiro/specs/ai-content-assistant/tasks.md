@@ -307,3 +307,102 @@
   - Add troubleshooting section for common issues
   - Create video tutorial for AI-assisted course creation
   - _Requirements: All requirements_
+
+- [ ] 26. Integrate AIAssistantPanel into Course Builder modals
+  - [x] 26.1 Integrate AI into TextBlockModal (Course Builder)
+    - Import AIAssistantPanel and CourseContextBuilder into `src/components/admin/course-builder/modals/TextBlockModal.tsx`
+    - Add AIAssistantPanel before the form content
+    - Implement onContentGenerated callback to update form fields using setValue()
+    - Extract text content from generated response and populate editor
+    - Test generation, refinement, and form submission
+    - _Requirements: 16.1, 16.2, 16.3, 16.4, 16.5, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6_
+  
+  - [x] 26.2 Integrate AI into VideoBlockModal (Course Builder)
+    - Import AIAssistantPanel into `src/components/admin/course-builder/modals/VideoBlockModal.tsx`
+    - Configure for video script generation
+    - Implement onContentGenerated to populate title, description, and script fields
+    - Handle video-specific content structure (timestamps, sections)
+    - Test video content generation workflow
+    - _Requirements: 16.1, 16.2, 16.3, 16.4, 16.5, 2.1, 2.2, 2.3, 2.4, 2.5_
+  
+  - [ ] 26.3 Integrate AI into CodeBlockModal (Course Builder)
+    - Import AIAssistantPanel into `src/components/admin/course-builder/modals/CodeBlockModal.tsx`
+    - Configure for code example generation
+    - Implement onContentGenerated to populate code, language, and explanation fields
+    - Auto-detect programming language from generated code
+    - Test code generation with multiple languages
+    - _Requirements: 16.1, 16.2, 16.3, 16.4, 16.5, 6.1, 6.2, 6.3, 6.4, 6.5_
+  
+  - [ ] 26.4 Integrate AI into ReflectionBlockModal (Course Builder)
+    - Import AIAssistantPanel into `src/components/admin/course-builder/modals/ReflectionBlockModal.tsx`
+    - Configure for reflection prompt generation
+    - Implement onContentGenerated to populate question/prompt field
+    - Handle multiple prompt options if generated
+    - Test reflection prompt generation
+    - _Requirements: 16.1, 16.2, 16.3, 16.4, 16.5, 4.1, 4.2, 4.3, 4.4, 4.5_
+  
+  - [ ] 26.5 Integrate AI into PollBlockModal (Course Builder)
+    - Import AIAssistantPanel into `src/components/admin/course-builder/modals/PollBlockModal.tsx`
+    - Configure for poll question and options generation
+    - Implement onContentGenerated to populate question and options array
+    - Parse generated options into form fields
+    - Test poll generation with various option counts
+    - _Requirements: 16.1, 16.2, 16.3, 16.4, 16.5, 5.1, 5.2, 5.3, 5.4, 5.5_
+  
+  - [ ] 26.6 Integrate AI into ListBlockModal (Course Builder)
+    - Import AIAssistantPanel into `src/components/admin/course-builder/modals/ListBlockModal.tsx`
+    - Configure for list generation (steps, tips, requirements, checklist)
+    - Implement onContentGenerated to populate list items array
+    - Auto-detect list type from generated content
+    - Test list generation with different types
+    - _Requirements: 16.1, 16.2, 16.3, 16.4, 16.5_
+  
+  - [ ] 26.7 Integrate AI into ImageBlockModal (Course Builder)
+    - Import AIAssistantPanel into `src/components/admin/course-builder/modals/ImageBlockModal.tsx`
+    - Configure for alt text and caption generation
+    - Implement onContentGenerated to populate alt text and caption fields
+    - Ensure alt text meets WCAG guidelines (under 125 characters)
+    - Test alt text generation with context awareness
+    - _Requirements: 16.1, 16.2, 16.3, 16.4, 16.5, 12.1, 12.2, 12.3, 12.4, 12.5_
+  
+  - [ ] 26.8 Integrate AI into FinalAssessmentBlockModal (Course Builder)
+    - Import AIAssistantPanel into `src/components/admin/course-builder/modals/FinalAssessmentBlockModal.tsx`
+    - Configure for quiz question generation
+    - Implement onContentGenerated to populate questions, options, and correct answers
+    - Handle multiple question types (multiple choice, true/false, short answer)
+    - Test assessment generation with various difficulty levels
+    - _Requirements: 16.1, 16.2, 16.3, 16.4, 16.5, 3.1, 3.2, 3.3, 3.4, 3.5_
+  
+  - [ ] 26.9 Integrate AI into AIGeneratorBlockModal (Course Builder)
+    - Import AIAssistantPanel into `src/components/admin/course-builder/modals/AIGeneratorBlockModal.tsx`
+    - Configure for AI-specific content generation (may need enhancement)
+    - Implement onContentGenerated to populate relevant fields
+    - Test AI generator block with various prompts
+    - _Requirements: 16.1, 16.2, 16.3, 16.4, 16.5_
+  
+  - [ ] 26.10 Integrate AI into WordCloudBlockModal (Course Builder)
+    - Import AIAssistantPanel into `src/components/admin/course-builder/modals/WordCloudBlockModal.tsx`
+    - Configure for word cloud prompt generation
+    - Implement onContentGenerated to populate prompt field
+    - Test word cloud prompt generation
+    - _Requirements: 16.1, 16.2, 16.3, 16.4, 16.5_
+  
+  - [ ] 26.11 Integrate AI into ChoiceComparisonBlockModal (Course Builder)
+    - Import AIAssistantPanel into `src/components/admin/course-builder/modals/ChoiceComparisonBlockModal.tsx`
+    - Configure for choice comparison scenario generation
+    - Implement onContentGenerated to populate scenario and choices
+    - Test choice comparison generation
+    - _Requirements: 16.1, 16.2, 16.3, 16.4, 16.5_
+  
+  - [ ] 26.12 Integrate AI into CertificateGeneratorBlockModal (Course Builder)
+    - Import AIAssistantPanel into `src/components/admin/course-builder/modals/CertificateGeneratorBlockModal.tsx`
+    - Configure for certificate text generation
+    - Implement onContentGenerated to populate certificate fields
+    - Test certificate content generation
+    - _Requirements: 16.1, 16.2, 16.3, 16.4, 16.5_
+  
+  - [ ] 26.13 Review DividerBlockModal for AI integration necessity
+    - Evaluate if DividerBlockModal needs AI assistance (likely not needed)
+    - Document decision in design.md
+    - Skip integration if not beneficial
+    - _Requirements: 16.1, 16.2, 16.5_

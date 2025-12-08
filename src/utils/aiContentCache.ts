@@ -29,7 +29,7 @@ interface CachedContent {
     timestamp: number;
     lastAccessed: number;
     blockType: BlockType;
-    courseId: string;
+    courseId: string | undefined;
 }
 
 interface CacheStats {
@@ -49,10 +49,10 @@ function generateCacheKey(
 ): string {
     // Create a deterministic hash of the inputs
     const contextHash = JSON.stringify({
-        courseId: context.courseId,
-        moduleId: context.moduleId,
-        lessonId: context.lessonId,
-        objectives: context.learningObjectives,
+        courseId: context.courseId || 'default',
+        moduleId: context.moduleId || '',
+        lessonId: context.lessonId || '',
+        objectives: context.learningObjectives || [],
     });
 
     const optionsHash = JSON.stringify(options || {});
@@ -188,7 +188,8 @@ export const aiContentCache = {
 
             // Update last accessed time
             parsed.lastAccessed = Date.now();
-            localStorage.setItem(key, JSON.stringify(parsed));
+            const storageKey = generateCacheKey(blockType, prompt, context, options);
+            localStorage.setItem(storageKey, JSON.stringify(parsed));
 
             updateCacheStats(true);
             return parsed.content;
@@ -211,7 +212,8 @@ export const aiContentCache = {
     ): void {
         try {
             // Evict LRU entries if needed before adding new entry
-            evictLRUIfNeeded(context.courseId);
+            const courseId = context.courseId || 'default';
+            evictLRUIfNeeded(courseId);
 
             const key = generateCacheKey(blockType, prompt, context, options);
             const cacheEntry: CachedContent = {

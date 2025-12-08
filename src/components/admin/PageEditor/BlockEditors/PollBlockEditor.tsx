@@ -99,7 +99,10 @@ const PollBlockEditor: React.FC<PollBlockEditorProps> = ({
 
         // Store discussion questions in metadata if available
         if (discussionQuestions.length > 0) {
-            updates.discussionQuestions = discussionQuestions;
+            updates.meta = {
+                ...block.content.meta,
+                discussionQuestions
+            };
         }
 
         onChange(updates);
@@ -168,7 +171,7 @@ const PollBlockEditor: React.FC<PollBlockEditorProps> = ({
             </div>
 
             {/* Display generated discussion questions if available */}
-            {block.content.discussionQuestions && block.content.discussionQuestions.length > 0 && (
+            {block.content.meta?.discussionQuestions && Array.isArray(block.content.meta.discussionQuestions) && block.content.meta.discussionQuestions.length > 0 && (
                 <div className="form-group">
                     <label>Generated Discussion Questions</label>
                     <div className="discussion-questions-list" style={{
@@ -189,7 +192,7 @@ const PollBlockEditor: React.FC<PollBlockEditorProps> = ({
                             paddingLeft: '1.5rem',
                             fontSize: '0.875rem'
                         }}>
-                            {block.content.discussionQuestions.map((question: string, index: number) => (
+                            {block.content.meta.discussionQuestions.map((question: string, index: number) => (
                                 <li key={index} style={{ marginBottom: '0.25rem' }}>
                                     {question}
                                 </li>

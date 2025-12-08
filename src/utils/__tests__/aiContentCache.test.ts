@@ -133,17 +133,17 @@ describe('aiContentCache', () => {
             const now = Date.now();
             vi.spyOn(Date, 'now').mockReturnValue(now);
 
-            aiContentCache.set('text', 'old prompt', mockContext, content);
+            aiContentCache.set('text' as BlockType, 'old prompt', mockContext, content);
 
             // Fast forward 8 days
             vi.spyOn(Date, 'now').mockReturnValue(now + 8 * 24 * 60 * 60 * 1000);
 
-            aiContentCache.set('text', 'new prompt', mockContext, content);
+            aiContentCache.set('text' as BlockType, 'new prompt', mockContext, content);
 
             aiContentCache.clearExpired();
 
-            expect(aiContentCache.has('text', 'old prompt', mockContext)).toBe(false);
-            expect(aiContentCache.has('text', 'new prompt', mockContext)).toBe(true);
+            expect(aiContentCache.has('text' as BlockType, 'old prompt', mockContext)).toBe(false);
+            expect(aiContentCache.has('text' as BlockType, 'new prompt', mockContext)).toBe(true);
 
             vi.restoreAllMocks();
         });
@@ -155,17 +155,17 @@ describe('aiContentCache', () => {
 
             // Add 51 entries
             for (let i = 0; i < 51; i++) {
-                aiContentCache.set('text', `prompt ${i}`, mockContext, { ...content, index: i });
+                aiContentCache.set('text' as BlockType, `prompt ${i}`, mockContext, { ...content, index: i });
             }
 
             // Should have max 50 entries
-            expect(aiContentCache.getCourseEntryCount(mockContext.courseId)).toBeLessThanOrEqual(50);
+            expect(aiContentCache.getCourseEntryCount(mockContext.courseId || 'default')).toBeLessThanOrEqual(50);
 
             // First entry should be evicted
-            expect(aiContentCache.get('text', 'prompt 0', mockContext)).toBeNull();
+            expect(aiContentCache.get('text' as BlockType, 'prompt 0', mockContext)).toBeNull();
 
             // Last entry should still exist
-            expect(aiContentCache.get('text', 'prompt 50', mockContext)).toEqual({ ...content, index: 50 });
+            expect(aiContentCache.get('text' as BlockType, 'prompt 50', mockContext)).toEqual({ ...content, index: 50 });
         });
 
         it('should update last accessed time on cache hit', () => {
@@ -176,23 +176,23 @@ describe('aiContentCache', () => {
 
             // Add 50 entries
             for (let i = 0; i < 50; i++) {
-                aiContentCache.set('text', `prompt ${i}`, mockContext, { ...content, index: i });
+                aiContentCache.set('text' as BlockType, `prompt ${i}`, mockContext, { ...content, index: i });
             }
 
             // Fast forward 1 hour
             vi.spyOn(Date, 'now').mockReturnValue(now + 60 * 60 * 1000);
 
             // Access the first entry to update its lastAccessed time
-            const firstEntry = aiContentCache.get('text', 'prompt 0', mockContext);
+            const firstEntry = aiContentCache.get('text' as BlockType, 'prompt 0', mockContext);
             expect(firstEntry).toEqual({ ...content, index: 0 });
 
             // Add one more entry (should trigger eviction)
-            aiContentCache.set('text', 'new prompt', mockContext, content);
+            aiContentCache.set('text' as BlockType, 'new prompt', mockContext, content);
 
             // First entry should still exist because it was accessed recently
             // The second entry (prompt 1) should be evicted instead
-            expect(aiContentCache.get('text', 'prompt 0', mockContext)).toEqual({ ...content, index: 0 });
-            expect(aiContentCache.get('text', 'prompt 1', mockContext)).toBeNull();
+            expect(aiContentCache.get('text' as BlockType, 'prompt 0', mockContext)).toEqual({ ...content, index: 0 });
+            expect(aiContentCache.get('text' as BlockType, 'prompt 1', mockContext)).toBeNull();
 
             vi.restoreAllMocks();
         });
@@ -203,17 +203,17 @@ describe('aiContentCache', () => {
 
             // Add 51 entries to course 1
             for (let i = 0; i < 51; i++) {
-                aiContentCache.set('text', `prompt ${i}`, mockContext, { ...content, index: i });
+                aiContentCache.set('text' as BlockType, `prompt ${i}`, mockContext, { ...content, index: i });
             }
 
             // Add 1 entry to course 2
-            aiContentCache.set('text', 'course 2 prompt', context2, content);
+            aiContentCache.set('text' as BlockType, 'course 2 prompt', context2, content);
 
             // Course 1 should have max 50 entries
-            expect(aiContentCache.getCourseEntryCount(mockContext.courseId)).toBeLessThanOrEqual(50);
+            expect(aiContentCache.getCourseEntryCount(mockContext.courseId || 'default')).toBeLessThanOrEqual(50);
 
             // Course 2 should have 1 entry
-            expect(aiContentCache.getCourseEntryCount(context2.courseId)).toBe(1);
+            expect(aiContentCache.getCourseEntryCount(context2.courseId || 'default')).toBe(1);
         });
     });
 
@@ -292,10 +292,10 @@ describe('aiContentCache', () => {
             aiContentCache.set('text', 'prompt 2', mockContext, content);
             aiContentCache.set('text', 'prompt 3', context2, content);
 
-            aiContentCache.clearCourse(mockContext.courseId);
+            aiContentCache.clearCourse(mockContext.courseId || 'default');
 
-            expect(aiContentCache.getCourseEntryCount(mockContext.courseId)).toBe(0);
-            expect(aiContentCache.getCourseEntryCount(context2.courseId)).toBe(1);
+            expect(aiContentCache.getCourseEntryCount(mockContext.courseId || 'default')).toBe(0);
+            expect(aiContentCache.getCourseEntryCount(context2.courseId || 'default')).toBe(1);
         });
     });
 });

@@ -73,7 +73,7 @@ export const ExampleBlockEditor: React.FC<ExampleBlockEditorProps> = ({
                 </h2>
 
                 <GenerationHistory
-                    courseId={courseContext.courseId}
+                    courseId={courseContext.courseId || 'default'}
                     onReuse={handleReuseFromHistory}
                 />
             </div>
@@ -129,6 +129,7 @@ export const ExamplePageEditor: React.FC = () => {
             'Understand key concepts',
             'Identify use cases',
         ],
+        existingBlocks: [],
     };
 
     const handleSave = (content: string) => {
