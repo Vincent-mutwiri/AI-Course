@@ -13,6 +13,8 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { listBlockSchema, type ListBlock } from '@/lib/validation/blockSchemas';
 import { Plus, Trash2, GripVertical } from 'lucide-react';
+import { AIAssistantPanel } from '@/components/admin/AIAssistantPanel';
+import { CourseContextBuilder } from '@/services/courseContextBuilder';
 
 interface ListBlockModalProps {
     open: boolean;
@@ -27,6 +29,7 @@ export function ListBlockModal({ open, onClose, onSave, initialData }: ListBlock
         handleSubmit,
         control,
         watch,
+        setValue,
         formState: { errors, isSubmitting },
     } = useForm<ListBlock>({
         resolver: zodResolver(listBlockSchema) as any,
@@ -39,12 +42,46 @@ export function ListBlockModal({ open, onClose, onSave, initialData }: ListBlock
         },
     });
 
-    const { fields, append, remove } = useFieldArray({
+    const { fields, append, remove, replace } = useFieldArray({
         control,
         name: 'content.items',
     });
 
     const listType = watch('content.listType');
+    const items = watch('content.items');
+
+    // Auto-detect list type from content
+    const detectListType = (content: any): 'bullet' | 'numbered' | 'checkbox' => {
+        const text = JSON.stringify(content).toLowerCase();
+        if (text.includes('step') || text.includes('first') || text.includes('second') || /\d+\./.test(text)) {
+            return 'numbered';
+        }
+        if (text.includes('checklist') || text.includes('task') || text.includes('todo') || text.includes('complete')) {
+            return 'checkbox';
+        }
+        return 'bullet';
+    };
+
+    // Handle AI-generated content
+    const handleContentGenerated = (content: any) => {
+        let parsedItems: string[] = [];
+        
+        if (typeof content === 'string') {
+            parsedItems = content.split(/\n+/).map(item => item.replace(/^[•\-*\d+\.\[\]\s]+/, '').trim()).filter(text => text.length > 0);
+        } else if (Array.isArray(content)) {
+            parsedItems = content.map(item => typeof item === 'string' ? item : (item.text || item.item || '')).filter(text => text.trim().length > 0);
+        } else if (content.items && Array.isArray(content.items)) {
+            parsedItems = content.items.map((item: any) => typeof item === 'string' ? item : (item.text || item.item || '')).filter((text: string) => text.trim().length > 0);
+        } else if (content.list && Array.isArray(content.list)) {
+            parsedItems = content.list.map((item: any) => typeof item === 'string' ? item : (item.text || item.item || '')).filter((text: string) => text.trim().length > 0);
+        }
+        
+        if (parsedItems.length > 0) {
+            const detectedType = content.listType || content.type || detectListType(content);
+            setValue('content.listType', detectedType, { shouldValidate: true });
+            replace(parsedItems.slice(0, 100).map(text => ({ text, checked: false })));
+        }
+    };
 
     const onSubmit = (data: any) => {
         onSave(data as ListBlock);
@@ -68,6 +105,17 @@ export function ListBlockModal({ open, onClose, onSave, initialData }: ListBlock
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+                    {/* AI Content Assistant */}
+                    <div className="mb-4">
+                        <AIAssistantPanel
+                            blockType="list"
+                            courseContext={CourseContextBuilder.buildContext({})}
+                            onContentGenerated={handleContentGenerated}
+                            currentContent={{ listType, items }}
+                            placeholder="Describe the list you want to generate (e.g., 'Create 5 steps for implementing gamification' or 'Generate a checklist for course design best practices')"
+                        />
+                    </div>
+
                     {/* List Type Selection */}
                     <div className="space-y-2">
                         <Label className="text-sm font-medium">
