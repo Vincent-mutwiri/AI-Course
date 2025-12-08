@@ -20,6 +20,8 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { codeBlockSchema, type CodeBlock } from '@/lib/validation/blockSchemas';
+import { AIAssistantPanel } from '@/components/admin/AIAssistantPanel';
+import { CourseContextBuilder } from '@/services/courseContextBuilder';
 
 interface CodeBlockModalProps {
     open: boolean;
@@ -74,6 +76,60 @@ export function CodeBlockModal({ open, onClose, onSave, initialData }: CodeBlock
     });
 
     const language = watch('content.language');
+    const code = watch('content.code');
+
+    // Auto-detect programming language from code content
+    const detectLanguage = (codeContent: string): string => {
+        const trimmed = codeContent.trim();
+        if (!trimmed) return 'javascript';
+
+        // Python detection
+        if (/^(def|class|import|from|if __name__|print\()/m.test(trimmed)) return 'python';
+        
+        // Java detection
+        if (/^(public|private|protected)\s+(class|interface|enum)/m.test(trimmed)) return 'java';
+        
+        // C# detection
+        if (/^(using|namespace|public class|private class)/m.test(trimmed)) return 'csharp';
+        
+        // HTML detection
+        if (/^<!DOCTYPE html>|^<html|^<div|^<body/i.test(trimmed)) return 'html';
+        
+        // CSS detection
+        if (/^[.#]?[a-zA-Z][\w-]*\s*\{|^@media|^@import/m.test(trimmed)) return 'css';
+        
+        // SQL detection
+        if (/^(SELECT|INSERT|UPDATE|DELETE|CREATE|ALTER|DROP)\s+/i.test(trimmed)) return 'sql';
+        
+        // TypeScript detection (has type annotations)
+        if (/:\s*(string|number|boolean|any|void|Promise|Array)/m.test(trimmed)) return 'typescript';
+        
+        // Default to JavaScript
+        return 'javascript';
+    };
+
+    // Handle AI-generated content
+    const handleContentGenerated = (content: any) => {
+        if (typeof content === 'string') {
+            // Plain string - treat as code
+            setValue('content.code', content, { shouldValidate: true });
+            const detectedLang = detectLanguage(content);
+            setValue('content.language', detectedLang, { shouldValidate: true });
+        } else {
+            // Structured content
+            if (content.code) {
+                setValue('content.code', content.code, { shouldValidate: true });
+                
+                // Auto-detect language if not provided
+                const lang = content.language || detectLanguage(content.code);
+                setValue('content.language', lang, { shouldValidate: true });
+            }
+            
+            if (content.explanation || content.title) {
+                setValue('content.title', content.explanation || content.title, { shouldValidate: true });
+            }
+        }
+    };
 
     const onSubmit = (data: any) => {
         onSave(data as CodeBlock);
@@ -93,6 +149,17 @@ export function CodeBlockModal({ open, onClose, onSave, initialData }: CodeBlock
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+                    {/* AI Content Assistant */}
+                    <div className="mb-4">
+                        <AIAssistantPanel
+                            blockType="code"
+                            courseContext={CourseContextBuilder.buildContext({})}
+                            onContentGenerated={handleContentGenerated}
+                            currentContent={{ code, language }}
+                            placeholder="Describe the code example you want to generate (e.g., 'Create a Python function to calculate fibonacci numbers' or 'Show a React component with useState hook')"
+                        />
+                    </div>
+
                     {/* Title (Optional) */}
                     <div className="space-y-2">
                         <Label htmlFor="title" className="text-sm font-medium">

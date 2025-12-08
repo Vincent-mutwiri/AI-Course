@@ -325,7 +325,7 @@
     - Test video content generation workflow
     - _Requirements: 16.1, 16.2, 16.3, 16.4, 16.5, 2.1, 2.2, 2.3, 2.4, 2.5_
   
-  - [ ] 26.3 Integrate AI into CodeBlockModal (Course Builder)
+  - [-] 26.3 Integrate AI into CodeBlockModal (Course Builder)
     - Import AIAssistantPanel into `src/components/admin/course-builder/modals/CodeBlockModal.tsx`
     - Configure for code example generation
     - Implement onContentGenerated to populate code, language, and explanation fields
