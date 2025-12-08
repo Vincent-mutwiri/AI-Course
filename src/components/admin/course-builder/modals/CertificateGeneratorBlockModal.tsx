@@ -17,6 +17,8 @@ import { certificateGeneratorBlockSchema, type CertificateGeneratorBlock } from 
 import { AlertCircle, Award, X } from 'lucide-react';
 import { toast } from 'sonner';
 import api from '@/services/api';
+import { AIAssistantPanel } from '@/components/admin/AIAssistantPanel';
+import { CourseContextBuilder } from '@/services/courseContextBuilder';
 
 interface CertificateGeneratorBlockModalProps {
     open: boolean;
@@ -37,6 +39,7 @@ export function CertificateGeneratorBlockModal({ open, onClose, onSave, initialD
     const {
         register,
         handleSubmit,
+        setValue,
         formState: { errors, isSubmitting },
     } = useForm<CertificateGeneratorBlock>({
         resolver: zodResolver(certificateGeneratorBlockSchema),
@@ -50,6 +53,18 @@ export function CertificateGeneratorBlockModal({ open, onClose, onSave, initialD
             },
         },
     });
+
+    const handleContentGenerated = (content: any) => {
+        if (typeof content === 'string') {
+            setValue('content.description', content, { shouldValidate: true });
+        } else {
+            if (content.title) setValue('content.title', content.title, { shouldValidate: true });
+            if (content.description || content.instructions || content.text) {
+                setValue('content.description', content.description || content.instructions || content.text, { shouldValidate: true });
+            }
+            if (content.certificateTitle) setValue('content.certificateTitle', content.certificateTitle, { shouldValidate: true });
+        }
+    };
 
     const handleFileUpload = async (file: File, type: 'logo' | 'background' | 'signature') => {
         if (!file || file.size === 0) {
@@ -119,6 +134,16 @@ export function CertificateGeneratorBlockModal({ open, onClose, onSave, initialD
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+                    <div className="mb-4">
+                        <AIAssistantPanel
+                            blockType="certificateGenerator"
+                            courseContext={CourseContextBuilder.buildContext({})}
+                            onContentGenerated={handleContentGenerated}
+                            currentContent=""
+                            placeholder="Describe the certificate content you want to generate..."
+                        />
+                    </div>
+
                     {/* Title */}
                     <div className="space-y-2">
                         <Label htmlFor="title" className="text-sm font-medium">
