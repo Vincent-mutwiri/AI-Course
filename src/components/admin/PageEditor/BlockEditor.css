@@ -574,8 +574,7 @@
     }
 }
 
-/* Blo
-ck Editor Panel Styles */
+/* Block Editor Panel Styles */
 .block-editor-panel {
     width: 350px;
     background: white;
@@ -817,8 +816,7 @@ textarea.form-control {
     overflow: hidden;
 }
 
-/*
- Page Preview Styles */
+/* Page Preview Styles */
 .page-preview-overlay {
     position: fixed;
     top: 0;
@@ -1341,7 +1339,8 @@ textarea.form-control {
     }
 }
 
-/ * Validation Error Styles */ .page-metadata-form .form-group input.error,
+/* Validation Error Styles */
+.page-metadata-form .form-group input.error,
 .page-metadata-form .form-group select.error {
     border-color: #dc3545;
 }
@@ -1442,8 +1441,7 @@ textarea.form-control {
     margin: 0.125rem 0;
 }
 
-/* Blo
-ck Editor Panel Validation Styles */
+/* Block Editor Panel Validation Styles */
 .block-editor-panel .block-validation-errors {
     background-color: #fff3cd;
     border: 1px solid #ffc107;
@@ -1480,8 +1478,7 @@ ck Editor Panel Validation Styles */
     color: #664d03;
 }
 
-/* 
-Offline Indicator */
+/* Offline Indicator */
 .page-editor-header .offline-indicator {
     display: inline-flex;
     align-items: center;
