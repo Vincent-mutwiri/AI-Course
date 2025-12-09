@@ -24,6 +24,9 @@ interface ChoiceComparisonBlockModalProps {
     onClose: () => void;
     onSave: (data: ChoiceComparisonBlock) => void;
     initialData?: Partial<ChoiceComparisonBlock>;
+    courseId?: string;
+    moduleId?: string;
+    lessonId?: string;
 }
 
 interface ChoiceEntry {
@@ -31,7 +34,7 @@ interface ChoiceEntry {
     description?: string;
 }
 
-export function ChoiceComparisonBlockModal({ open, onClose, onSave, initialData }: ChoiceComparisonBlockModalProps) {
+export function ChoiceComparisonBlockModal({ open, onClose, onSave, initialData, courseId, moduleId, lessonId }: ChoiceComparisonBlockModalProps) {
     const [choices, setChoices] = useState<ChoiceEntry[]>([
         { label: '' },
         { label: '' },
@@ -171,7 +174,7 @@ export function ChoiceComparisonBlockModal({ open, onClose, onSave, initialData 
                     <div className="mb-4">
                         <AIAssistantPanel
                             blockType="choiceComparison"
-                            courseContext={CourseContextBuilder.buildContext({})}
+                            courseContext={CourseContextBuilder.buildContext({ courseId, moduleId, lessonId })}
                             onContentGenerated={handleContentGenerated}
                             currentContent=""
                             placeholder="Describe the comparison scenario and choices you want to generate..."

@@ -23,6 +23,9 @@ interface WordCloudBlockModalProps {
     onClose: () => void;
     onSave: (data: WordCloudBlock) => void;
     initialData?: Partial<WordCloudBlock>;
+    courseId?: string;
+    moduleId?: string;
+    lessonId?: string;
 }
 
 interface WordEntry {
@@ -31,7 +34,7 @@ interface WordEntry {
     mapping: string;
 }
 
-export function WordCloudBlockModal({ open, onClose, onSave, initialData }: WordCloudBlockModalProps) {
+export function WordCloudBlockModal({ open, onClose, onSave, initialData, courseId, moduleId, lessonId }: WordCloudBlockModalProps) {
     const [words, setWords] = useState<WordEntry[]>([{ text: '', value: 50, mapping: '' }]);
 
     // Reset words when modal opens or initialData changes
@@ -70,9 +73,13 @@ export function WordCloudBlockModal({ open, onClose, onSave, initialData }: Word
     });
 
     const handleContentGenerated = (content: any) => {
-        const prompt = typeof content === 'string' ? content : (content.prompt || content.question || content.text || '');
-        if (prompt) {
-            setValue('content.instructionText', prompt, { shouldValidate: true });
+        if (content.words && Array.isArray(content.words)) {
+            const parsedWords = content.words.map((w: any) => ({
+                text: w.text || '',
+                value: w.value || 50,
+                mapping: w.mapping || ''
+            }));
+            setWords(parsedWords);
         }
     };
 
@@ -163,7 +170,7 @@ export function WordCloudBlockModal({ open, onClose, onSave, initialData }: Word
                     <div className="mb-4">
                         <AIAssistantPanel
                             blockType="wordCloud"
-                            courseContext={CourseContextBuilder.buildContext({})}
+                            courseContext={CourseContextBuilder.buildContext({ courseId, moduleId, lessonId })}
                             onContentGenerated={handleContentGenerated}
                             currentContent=""
                             placeholder="Describe the word cloud prompt you want to generate..."

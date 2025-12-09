@@ -24,9 +24,12 @@ interface PollBlockModalProps {
     onClose: () => void;
     onSave: (data: PollBlock) => void;
     initialData?: Partial<PollBlock>;
+    courseId?: string;
+    moduleId?: string;
+    lessonId?: string;
 }
 
-export function PollBlockModal({ open, onClose, onSave, initialData }: PollBlockModalProps) {
+export function PollBlockModal({ open, onClose, onSave, initialData, courseId, moduleId, lessonId }: PollBlockModalProps) {
     const {
         register,
         handleSubmit,
@@ -147,7 +150,7 @@ export function PollBlockModal({ open, onClose, onSave, initialData }: PollBlock
                     <div className="mb-4">
                         <AIAssistantPanel
                             blockType="poll"
-                            courseContext={CourseContextBuilder.buildContext({})}
+                            courseContext={CourseContextBuilder.buildContext({ courseId, moduleId, lessonId })}
                             onContentGenerated={handleContentGenerated}
                             currentContent={{ question, options }}
                             placeholder="Describe the poll you want to generate (e.g., 'Create a poll about preferred learning styles with 4 options' or 'Generate a poll asking about gamification experience levels')"

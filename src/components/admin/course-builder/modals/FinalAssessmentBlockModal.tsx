@@ -32,9 +32,12 @@ interface FinalAssessmentBlockModalProps {
     onClose: () => void;
     onSave: (data: FinalAssessmentBlock) => void;
     initialData?: Partial<FinalAssessmentBlock>;
+    courseId?: string;
+    moduleId?: string;
+    lessonId?: string;
 }
 
-export function FinalAssessmentBlockModal({ open, onClose, onSave, initialData }: FinalAssessmentBlockModalProps) {
+export function FinalAssessmentBlockModal({ open, onClose, onSave, initialData, courseId, moduleId, lessonId }: FinalAssessmentBlockModalProps) {
     const [generatingRubric, setGeneratingRubric] = React.useState<number | null>(null);
 
     // Handle AI-generated questions
@@ -181,7 +184,7 @@ Format the rubric in a clear, easy-to-read structure.`
                     <div className="mb-4">
                         <AIAssistantPanel
                             blockType="finalAssessment"
-                            courseContext={CourseContextBuilder.buildContext({})}
+                            courseContext={CourseContextBuilder.buildContext({ courseId, moduleId, lessonId })}
                             onContentGenerated={handleContentGenerated}
                             currentContent={watch('content.questions')}
                             placeholder="Describe the quiz questions you want to generate (e.g., 'Generate 5 multiple choice questions about machine learning basics with varying difficulty' or 'Create 3 short answer questions about data structures')"

@@ -32,6 +32,9 @@ interface BlockModalRouterProps {
     modalState: BlockModalState;
     onClose: () => void;
     onSave: (data: any) => void;
+    courseId?: string;
+    moduleId?: string;
+    lessonId?: string;
 }
 
 /**
@@ -44,7 +47,7 @@ interface BlockModalRouterProps {
  * @param onClose - Callback to close the modal
  * @param onSave - Callback to save block data
  */
-export function BlockModalRouter({ modalState, onClose, onSave }: BlockModalRouterProps) {
+export function BlockModalRouter({ modalState, onClose, onSave, courseId, moduleId, lessonId }: BlockModalRouterProps) {
     const { isOpen, blockType, blockData } = modalState;
 
     if (!isOpen || !blockType) {
@@ -66,6 +69,9 @@ export function BlockModalRouter({ modalState, onClose, onSave }: BlockModalRout
                         onClose={onClose}
                         onSave={onSave}
                         initialData={initialData}
+                        courseId={courseId}
+                        moduleId={moduleId}
+                        lessonId={lessonId}
                     />
                 );
 
@@ -96,6 +102,9 @@ export function BlockModalRouter({ modalState, onClose, onSave }: BlockModalRout
                         onClose={onClose}
                         onSave={onSave}
                         initialData={initialData}
+                        courseId={courseId}
+                        moduleId={moduleId}
+                        lessonId={lessonId}
                     />
                 );
 
@@ -106,6 +115,9 @@ export function BlockModalRouter({ modalState, onClose, onSave }: BlockModalRout
                         onClose={onClose}
                         onSave={onSave}
                         initialData={initialData}
+                        courseId={courseId}
+                        moduleId={moduleId}
+                        lessonId={lessonId}
                     />
                 );
 
@@ -127,6 +139,9 @@ export function BlockModalRouter({ modalState, onClose, onSave }: BlockModalRout
                         onClose={onClose}
                         onSave={onSave}
                         initialData={initialData}
+                        courseId={courseId}
+                        moduleId={moduleId}
+                        lessonId={lessonId}
                     />
                 );
 
@@ -137,6 +152,9 @@ export function BlockModalRouter({ modalState, onClose, onSave }: BlockModalRout
                         onClose={onClose}
                         onSave={onSave}
                         initialData={initialData}
+                        courseId={courseId}
+                        moduleId={moduleId}
+                        lessonId={lessonId}
                     />
                 );
 
@@ -147,6 +165,9 @@ export function BlockModalRouter({ modalState, onClose, onSave }: BlockModalRout
                         onClose={onClose}
                         onSave={onSave}
                         initialData={initialData}
+                        courseId={courseId}
+                        moduleId={moduleId}
+                        lessonId={lessonId}
                     />
                 );
 
@@ -157,6 +178,9 @@ export function BlockModalRouter({ modalState, onClose, onSave }: BlockModalRout
                         onClose={onClose}
                         onSave={onSave}
                         initialData={initialData}
+                        courseId={courseId}
+                        moduleId={moduleId}
+                        lessonId={lessonId}
                     />
                 );
 
@@ -167,6 +191,9 @@ export function BlockModalRouter({ modalState, onClose, onSave }: BlockModalRout
                         onClose={onClose}
                         onSave={onSave}
                         initialData={initialData}
+                        courseId={courseId}
+                        moduleId={moduleId}
+                        lessonId={lessonId}
                     />
                 );
 
@@ -177,6 +204,9 @@ export function BlockModalRouter({ modalState, onClose, onSave }: BlockModalRout
                         onClose={onClose}
                         onSave={onSave}
                         initialData={initialData}
+                        courseId={courseId}
+                        moduleId={moduleId}
+                        lessonId={lessonId}
                     />
                 );
 
@@ -187,6 +217,9 @@ export function BlockModalRouter({ modalState, onClose, onSave }: BlockModalRout
                         onClose={onClose}
                         onSave={onSave}
                         initialData={initialData}
+                        courseId={courseId}
+                        moduleId={moduleId}
+                        lessonId={lessonId}
                     />
                 );
 

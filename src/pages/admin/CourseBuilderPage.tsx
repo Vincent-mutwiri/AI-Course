@@ -947,6 +947,9 @@ export default function CourseBuilderPage() {
                 modalState={modalState}
                 onClose={closeModal}
                 onSave={handleSave}
+                courseId={id}
+                moduleId={currentModuleId || undefined}
+                lessonId={currentLessonId || undefined}
             />
 
             {/* Add Module Modal */}

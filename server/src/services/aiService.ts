@@ -446,11 +446,26 @@ function parseBlockContent(blockType: string, generatedText: string): any {
         case 'quiz':
             return parseQuizContent(generatedText);
 
+        case 'finalAssessment':
+            return parseFinalAssessmentContent(generatedText);
+
         case 'list':
             return parseListContent(generatedText);
 
         case 'image':
             return parseImageContent(generatedText);
+
+        case 'wordCloud':
+            return parseWordCloudContent(generatedText);
+
+        case 'aiGenerator':
+            return parseAIGeneratorContent(generatedText);
+
+        case 'choiceComparison':
+            return parseChoiceComparisonContent(generatedText);
+
+        case 'certificateGenerator':
+            return parseCertificateGeneratorContent(generatedText);
 
         default:
             return { text: generatedText.trim() };
@@ -602,6 +617,30 @@ function parseQuizContent(text: string): any {
 }
 
 /**
+ * Parse final assessment content
+ */
+function parseFinalAssessmentContent(text: string): any {
+    try {
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+            const parsed = JSON.parse(jsonMatch[0]);
+            if (parsed.questions && Array.isArray(parsed.questions)) {
+                return parsed;
+            }
+        }
+    } catch (e) {
+        // Fallback to quiz parser
+        return parseQuizContent(text);
+    }
+    
+    return {
+        title: 'Final Assessment',
+        description: 'Complete this assessment to demonstrate your understanding.',
+        questions: []
+    };
+}
+
+/**
  * Parse list content
  */
 function parseListContent(text: string): any {
@@ -622,6 +661,104 @@ function parseListContent(text: string): any {
     return {
         items: items.length > 0 ? items : [text.trim()],
         ordered: /^\d+\./.test(text)
+    };
+}
+
+/**
+ * Parse certificate generator content
+ */
+function parseCertificateGeneratorContent(text: string): any {
+    try {
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+            const parsed = JSON.parse(jsonMatch[0]);
+            return parsed;
+        }
+    } catch (e) {
+        // Fallback parsing
+    }
+    
+    return {
+        title: 'Generate Your Certificate',
+        description: text.substring(0, 200) || 'Congratulations on completing this course! Generate your certificate below.',
+        certificateTitle: 'Certificate of Completion'
+    };
+}
+
+/**
+ * Parse choice comparison content
+ */
+function parseChoiceComparisonContent(text: string): any {
+    try {
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+            const parsed = JSON.parse(jsonMatch[0]);
+            if (parsed.choices && Array.isArray(parsed.choices)) {
+                return parsed;
+            }
+        }
+    } catch (e) {
+        // Fallback parsing
+    }
+    
+    return {
+        question: text.substring(0, 200),
+        title: '',
+        choices: [
+            { label: 'Option A', description: 'First approach' },
+            { label: 'Option B', description: 'Second approach' },
+            { label: 'Option C', description: 'Third approach' }
+        ]
+    };
+}
+
+/**
+ * Parse AI generator content
+ */
+function parseAIGeneratorContent(text: string): any {
+    try {
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+            const parsed = JSON.parse(jsonMatch[0]);
+            return parsed;
+        }
+    } catch (e) {
+        // Fallback parsing
+    }
+    
+    return {
+        title: 'AI Assistant',
+        description: text.substring(0, 200),
+        placeholder: 'Enter your input here...',
+        prompt: ''
+    };
+}
+
+/**
+ * Parse word cloud content
+ */
+function parseWordCloudContent(text: string): any {
+    try {
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+            const parsed = JSON.parse(jsonMatch[0]);
+            if (parsed.words && Array.isArray(parsed.words)) {
+                return parsed;
+            }
+        }
+    } catch (e) {
+        // Fallback parsing
+    }
+    
+    return {
+        words: [
+            { text: 'Engagement', value: 85, mapping: 'Key principle for learner motivation' },
+            { text: 'Feedback', value: 75, mapping: 'Essential for learning progress' },
+            { text: 'Challenge', value: 70, mapping: 'Balancing difficulty and skill' },
+            { text: 'Autonomy', value: 65, mapping: 'Learner control and choice' },
+            { text: 'Progress', value: 60, mapping: 'Visible advancement tracking' },
+            { text: 'Rewards', value: 55, mapping: 'Recognition and incentives' }
+        ]
     };
 }
 

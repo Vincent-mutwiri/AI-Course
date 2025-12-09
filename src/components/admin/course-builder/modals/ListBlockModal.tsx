@@ -21,9 +21,12 @@ interface ListBlockModalProps {
     onClose: () => void;
     onSave: (data: ListBlock) => void;
     initialData?: Partial<ListBlock>;
+    courseId?: string;
+    moduleId?: string;
+    lessonId?: string;
 }
 
-export function ListBlockModal({ open, onClose, onSave, initialData }: ListBlockModalProps) {
+export function ListBlockModal({ open, onClose, onSave, initialData, courseId, moduleId, lessonId }: ListBlockModalProps) {
     const {
         register,
         handleSubmit,
@@ -109,7 +112,7 @@ export function ListBlockModal({ open, onClose, onSave, initialData }: ListBlock
                     <div className="mb-4">
                         <AIAssistantPanel
                             blockType="list"
-                            courseContext={CourseContextBuilder.buildContext({})}
+                            courseContext={CourseContextBuilder.buildContext({ courseId, moduleId, lessonId })}
                             onContentGenerated={handleContentGenerated}
                             currentContent={{ listType, items }}
                             placeholder="Describe the list you want to generate (e.g., 'Create 5 steps for implementing gamification' or 'Generate a checklist for course design best practices')"

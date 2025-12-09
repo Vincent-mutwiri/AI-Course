@@ -28,6 +28,9 @@ interface CodeBlockModalProps {
     onClose: () => void;
     onSave: (data: CodeBlock) => void;
     initialData?: Partial<CodeBlock>;
+    courseId?: string;
+    moduleId?: string;
+    lessonId?: string;
 }
 
 const PROGRAMMING_LANGUAGES = [
@@ -56,7 +59,7 @@ const PROGRAMMING_LANGUAGES = [
     { value: 'plaintext', label: 'Plain Text' },
 ];
 
-export function CodeBlockModal({ open, onClose, onSave, initialData }: CodeBlockModalProps) {
+export function CodeBlockModal({ open, onClose, onSave, initialData, courseId, moduleId, lessonId }: CodeBlockModalProps) {
     const {
         register,
         handleSubmit,
@@ -153,7 +156,7 @@ export function CodeBlockModal({ open, onClose, onSave, initialData }: CodeBlock
                     <div className="mb-4">
                         <AIAssistantPanel
                             blockType="code"
-                            courseContext={CourseContextBuilder.buildContext({})}
+                            courseContext={CourseContextBuilder.buildContext({ courseId, moduleId, lessonId })}
                             onContentGenerated={handleContentGenerated}
                             currentContent={{ code, language }}
                             placeholder="Describe the code example you want to generate (e.g., 'Create a Python function to calculate fibonacci numbers' or 'Show a React component with useState hook')"

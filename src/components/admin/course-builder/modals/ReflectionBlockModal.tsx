@@ -21,9 +21,12 @@ interface ReflectionBlockModalProps {
     onClose: () => void;
     onSave: (data: ReflectionBlock) => void;
     initialData?: Partial<ReflectionBlock>;
+    courseId?: string;
+    moduleId?: string;
+    lessonId?: string;
 }
 
-export function ReflectionBlockModal({ open, onClose, onSave, initialData }: ReflectionBlockModalProps) {
+export function ReflectionBlockModal({ open, onClose, onSave, initialData, courseId, moduleId, lessonId }: ReflectionBlockModalProps) {
     const {
         register,
         handleSubmit,
@@ -49,39 +52,18 @@ export function ReflectionBlockModal({ open, onClose, onSave, initialData }: Ref
 
     // Handle AI-generated content
     const handleContentGenerated = (content: any) => {
+        let question = '';
+        
         if (typeof content === 'string') {
-            // Plain string - use as question
-            setValue('content.question', content, { shouldValidate: true });
-        } else if (Array.isArray(content)) {
-            // Array of prompts - use first as question, rest as context
-            if (content.length > 0) {
-                setValue('content.question', content[0], { shouldValidate: true });
-                if (content.length > 1) {
-                    setValue('content.prompt', content.slice(1).join('\n\n'), { shouldValidate: true });
-                }
-            }
+            question = content;
+        } else if (content.prompts && Array.isArray(content.prompts) && content.prompts.length > 0) {
+            question = content.prompts[0].prompt || content.prompts[0].text || '';
         } else {
-            // Structured content
-            const reflectionQuestion = content.question || content.prompt || content.text;
-            if (reflectionQuestion) {
-                setValue('content.question', reflectionQuestion, { shouldValidate: true });
-            }
-            
-            if (content.context || content.guidance || content.additionalContext) {
-                setValue('content.prompt', content.context || content.guidance || content.additionalContext, { shouldValidate: true });
-            }
-            
-            if (content.title) {
-                setValue('content.title', content.title, { shouldValidate: true });
-            }
-            
-            if (content.placeholder) {
-                setValue('content.placeholder', content.placeholder, { shouldValidate: true });
-            }
-            
-            if (content.minLength && typeof content.minLength === 'number') {
-                setValue('content.minLength', content.minLength, { shouldValidate: true });
-            }
+            question = content.question || content.prompt || content.text || '';
+        }
+        
+        if (question) {
+            setValue('content.question', question, { shouldValidate: true });
         }
     };
 
@@ -110,7 +92,7 @@ export function ReflectionBlockModal({ open, onClose, onSave, initialData }: Ref
                     <div className="mb-4">
                         <AIAssistantPanel
                             blockType="reflection"
-                            courseContext={CourseContextBuilder.buildContext({})}
+                            courseContext={CourseContextBuilder.buildContext({ courseId, moduleId, lessonId })}
                             onContentGenerated={handleContentGenerated}
                             currentContent={{ question, prompt }}
                             placeholder="Describe the reflection prompt you want to generate (e.g., 'Create a reflection about applying gamification principles in the classroom' or 'Generate a prompt about ethical considerations in AI')"

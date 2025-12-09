@@ -28,6 +28,9 @@ interface AIGeneratorBlockModalProps {
     onClose: () => void;
     onSave: (data: AIGeneratorBlock) => void;
     initialData?: Partial<AIGeneratorBlock>;
+    courseId?: string;
+    moduleId?: string;
+    lessonId?: string;
 }
 
 const GENERATOR_TYPES = [
@@ -83,7 +86,7 @@ const GENERATOR_TYPES = [
     },
 ];
 
-export function AIGeneratorBlockModal({ open, onClose, onSave, initialData }: AIGeneratorBlockModalProps) {
+export function AIGeneratorBlockModal({ open, onClose, onSave, initialData, courseId, moduleId, lessonId }: AIGeneratorBlockModalProps) {
     const {
         register,
         handleSubmit,
@@ -148,7 +151,7 @@ export function AIGeneratorBlockModal({ open, onClose, onSave, initialData }: AI
                     <div className="mb-4">
                         <AIAssistantPanel
                             blockType="aiGenerator"
-                            courseContext={CourseContextBuilder.buildContext({})}
+                            courseContext={CourseContextBuilder.buildContext({ courseId, moduleId, lessonId })}
                             onContentGenerated={handleContentGenerated}
                             currentContent={{ generatorType, title, description }}
                             placeholder="Describe the AI generator you want to create (e.g., 'Create a study buddy that helps students summarize complex topics' or 'Build a code debugger for Python beginners')"

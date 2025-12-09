@@ -22,9 +22,12 @@ interface TextBlockModalProps {
     onClose: () => void;
     onSave: (data: TextBlock) => void;
     initialData?: Partial<TextBlock>;
+    courseId?: string;
+    moduleId?: string;
+    lessonId?: string;
 }
 
-export function TextBlockModal({ open, onClose, onSave, initialData }: TextBlockModalProps) {
+export function TextBlockModal({ open, onClose, onSave, initialData, courseId, moduleId, lessonId }: TextBlockModalProps) {
     const {
         handleSubmit,
         setValue,
@@ -71,10 +74,7 @@ export function TextBlockModal({ open, onClose, onSave, initialData }: TextBlock
                     <div className="mb-4">
                         <AIAssistantPanel
                             blockType="text"
-                            courseContext={{
-                                courseId: 'course-builder',  // Fallback ID for course builder
-                                courseTitle: 'Course Content',
-                            }}
+                            courseContext={CourseContextBuilder.buildContext({ courseId, moduleId, lessonId })}
                             onContentGenerated={(content) => {
                                 const htmlContent = typeof content === 'string' ? content : content.text || content.html || '';
                                 handleEditorChange(htmlContent);

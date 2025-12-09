@@ -390,6 +390,58 @@ Bloom's Level: [level]`,
 };
 
 // ============================================================================
+// Final Assessment Block Prompts
+// ============================================================================
+
+export const finalAssessmentBlockPrompts: Record<string, PromptTemplate> = {
+    questions: {
+        name: 'Final Assessment Questions',
+        description: 'Generate comprehensive assessment with multiple question types',
+        template: `You are creating a final assessment for "{{lessonName}}" in "{{courseTitle}}".
+
+Topic: {{topic}}
+Learning Objectives: {{objectives}}
+
+Generate a comprehensive assessment with multiple question types. Return the response as a JSON object.
+
+Requirements:
+- Target {{readingLevel}} learners
+- Mix of multiple-choice, short-answer, and essay questions
+- Questions should test different levels of understanding
+- Include clear, unambiguous questions
+- For multiple choice: provide 4 options with one correct answer
+- For short-answer/essay: include grading rubric and sample answer
+
+Format as JSON:
+{
+  "title": "Assessment title",
+  "description": "Instructions for students",
+  "questions": [
+    {
+      "question": "Question text",
+      "type": "multiple-choice",
+      "options": [
+        {"text": "Option A", "feedback": "Why this is/isn't correct"},
+        {"text": "Option B", "feedback": "Why this is/isn't correct"},
+        {"text": "Option C", "feedback": "Why this is/isn't correct"},
+        {"text": "Option D", "feedback": "Why this is/isn't correct"}
+      ],
+      "correctAnswer": "Option text that is correct"
+    },
+    {
+      "question": "Question text",
+      "type": "short-answer",
+      "maxScore": 10,
+      "rubric": "Grading criteria",
+      "correctAnswer": "Sample answer"
+    }
+  ]
+}`,
+        variables: ['lessonName', 'courseTitle', 'topic', 'objectives', 'readingLevel']
+    }
+};
+
+// ============================================================================
 // List Block Prompts
 // ============================================================================
 
@@ -422,6 +474,153 @@ Format:
 
 Make each item concise but informative.`,
         variables: ['listType', 'lessonName', 'courseTitle', 'topic', 'itemCount', 'readingLevel', 'tone', 'specificInstructions', 'ordered']
+    }
+};
+
+// ============================================================================
+// Certificate Generator Block Prompts
+// ============================================================================
+
+export const certificateGeneratorBlockPrompts: Record<string, PromptTemplate> = {
+    setup: {
+        name: 'Certificate Generator Setup',
+        description: 'Generate certificate configuration and text',
+        template: `You are creating a certificate generator for "{{courseTitle}}" - Lesson: "{{lessonName}}".
+
+Course Topic: {{topic}}
+
+Generate:
+1. A block title for the certificate generator (e.g., "Claim Your Certificate")
+2. Instructions for students (2-3 sentences explaining how to generate their certificate)
+3. A certificate title that will appear on the certificate (e.g., "Certificate of Completion")
+
+Requirements:
+- Use a {{tone}} tone
+- Target {{readingLevel}} learners
+- Make it celebratory and motivating
+- Keep text professional and clear
+
+Format as JSON:
+{
+  "title": "Block title",
+  "description": "Instructions for students",
+  "certificateTitle": "Certificate title"
+}
+
+Make it encouraging and professional.`,
+        variables: ['courseTitle', 'lessonName', 'topic', 'tone', 'readingLevel']
+    }
+};
+
+// ============================================================================
+// Choice Comparison Block Prompts
+// ============================================================================
+
+export const choiceComparisonBlockPrompts: Record<string, PromptTemplate> = {
+    generate: {
+        name: 'Choice Comparison',
+        description: 'Generate comparison scenario with multiple choices',
+        template: `You are creating a choice comparison activity for "{{lessonName}}" in "{{courseTitle}}".
+
+Topic: {{topic}}
+
+Generate:
+1. A clear comparison question or scenario (1-2 sentences)
+2. 3-5 distinct choices/options to compare
+3. For each choice, provide:
+   - A clear label (2-5 words)
+   - A brief description explaining the approach (1-2 sentences)
+
+Requirements:
+- Choices should represent meaningfully different approaches
+- Make it relevant for {{readingLevel}} learners
+- Use a {{tone}} tone
+- Ensure choices are balanced (no obviously "correct" answer)
+
+Format as JSON:
+{
+  "question": "Comparison question or scenario",
+  "title": "Optional activity title",
+  "choices": [
+    { "label": "Choice name", "description": "Brief explanation" },
+    { "label": "Choice name", "description": "Brief explanation" }
+  ]
+}
+
+Generate 3-5 choices that encourage critical thinking.`,
+        variables: ['lessonName', 'courseTitle', 'topic', 'readingLevel', 'tone']
+    }
+};
+
+// ============================================================================
+// AI Generator Block Prompts
+// ============================================================================
+
+export const aiGeneratorBlockPrompts: Record<string, PromptTemplate> = {
+    setup: {
+        name: 'AI Generator Setup',
+        description: 'Generate configuration for an AI generator tool',
+        template: `You are creating an AI generator tool configuration for "{{lessonName}}" in "{{courseTitle}}".
+
+Tool Purpose: {{topic}}
+Generator Type: {{generatorType}}
+
+Generate:
+1. A clear, engaging title for the tool (under 50 characters)
+2. Instructions for students explaining how to use this tool (2-3 sentences)
+3. A helpful placeholder text for the input field
+4. (Optional) A custom system prompt if needed for specific behavior
+
+Target Audience: {{readingLevel}}
+Tone: {{tone}}
+
+Format as JSON:
+{
+  "title": "Tool name",
+  "description": "Instructions for students",
+  "placeholder": "Input field placeholder",
+  "prompt": "Optional custom system prompt"
+}
+
+Make it clear and user-friendly for students.`,
+        variables: ['lessonName', 'courseTitle', 'topic', 'generatorType', 'readingLevel', 'tone']
+    }
+};
+
+// ============================================================================
+// Word Cloud Block Prompts
+// ============================================================================
+
+export const wordCloudBlockPrompts: Record<string, PromptTemplate> = {
+    generate: {
+        name: 'Word Cloud',
+        description: 'Generate words with mappings for an interactive word cloud',
+        template: `You are creating an interactive word cloud for "{{lessonName}}" in "{{courseTitle}}".
+
+Topic: {{topic}}
+
+Generate 6-12 key words related to this topic, where each word:
+- Represents an important concept, term, or idea
+- Has a value (1-100) indicating its importance/size in the cloud
+- Maps to a brief explanation or related concept
+
+Requirements:
+- Words should be single words or short phrases (1-3 words max)
+- Values should vary to create visual interest (range from 30-100)
+- Mappings should be concise explanations (1-2 sentences)
+- Target {{readingLevel}} learners
+- Use a {{tone}} tone in mappings
+
+Format as JSON:
+{
+  "words": [
+    { "text": "word1", "value": 85, "mapping": "Brief explanation of what this connects to" },
+    { "text": "word2", "value": 70, "mapping": "Brief explanation of what this connects to" }
+  ]
+}
+
+Generate at least 6 words with varied importance values.`,
+        variables: ['lessonName', 'courseTitle', 'topic', 'readingLevel', 'tone']
     }
 };
 
@@ -613,7 +812,12 @@ export function getPromptTemplate(
         reflection: reflectionBlockPrompts,
         poll: pollBlockPrompts,
         quiz: quizBlockPrompts,
+        finalAssessment: finalAssessmentBlockPrompts,
         list: listBlockPrompts,
+        certificateGenerator: certificateGeneratorBlockPrompts,
+        choiceComparison: choiceComparisonBlockPrompts,
+        aiGenerator: aiGeneratorBlockPrompts,
+        wordCloud: wordCloudBlockPrompts,
         outline: lessonOutlinePrompts,
         image: imageAltTextPrompts
     };
@@ -635,7 +839,12 @@ export function getAvailableTemplates(blockType: string): PromptTemplate[] {
         reflection: reflectionBlockPrompts,
         poll: pollBlockPrompts,
         quiz: quizBlockPrompts,
+        finalAssessment: finalAssessmentBlockPrompts,
         list: listBlockPrompts,
+        certificateGenerator: certificateGeneratorBlockPrompts,
+        choiceComparison: choiceComparisonBlockPrompts,
+        aiGenerator: aiGeneratorBlockPrompts,
+        wordCloud: wordCloudBlockPrompts,
         outline: lessonOutlinePrompts,
         image: imageAltTextPrompts
     };

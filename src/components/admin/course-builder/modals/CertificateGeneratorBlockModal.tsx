@@ -25,9 +25,12 @@ interface CertificateGeneratorBlockModalProps {
     onClose: () => void;
     onSave: (data: CertificateGeneratorBlock) => void;
     initialData?: Partial<CertificateGeneratorBlock>;
+    courseId?: string;
+    moduleId?: string;
+    lessonId?: string;
 }
 
-export function CertificateGeneratorBlockModal({ open, onClose, onSave, initialData }: CertificateGeneratorBlockModalProps) {
+export function CertificateGeneratorBlockModal({ open, onClose, onSave, initialData, courseId, moduleId, lessonId }: CertificateGeneratorBlockModalProps) {
     const [logoUrl, setLogoUrl] = useState(initialData?.content?.config?.logoUrl || '');
     const [backgroundUrl, setBackgroundUrl] = useState(initialData?.content?.config?.backgroundUrl || '');
     const [signatureUrl, setSignatureUrl] = useState(initialData?.content?.config?.signatureUrl || '');
@@ -137,7 +140,7 @@ export function CertificateGeneratorBlockModal({ open, onClose, onSave, initialD
                     <div className="mb-4">
                         <AIAssistantPanel
                             blockType="certificateGenerator"
-                            courseContext={CourseContextBuilder.buildContext({})}
+                            courseContext={CourseContextBuilder.buildContext({ courseId, moduleId, lessonId })}
                             onContentGenerated={handleContentGenerated}
                             currentContent=""
                             placeholder="Describe the certificate content you want to generate..."
