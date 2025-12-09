@@ -14,9 +14,13 @@ export function AdminLayout() {
         { icon: FileText, label: "Pages", href: "/admin/pages" },
     ];
 
+    // Hide sidebar on course builder page
+    const isBuilderPage = location.pathname.includes('/builder');
+
     return (
         <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
             {/* Sidebar */}
+            {!isBuilderPage && (
             <aside className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 hidden md:flex flex-col">
                 <div className="p-6">
                     <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Admin Portal</h1>
@@ -50,12 +54,17 @@ export function AdminLayout() {
                     </Button>
                 </div>
             </aside>
+            )}
 
             {/* Main Content */}
             <main className="flex-1 overflow-y-auto">
-                <div className="p-8">
+                {isBuilderPage ? (
                     <Outlet />
-                </div>
+                ) : (
+                    <div className="p-8">
+                        <Outlet />
+                    </div>
+                )}
             </main>
         </div>
     );
