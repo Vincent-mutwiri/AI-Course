@@ -88,7 +88,7 @@ export const FinalAssessmentComponent: React.FC<FinalAssessmentComponentProps> =
     return storedScore ? parseInt(storedScore) : null;
   });
 
-  const [isSubmitted, setIsSubmitted] = useState(passStatus !== null);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [showResults, setShowResults] = useState(false);
   const [aiGradingResults, setAiGradingResults] = useState<Record<string, AIGradingResult>>({});
@@ -356,16 +356,14 @@ Provide your response in the following JSON format:
                 </h3>
               </div>
 
-              {/* Show detailed results if they want */}
-              {showResults && (
-                <Button
-                  variant="outline"
-                  onClick={() => setShowResults(!showResults)}
-                  className="mt-4"
-                >
-                  Review Answers
-                </Button>
-              )}
+              {/* Show detailed results button */}
+              <Button
+                variant="outline"
+                onClick={() => setShowResults(!showResults)}
+                className="mt-4"
+              >
+                {showResults ? 'Hide Answers' : 'Review Answers'}
+              </Button>
             </div>
 
             {/* Detailed Results (optional) */}

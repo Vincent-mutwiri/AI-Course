@@ -290,6 +290,27 @@ function renderBlockContent(block: Block): React.ReactNode {
                 </div>
             );
 
+        case "finalAssessment":
+            return (
+                <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <CheckCircle className="h-3 w-3" />
+                        <span>Final Assessment</span>
+                    </div>
+                    <p className="text-sm font-medium line-clamp-1">
+                        {content.title || "Final Assessment"}
+                    </p>
+                    {content.description && (
+                        <p className="text-xs text-muted-foreground line-clamp-2">
+                            {content.description}
+                        </p>
+                    )}
+                    <p className="text-xs text-muted-foreground">
+                        {content.questions?.length || 0} questions
+                    </p>
+                </div>
+            );
+
         // Interactive blocks with generic rendering
         case "choiceComparison":
         case "designFixer":
@@ -302,7 +323,6 @@ function renderBlockContent(block: Block): React.ReactNode {
         case "roeDashboard":
         case "journeyTimeline":
         case "certificateGenerator":
-        case "finalAssessment":
             return (
                 <div className="space-y-2">
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
